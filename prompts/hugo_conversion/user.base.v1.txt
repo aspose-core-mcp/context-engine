@@ -1,0 +1,21 @@
+Convert this Hugo Markdown file to `adcs.normalized_document.v1`.
+
+Metadata:
+- repo_id: {{repo_id}}
+- product_id: {{product_id}}
+- product_family: {{product_family}}
+- source_kind: {{source_kind}}
+- programming_language: {{programming_language}}
+- doc_locale: {{doc_locale}}
+- version: {{version}}
+- source_revision: {{source_revision}}
+- source_path: {{source_path}}
+
+Requirements:
+1) Keep all mandatory metadata non-empty.
+2) Preserve citations per chunk.
+3) Keep chunking retrieval-friendly with section anchors.
+4) Keep warnings for unsupported Hugo constructs.
+
+Hugo Markdown input:
+{{raw_hugo_markdown}}

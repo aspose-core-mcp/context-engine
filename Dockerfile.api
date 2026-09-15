@@ -1,0 +1,93 @@
+FROM python:3.12-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    VENV_PATH=/opt/venv
+
+WORKDIR /app
+
+RUN python -m venv "${VENV_PATH}"
+ENV PATH="${VENV_PATH}/bin:${PATH}"
+
+COPY pyproject.toml constraints.txt README.md LICENSE ./
+COPY src ./src
+
+# Install against the hash-pinned closure so the image is reproducible: a bare
+# `pip install .` would re-resolve every dependency to whatever is newest on PyPI
+# at build time, and an untested major version could ship.
+# Two steps on purpose: pip switches into hash-checking mode as soon as the
+# constraints carry hashes, and then refuses the project itself because a
+# directory cannot be hashed ("Can't verify hashes for these file://
+# requirements"). Installing the pinned closure first with --require-hashes
+# keeps every dependency verified — more strictly than -c would — and --no-deps
+# then adds the project without re-resolving anything.
+RUN pip install --upgrade pip \
+    && pip install --require-hashes -r constraints.txt \
+    && pip install --no-deps .
+
+# License texts of the bundled Python packages, redistributed with the image.
+COPY scripts/licenses/python_third_party_notices.py /tmp/
+RUN python /tmp/python_third_party_notices.py --output /opt/licenses/THIRD_PARTY_NOTICES.txt \
+    && cp LICENSE /opt/licenses/LICENSE
+
+FROM python:3.12-slim AS runtime
+
+# Provenance. Pass GIT_REVISION and BUILD_DATE so an image traces back to a commit:
+#   docker build --build-arg GIT_REVISION=$(git rev-parse HEAD) \
+#                --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) ...
+# Inspect with: docker inspect -f '{index .Config.Labels "org.opencontainers.image.revision"}' IMAGE
+ARG GIT_REVISION=unknown
+ARG BUILD_DATE=unknown
+ARG IMAGE_VERSION=unknown
+LABEL org.opencontainers.image.title="adcs-api" \
+      org.opencontainers.image.description="ADCS API — versioned, citation-backed Aspose documentation over MCP and REST." \
+      org.opencontainers.image.source="https://github.com/aspose-mcp/aspose-context-engine" \
+      org.opencontainers.image.revision="${GIT_REVISION}" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.version="${IMAGE_VERSION}" \
+      org.opencontainers.image.licenses="MIT"
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    VENV_PATH=/opt/venv \
+    PATH="/opt/venv/bin:${PATH}" \
+    PYTHONPATH=/app/src
+
+RUN groupadd --system appuser \
+    && useradd --system --gid appuser --create-home --home-dir /home/appuser appuser
+
+WORKDIR /app
+
+COPY --from=builder /opt/venv /opt/venv
+COPY --from=builder /opt/licenses /licenses
+COPY src ./src
+COPY config ./config
+# The source registry accepts repositories that are registered but not cloned yet
+# (materialization_state: lazy_registered) only when they appear in .gitmodules,
+# which it reads from the workspace root (/app). Without it the API refuses to start
+# unless every source directory exists.
+COPY .gitmodules ./
+# Raw source corpora (source-repo-apiref / source-repo-docs) are NOT baked into
+# the image: serving queries the indexes, not raw markdown, and the multi-GB
+# corpus would bloat the image and duplicate data already on the host. Matches
+# the lightweight production image (Dockerfile.k8s). Ingestion containers
+# bind-mount the corpus at runtime (see docker-compose volumes on `worker`).
+#
+# The empty source-root dirs MUST still exist: SourceRegistryService validates
+# at startup that every `source_roots[].path` exists (config/source-repositories.yaml),
+# and that check is not gated by ADCS_VALIDATE_SOURCE_SUBMODULES. Create them so
+# the app boots without the corpus (mirrors the k8s `create-source-dirs`
+# initContainer); a runtime bind-mount overlays real content when present.
+RUN mkdir -p /app/artifacts/config-history /app/artifacts/semantic-review \
+    /app/source-repo-apiref /app/source-repo-docs \
+    && chown -R appuser:appuser /app
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=5 \
+  CMD ["python", "-c", "import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3).status == 200 else 1)"]
+
+USER appuser
+
+CMD ["python", "-m", "uvicorn", "adcs.api.main:app", "--host", "0.0.0.0", "--port", "8080"]

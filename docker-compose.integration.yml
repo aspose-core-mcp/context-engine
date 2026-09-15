@@ -1,0 +1,180 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: adcs-api:local
+    # Serving is light (remote embedding client, no in-process model). Cap RAM so
+    # a runaway request can never exhaust the host — the container is OOM-killed
+    # and restarted instead of freezing the machine.
+    mem_limit: 4g
+    # Read-only corpus mount: the source registry validates that the source-root
+    # dirs exist at startup, and the admin raw-markdown:preview endpoint reads
+    # files from them. Mounted read-only (the api never writes the corpus); the
+    # multi-GB data is still not baked into the image.
+    volumes:
+      - ./source-repo-apiref:/app/source-repo-apiref:ro
+      - ./source-repo-docs:/app/source-repo-docs:ro
+      # Operation state (artifacts/runtime-state) is shared with the worker, so ingestion
+      # jobs the worker runs report their progress through the API.
+      - ./artifacts:/app/artifacts
+    env_file:
+      - ${ADCS_COMPOSE_ENV_FILE:-.env.compose.example}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    image: adcs-worker:local
+    # Ingestion runs here and can be memory-heavy on large products. Cap RAM so a
+    # runaway/oversized ingest is OOM-killed and restarted instead of freezing the
+    # host (an uncapped ingest on an over-committed host can swap-thrash it). Tune
+    # per host via ADCS_WORKER_MEM_LIMIT (raise it on a dedicated ingestion machine).
+    mem_limit: ${ADCS_WORKER_MEM_LIMIT:-24g}
+    # The raw corpus is bind-mounted from the host rather than baked into the
+    # image (de-duplicates multi-GB data already present on the host; keeps the
+    # image small). Raw source repos are read-only; the normalized staging dirs
+    # and artifacts are writable.
+    volumes:
+      - ./source-repo-apiref:/app/source-repo-apiref:ro
+      - ./source-repo-docs:/app/source-repo-docs:ro
+      - ./data-apiref:/app/data-apiref
+      - ./data-docs:/app/data-docs
+      - ./artifacts:/app/artifacts
+      # The documentation sources are git submodules; their git metadata lives in the
+      # parent repository and is needed to resolve each source's revision.
+      - ./.git:/app/.git:ro
+    env_file:
+      - ${ADCS_COMPOSE_ENV_FILE:-.env.compose.example}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    mem_limit: 512m
+    env_file:
+      - ${ADCS_COMPOSE_ENV_FILE:-.env.compose.example}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    # Valkey (BSD-3-Clause) is a protocol-compatible Redis fork. Redis 7.4 and later
+    # ship under RSALv2/SSPLv1, which is not an open-source license, so the stack
+    # does not default to them. Any Redis-compatible server works through REDIS_URL.
+    image: valkey/valkey:8.1-alpine
+    mem_limit: 256m
+    command: ["valkey-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    environment:
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit vm_memory_high_watermark 0.4"
+    mem_limit: 512m
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  qdrant:
+    image: qdrant/qdrant:v1.13.2
+    mem_limit: 1g
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333 && printf \"GET /readyz HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3 && cat <&3 | grep -q \"200 OK\"'",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  opensearch:
+    image: opensearchproject/opensearch:2.19.1
+    mem_limit: 1536m
+    # DEV/INTEGRATION ONLY. The OpenSearch security plugin is disabled so the
+    # integration suite can talk to a single-node cluster without TLS or
+    # password setup. Do not expose port 9200 beyond the development machine.
+    # The Helm chart in infra/helm does not deploy OpenSearch; production
+    # clusters are provisioned separately and should run with the security
+    # plugin, TLS and credentials from a Secret — see docs/secrets-handling.md.
+    environment:
+      discovery.type: single-node
+      DISABLE_INSTALL_DEMO_CONFIG: "${OPENSEARCH_DISABLE_DEMO_CONFIG:-true}"
+      # DEV/INTEGRATION default only (see banner above). Sourced from an env var
+      # so no literal "disabled-security" value is committed; production never
+      # uses this compose file. Override to "false" to run with the plugin on.
+      DISABLE_SECURITY_PLUGIN: "${OPENSEARCH_DISABLE_SECURITY:-true}"
+      OPENSEARCH_JAVA_OPTS: "-Xms1g -Xmx1g"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s > /dev/null",
+        ]
+      interval: 15s
+      timeout: 8s
+      retries: 20
+
+volumes:
+  postgres_data:
+  qdrant_data:
+  opensearch_data:

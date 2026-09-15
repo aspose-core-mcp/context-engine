@@ -1,0 +1,11 @@
+Additional constraints for documentation/guides pages:
+1) Preserve instructional flow (steps, prerequisites, warnings, outcomes).
+2) Keep chunk types focused on task retrieval:
+   - `guide_overview`
+   - `guide_steps`
+   - `guide_example`
+   - `guide_warning`
+3) Sanitize embedded HTML/CSS/JS to avoid polluting retrieval context.
+4) Keep code snippets and command blocks in chunk code metadata.
+5) Preserve external links and API links as citations.
+6) Do not drop shortcode semantic intent (`alert`, `tab`, `tabs`).

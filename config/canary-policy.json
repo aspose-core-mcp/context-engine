@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "initial_traffic_pct": 10,
+  "full_traffic_pct": 100,
+  "analysis_window_minutes": 15,
+  "max_error_rate_pct": 1.0,
+  "max_latency_p95_ms": 1200,
+  "auto_rollback": true
+}

@@ -1,0 +1,40 @@
+{
+  "profiles": [
+    {
+      "profile_id": "sustained",
+      "description": "MVP sustained profile target 50 RPS.",
+      "target_rps": 50,
+      "duration_seconds": 6,
+      "run_by_default": true,
+      "simulated_products": 1,
+      "required_min_products": 0
+    },
+    {
+      "profile_id": "burst",
+      "description": "MVP burst profile target 150 RPS.",
+      "target_rps": 150,
+      "duration_seconds": 2,
+      "run_by_default": true,
+      "simulated_products": 1,
+      "required_min_products": 0
+    },
+    {
+      "profile_id": "soak",
+      "description": "Soak profile definition for 12-hour stability checks.",
+      "target_rps": 50,
+      "duration_seconds": 43200,
+      "run_by_default": false,
+      "simulated_products": 1,
+      "required_min_products": 0
+    },
+    {
+      "profile_id": "capacity-100-products",
+      "description": "Preprod capacity profile for multi-product envelope (100+ products).",
+      "target_rps": 300,
+      "duration_seconds": 4,
+      "run_by_default": false,
+      "simulated_products": 120,
+      "required_min_products": 100
+    }
+  ]
+}

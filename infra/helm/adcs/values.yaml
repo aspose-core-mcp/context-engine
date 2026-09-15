@@ -1,0 +1,247 @@
+global:
+  imagePullSecrets: []
+  podLabels: {}
+
+  env:
+    ADCS_ENV: prod
+    ADCS_LOG_LEVEL: info
+    ADCS_HOST: 0.0.0.0
+    ADCS_PORT: "8080"
+    ADCS_ADMIN_KEYS_SOURCE: env
+    ADCS_PERSISTENCE_BACKEND: postgres
+    ADCS_RETRIEVAL_BACKEND: qdrant_opensearch
+    ADCS_TEST_MODE: "false"
+
+    ADCS_WEBMCP_ENABLED: "true"
+    ADCS_WEBMCP_CONFIRM_TTL_SECONDS: "300"
+    ADCS_MCP_SUPPORTED_REVISIONS: "2025-11-25,2025-06-18,2024-11-05"
+
+    ADCS_ABUSE_GUARD_MODE: observe-only
+    ADCS_ABUSE_GUARD_ALLOWLIST: ""
+    ADCS_ABUSE_REQUESTS_PER_IP_PER_MINUTE: "120"
+    ADCS_ABUSE_REQUESTS_PER_FINGERPRINT_PER_MINUTE: "180"
+    ADCS_ABUSE_REQUESTS_GLOBAL_PER_MINUTE: "5000"
+
+    ADCS_INGESTION_PARTIAL_PUBLISH_THRESHOLD_PCT: "30"
+    ADCS_INGESTION_METADATA_QUARANTINE_POLICY: best_effort_continue
+    ADCS_INGESTION_RETRY_MAX_ATTEMPTS: "5"
+    ADCS_INGESTION_RETRY_BACKOFF_BASE_SECONDS: "5"
+    ADCS_INGESTION_RETRY_BACKOFF_MAX_SECONDS: "120"
+
+    ADCS_LAYOUT_DETECTION_CONFIDENCE_THRESHOLD: "0.80"
+    ADCS_LAYOUT_DETECTION_ALLOW_MANUAL_OVERRIDE: "true"
+    ADCS_QUALITY_GATES_PHASE: preprod
+
+    # Embeddings. The prod profile rejects the deterministic development backend,
+    # so point the service at an OpenAI-compatible (or Ollama) embedding endpoint.
+    # ADCS_EMBEDDING_MODEL is rendered only when set; otherwise the settings default applies.
+    ADCS_EMBEDDING_BACKEND: openai_compatible
+    ADCS_EMBEDDING_API_URL: ""
+    ADCS_EMBEDDING_MODEL: ""
+
+  # Non-secret service endpoints only. Credential-bearing connection strings
+  # (POSTGRES_DSN, RABBITMQ_URL) live in global.secretEnv below so they render
+  # into a Kubernetes Secret, not plaintext env. See docs/secrets-handling.md.
+  externalServices:
+    REDIS_URL: redis://redis:6379/0
+    QDRANT_URL: http://qdrant:6333
+    OPENSEARCH_URL: http://opensearch:9200
+
+  configPaths:
+    ADCS_ADMIN_KEYS_JSON_PATH: /app/config/admin_keys.json
+    ADCS_TRANSLATION_LLM_CONFIG_PATH: /app/config/translation_llm.json
+    ADCS_INGESTION_LLM_POLICY_CONFIG_PATH: /app/config/ingestion_llm_policy.json
+    ADCS_INGESTION_PROMPT_REGISTRY_CONFIG_PATH: /app/config/ingestion_prompt_registry.json
+
+  # Credential placeholders ONLY. Supply real values at install time, for example
+  # `helm upgrade --install ... --set-string global.secretEnv.<KEY>=...` from your
+  # secret store. Never commit real values — see docs/secrets-handling.md.
+  secretEnv:
+    ADCS_API_KEY: replace-me
+    POSTGRES_DSN: replace-me
+    RABBITMQ_URL: replace-me
+    # Key for ip_hash / query_fingerprint hashing, required by staging/prod profiles.
+    # Deliberately empty so a deployment fails fast until a real value is supplied.
+    ADCS_HASH_SECRET: ""
+    # Optional API key for the embedding endpoint.
+    ADCS_EMBEDDING_API_KEY: ""
+
+  # Additional non-secret environment variables rendered on every workload,
+  # for example APIREF_STRUCTURED_STORE_ENABLED: "true".
+  extraEnv: {}
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+api:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: adcs-api
+    tag: local
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+  livenessProbe:
+    path: /healthz
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 5
+  readinessProbe:
+    path: /readyz
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 6
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 12
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  pdb:
+    enabled: true
+    minAvailable: 1
+  ingress:
+    public:
+      enabled: true
+      className: ""
+      annotations: {}
+      host: api.adcs.local
+      paths:
+        - "/"
+        - "/v1"
+        - "/v1/"
+        - "/healthz"
+        - "/readyz"
+        - "/metrics"
+      tls: []
+    admin:
+      enabled: true
+      className: ""
+      annotations: {}
+      host: admin.adcs.local
+      paths:
+        - "/admin"
+        - "/admin/"
+        - "/admin/v1"
+        - "/admin/v1/"
+      tls: []
+
+mcpGateway:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: adcs-api
+    tag: local
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+  livenessProbe:
+    path: /healthz
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 5
+  readinessProbe:
+    path: /readyz
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 6
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 12
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  pdb:
+    enabled: true
+    minAvailable: 1
+  ingress:
+    enabled: true
+    className: ""
+    annotations: {}
+    host: mcp.adcs.local
+    paths:
+      - "/mcp"
+      - "/mcp/"
+      - "/webmcp"
+      - "/webmcp/"
+    tls: []
+
+worker:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: adcs-worker
+    tag: local
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 300m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+
+scheduler:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: adcs-worker
+    tag: local
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+networkPolicy:
+  enabled: true
+  allowSameNamespaceIngress: true
+  allowSameNamespaceEgress: true
+  ingressFrom:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+  # Egress beyond the namespace is denied except for the entries below. Backing services
+  # outside the cluster need an entry, for example:
+  #   - ipBlock: {cidr: 10.20.0.0/16}
+  #     ports: [{protocol: TCP, port: 5432}, {protocol: TCP, port: 9200}]
+  # Entries take either an ipBlock or a namespaceSelector (optionally with a podSelector).
+  egressTo:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+nodeSelector: {}
+affinity: {}
+tolerations: []

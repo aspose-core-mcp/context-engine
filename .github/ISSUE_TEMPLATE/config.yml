@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/aspose-mcp/aspose-context-engine/security/advisories/new
+    about: Please report security issues privately, not as public issues.
+  - name: Ask a question
+    url: https://github.com/aspose-mcp/aspose-context-engine/blob/main/README.md#contact
+    about: Questions about the project go to Muhammad Sabir (muhammad.sabir@aspose.com).

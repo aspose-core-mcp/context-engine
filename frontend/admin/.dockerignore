@@ -1,0 +1,28 @@
+# The builder stage does `COPY . .`, so anything not excluded here lands in the
+# image layer. Keep node_modules, prior build output and Playwright artifacts out
+# of the build context so the image stays small.
+node_modules
+.next
+.next-dev
+out
+build
+
+# Test and report artifacts
+test-results
+playwright-report
+e2e
+*.tsbuildinfo
+
+# Local environment and editor noise
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+npm-debug.log*
+
+# Never ship VCS metadata or the Dockerfile itself
+.git
+.gitignore
+Dockerfile
+.dockerignore

@@ -1,0 +1,34 @@
+{{- if and .Values.mcpGateway.enabled .Values.mcpGateway.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "adcs.fullname" . }}-mcp
+  labels:
+    {{- include "adcs.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mcp-gateway
+  {{- with .Values.mcpGateway.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.mcpGateway.ingress.className }}
+  ingressClassName: {{ .Values.mcpGateway.ingress.className }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.mcpGateway.ingress.host }}
+      http:
+        paths:
+          {{- range .Values.mcpGateway.ingress.paths }}
+          - path: {{ . }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "adcs.fullname" $ }}-mcp-gateway
+                port:
+                  number: {{ $.Values.mcpGateway.service.port }}
+          {{- end }}
+  {{- with .Values.mcpGateway.ingress.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

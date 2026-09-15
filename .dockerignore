@@ -1,0 +1,22 @@
+.git
+.gitignore
+frontend
+artifacts
+reports
+infra
+tests
+__pycache__
+*.pyc
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.venv
+.env
+.env.*
+# Document corpora and staging data — multi-GB, provided at runtime via volume
+# mounts and never COPY'd into the image. Excluding them keeps the build context
+# small, so builds are fast and do not overload the Docker daemon.
+source-repo-apiref
+source-repo-docs
+data-apiref
+data-docs

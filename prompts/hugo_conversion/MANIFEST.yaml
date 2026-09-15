@@ -1,0 +1,117 @@
+# Hugo Conversion Prompt Pack — Manifest
+#
+# This file is the authoritative version + integrity record for every prompt
+# in this directory. Two contracts depend on it:
+#
+#   1. tests/test_prompt_pack_integrity.py — asserts the sha256 of every
+#      file listed below matches the actual file contents. Any drift fails
+#      the test until the manifest is updated.
+#
+#   2. The change-history discipline — a prompt edit MUST be accompanied by
+#      either (a) a new versioned file (e.g. system.v2.txt) with a new
+#      manifest entry, or (b) a bump of `version` + a new `change_history`
+#      entry on the existing prompt. In-place edits without a manifest bump
+#      will fail the integrity test.
+#
+# Hashes are SHA-256 of the file as committed to the repo (LF line endings,
+# UTF-8 encoded). Recompute via:
+#   shasum -a 256 prompts/hugo_conversion/<filename>
+
+manifest_version: "1.0"
+prompt_pack: hugo_conversion
+description: >
+  Versioned prompts for converting Hugo markdown into the canonical
+  adcs.normalized_document.v1 schema. Used by the conversion-experiment
+  variants in config/ingestion_prompt_registry.json.
+
+prompts:
+
+  - filename: system.v1.txt
+    version: v1
+    role: system
+    purpose: >
+      Strict converter behavior for Hugo → adcs.normalized_document.v1.
+      Loaded as the system prompt by every variant in the conversion
+      experiment.
+    sha256: d963b42ba90d1463d7adca9eb2cf83ecec2ccc3639da1159dac5f8f8bb4f0ce0
+    introduced_at: "2026-03-04"
+    consumer: src/adcs/ingestion/prompt_registry.py
+    change_history:
+      - version: v1
+        date: "2026-03-04"
+        author: maintainers
+        change: Initial release
+        rationale: >
+          Baseline deterministic converter prompt — establishes the contract
+          for the conversion.ab.v1 experiment.
+
+  - filename: user.base.v1.txt
+    version: v1
+    role: user
+    purpose: >
+      Common payload template shared between user.docs.v1 and user.apiref.v1.
+      Sets the structural expectations for any source document.
+    sha256: abab97cf3f138cd97504ca76e565aac3b5ad4f3e242df6d4e65b6edcdf795fb5
+    introduced_at: "2026-03-04"
+    consumer: src/adcs/ingestion/prompt_registry.py
+    change_history:
+      - version: v1
+        date: "2026-03-04"
+        author: maintainers
+        change: Initial release
+        rationale: Baseline user-prompt template.
+
+  - filename: user.apiref.v1.txt
+    version: v1
+    role: user
+    purpose: >
+      API-reference specialization. Used when source_kind == "apiref" in the
+      registry assignment.
+    sha256: 1817732d0430d659edcdd8bf598b6099f525dcdaf12c3348908b32ba735b5fe5
+    introduced_at: "2026-03-04"
+    consumer: src/adcs/ingestion/prompt_registry.py
+    change_history:
+      - version: v1
+        date: "2026-03-04"
+        author: maintainers
+        change: Initial release
+        rationale: >
+          API-reference-biased variant for the apiref source_kind. Establishes
+          the per-symbol chunking expectations.
+
+  - filename: user.docs.v1.txt
+    version: v1
+    role: user
+    purpose: >
+      Guides / how-to specialization. Used when source_kind == "docs" in the
+      registry assignment.
+    sha256: c6d81beb8d2affc53303e8d2185dc788864eeefd677fbbc6e0e0b7d7f806bda1
+    introduced_at: "2026-03-04"
+    consumer: src/adcs/ingestion/prompt_registry.py
+    change_history:
+      - version: v1
+        date: "2026-03-04"
+        author: maintainers
+        change: Initial release
+        rationale: >
+          Docs-biased variant for narrative how-to pages. Establishes the
+          300–900 token chunking target with 10–15% overlap.
+
+  - filename: eval-rubric.v1.md
+    version: v1
+    role: rubric
+    purpose: >
+      Scoring checklist for manual review of conversion outputs. Not sent to
+      the LLM at runtime; consumed by reviewers via the admin UI quality-review
+      workflow.
+    sha256: 3d458e89c315f35a274b67d7ccc8e2a9bd152d97bf0b66a0442d33797c9fa10e
+    introduced_at: "2026-03-04"
+    consumer: src/adcs/admin/quality_reviews.py
+    change_history:
+      - version: v1
+        date: "2026-03-04"
+        author: maintainers
+        change: Initial release
+        rationale: >
+          Baseline reviewer rubric — gates major-change semantic review with
+          threshold ≥ 4.3 on a 0..5 scale.

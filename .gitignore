@@ -1,0 +1,50 @@
+# Local environment files — never commit real credentials
+.env
+.env.local
+.env.compose
+.env.compose.local
+infra/pact-broker/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+mutants/
+.coverage
+.coverage.*
+htmlcov/
+
+# Admin UI
+node_modules/
+frontend/admin/.next/
+frontend/admin/.next-dev/
+frontend/admin/playwright-report/
+frontend/admin/test-results/
+frontend/admin/ui-screenshots/
+frontend/admin/*.tsbuildinfo
+
+# Documentation corpora (git submodules, cloned on demand) and normalized staging
+source-repo-apiref/
+source-repo-docs/
+data-apiref/
+data-docs/
+
+# Generated reports, contracts and runtime artifacts
+reports/
+pacts/
+logs/
+artifacts/*
+!artifacts/quality-gates/
+artifacts/quality-gates/retrieval_corpus.json
+artifacts/quality-gates/retrieval_corpus_stale.json
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store

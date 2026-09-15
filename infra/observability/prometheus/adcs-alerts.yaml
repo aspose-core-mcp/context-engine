@@ -1,0 +1,208 @@
+# ADCS alert rules.
+#
+# Every rule queries a metric family the API serves at /metrics
+# (src/adcs/api/metrics.py and src/adcs/api/ingestion_slis.py). Series from
+# metrics.py are held in process memory, so they are per pod and start from zero
+# when the pod restarts; the ingestion series are read from PostgreSQL at scrape
+# time.
+#
+# Rules that select `job="adcs-api"` assume the api and mcp-gateway pods are
+# scraped under that job name. The Helm chart ships no scrape configuration;
+# see infra/observability/README.md.
+#
+# Severity labels follow the definitions in
+# infra/runbooks/incident-response-playbooks.md.
+groups:
+  # ===========================================================================
+  # Sev1 — service unavailable or data integrity at risk
+  # ===========================================================================
+  - name: adcs-sev1
+    interval: 30s
+    rules:
+      - alert: ADCSCriticalApiAvailability
+        expr: |
+          (
+            sum(rate(adcs_http_requests_total{job="adcs-api",status!~"5.."}[5m]))
+            /
+            sum(rate(adcs_http_requests_total{job="adcs-api"}[5m]))
+          ) < 0.95
+        for: 5m
+        labels:
+          severity: sev1
+          service: adcs-api
+        annotations:
+          summary: "API availability below 95% for 5 minutes"
+          description: |
+            More than 5% of ADCS API requests returned a 5xx status over the last
+            5 minutes.
+          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"
+
+  # ===========================================================================
+  # Sev2 — SLO at risk or major feature degraded
+  # ===========================================================================
+  - name: adcs-sev2
+    interval: 30s
+    rules:
+      - alert: ADCSHighLatencyP95
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(adcs_http_request_duration_seconds_bucket{job="adcs-api"}[5m])) by (le)
+          ) > 1.8
+        for: 10m
+        labels:
+          severity: sev2
+          service: adcs-api
+        annotations:
+          summary: "API p95 latency above 1.8s for 10 minutes"
+          description: "Latency SLO at risk. Investigate retrieval pipeline and upstreams."
+          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s2a-api-latency-slo-breach-sev2"
+
+      - alert: ADCSCitationCoverageBreach
+        expr: adcs_citation_missing_ratio > 0.005
+        for: 60m
+        labels:
+          severity: sev2
+          service: retrieval
+        annotations:
+          summary: "Citation coverage below 99.5% for 1 hour"
+          description: |
+            Retrieval results are being returned without a canonical_url or
+            section_anchor, violating the citation coverage SLI.
+          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s2d-citation-coverage-breach-sev2--data-integrity"
+
+  # ===========================================================================
+  # Sev3 — minor degradation, a workaround exists
+  # ===========================================================================
+  - name: adcs-sev3
+    interval: 1m
+    rules:
+      - alert: ADCSLowConfidenceRetrieval
+        expr: adcs_retrieval_confidence_low_ratio > 0.2
+        for: 30m
+        labels:
+          severity: sev3
+          service: retrieval
+        annotations:
+          summary: "Over 20% of retrieval answers report low confidence"
+          description: |
+            The retrieval_confidence_low_ratio SLO is breached. A sudden
+            jump to ~100% is the signature of a dead retrieval lane rather than a
+            quality regression — check that the dense lane is being queried at
+            all before tuning anything.
+
+      - alert: ADCSAbuseStorm
+        expr: |
+          sum(rate(adcs_http_requests_total{job="adcs-api",status="429"}[5m])) > 10
+        for: 5m
+        labels:
+          severity: sev3
+          service: adcs-api
+        annotations:
+          summary: "Sustained rate-limit firing > 10 req/s for 5 min"
+          description: |
+            The abuse guard defaults to observe-only mode (ADCS_ABUSE_GUARD_MODE), so
+            no 429 is emitted and this fires only once enforcement is switched on.
+          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s3a-rate-limit--abuse-storm-sev3"
+
+      - alert: ADCSMcpNegotiationFallbackSpike
+        expr: |
+          (
+            sum(rate(mcp_negotiation_fallback_total{job="adcs-api"}[30m]))
+            /
+            clamp_min(sum(rate(mcp_negotiation_total{job="adcs-api"}[30m])), 1)
+          ) > 0.2
+        for: 30m
+        labels:
+          severity: sev3
+          service: adcs-api
+        annotations:
+          summary: "MCP revision fallbacks above 20% of negotiations for 30 min"
+          description: |
+            Clients are negotiating protocol revisions the server does not support
+            directly. Check ADCS_MCP_SUPPORTED_REVISIONS against client versions
+            before deprecating a revision.
+
+      - alert: ADCSPartialPublishBurst
+        expr: |
+          increase(
+            adcs_ingestion_publish_events_total{job="adcs-api",event_type="partial_publish"}[6h]
+          ) > 3
+        for: 10m
+        labels:
+          severity: sev3
+          service: ingestion
+        annotations:
+          summary: "More than 3 partial publishes in 6 hours"
+          description: |
+            A partial publish means the run stayed under the partial-publish
+            threshold (ADCS_INGESTION_PARTIAL_PUBLISH_THRESHOLD_PCT) but dropped
+            documents. One is routine; a burst usually means a source repository
+            changed shape. Clean runs are not recorded, so no ratio is available
+            and the rule counts partial-publish events instead.
+          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s3b-ingestion-pipeline-failure-sev3"
+
+  # ===========================================================================
+  # SLO burn-rate alerts (multi-window, multi-burn-rate pattern)
+  # ===========================================================================
+  - name: adcs-slo-burn
+    interval: 1m
+    rules:
+      - alert: ADCSSlo99_9_FastBurn
+        expr: |
+          (
+            (
+              1 -
+              sum(rate(adcs_http_requests_total{job="adcs-api",status!~"5.."}[1h]))
+              /
+              sum(rate(adcs_http_requests_total{job="adcs-api"}[1h]))
+            ) > (1 - 0.999) * 14.4
+          )
+          and
+          (
+            (
+              1 -
+              sum(rate(adcs_http_requests_total{job="adcs-api",status!~"5.."}[5m]))
+              /
+              sum(rate(adcs_http_requests_total{job="adcs-api"}[5m]))
+            ) > (1 - 0.999) * 14.4
+          )
+        for: 2m
+        labels:
+          severity: sev2
+          service: adcs-api
+          slo: api_availability
+        annotations:
+          summary: "API SLO 99.9% burning at 14.4x rate (will exhaust monthly budget in 2h)"
+          description: |
+            Fast burn rate detected. At current rate, monthly error budget will exhaust
+            in approximately 2 hours.
+          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"
+
+      - alert: ADCSSlo99_9_SlowBurn
+        expr: |
+          (
+            (
+              1 -
+              sum(rate(adcs_http_requests_total{job="adcs-api",status!~"5.."}[6h]))
+              /
+              sum(rate(adcs_http_requests_total{job="adcs-api"}[6h]))
+            ) > (1 - 0.999) * 6
+          )
+          and
+          (
+            (
+              1 -
+              sum(rate(adcs_http_requests_total{job="adcs-api",status!~"5.."}[30m]))
+              /
+              sum(rate(adcs_http_requests_total{job="adcs-api"}[30m]))
+            ) > (1 - 0.999) * 6
+          )
+        for: 15m
+        labels:
+          severity: sev3
+          service: adcs-api
+          slo: api_availability
+        annotations:
+          summary: "API SLO 99.9% burning at 6x rate (will exhaust monthly budget in 5 days)"
+          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"

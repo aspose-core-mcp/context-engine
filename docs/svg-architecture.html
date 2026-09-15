@@ -1,0 +1,71 @@
+<meta charset="UTF-8">
+<body style="margin:0;padding:0;background:white;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" style="width:900px;height:520px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <rect width="900" height="520" fill="#f8f9fa" rx="8"/>
+  <text x="450" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">ADCS — System Architecture</text>
+  <rect x="20" y="180" width="160" height="160" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="100" y="215" text-anchor="middle" font-size="13" font-weight="bold" fill="#1976d2">AI-IDE / Agent</text>
+  <text x="100" y="240" text-anchor="middle" font-size="11" fill="#555">Copilot, Cursor,</text>
+  <text x="100" y="255" text-anchor="middle" font-size="11" fill="#555">Claude, ChatGPT</text>
+  <text x="100" y="285" text-anchor="middle" font-size="11" fill="#555">Sends query:</text>
+  <text x="100" y="300" text-anchor="middle" font-size="10" fill="#888" font-style="italic">"How to recognize</text>
+  <text x="100" y="315" text-anchor="middle" font-size="10" fill="#888" font-style="italic">text from image?"</text>
+  <line x1="180" y1="260" x2="230" y2="260" stroke="#1976d2" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="205" y="250" text-anchor="middle" font-size="9" fill="#1976d2">MCP / REST</text>
+  <rect x="230" y="200" width="130" height="120" rx="8" fill="#fff" stroke="#455a64" stroke-width="2"/>
+  <text x="295" y="230" text-anchor="middle" font-size="12" font-weight="bold" fill="#455a64">MCP / REST</text>
+  <text x="295" y="248" text-anchor="middle" font-size="12" font-weight="bold" fill="#455a64">Gateway</text>
+  <text x="295" y="275" text-anchor="middle" font-size="10" fill="#777">9 tools</text>
+  <text x="295" y="290" text-anchor="middle" font-size="10" fill="#777">Rate limiting</text>
+  <text x="295" y="305" text-anchor="middle" font-size="10" fill="#777">Auth</text>
+  <line x1="360" y1="260" x2="410" y2="260" stroke="#455a64" stroke-width="2" marker-end="url(#arrowGray)"/>
+  <rect x="410" y="150" width="180" height="220" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="500" y="178" text-anchor="middle" font-size="12" font-weight="bold" fill="#388e3c">Retrieval Engine</text>
+  <text x="500" y="205" text-anchor="middle" font-size="10" fill="#555">Query Planner</text>
+  <text x="500" y="225" text-anchor="middle" font-size="10" fill="#555">Hybrid Search</text>
+  <text x="500" y="240" text-anchor="middle" font-size="9" fill="#888">(Vector + BM25)</text>
+  <text x="500" y="263" text-anchor="middle" font-size="10" fill="#555">Reranker</text>
+  <text x="500" y="286" text-anchor="middle" font-size="10" fill="#555">Context Packer</text>
+  <text x="500" y="309" text-anchor="middle" font-size="10" fill="#555">Citation Builder</text>
+  <text x="500" y="355" text-anchor="middle" font-size="9" fill="#888">OpenAI-compatible LLM API</text>
+  <rect x="650" y="160" width="120" height="70" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="710" y="185" text-anchor="middle" font-size="11" font-weight="bold" fill="#f57c00">Qdrant</text>
+  <text x="710" y="202" text-anchor="middle" font-size="9" fill="#888">Vector Search</text>
+  <text x="710" y="218" text-anchor="middle" font-size="9" fill="#888">Embeddings</text>
+  <rect x="650" y="250" width="120" height="70" rx="6" fill="#fce4ec" stroke="#c62828" stroke-width="1.5"/>
+  <text x="710" y="275" text-anchor="middle" font-size="11" font-weight="bold" fill="#c62828">OpenSearch</text>
+  <text x="710" y="292" text-anchor="middle" font-size="9" fill="#888">Lexical BM25</text>
+  <text x="710" y="308" text-anchor="middle" font-size="9" fill="#888">Keyword Match</text>
+  <line x1="590" y1="230" x2="650" y2="200" stroke="#f57c00" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+  <line x1="590" y1="280" x2="650" y2="285" stroke="#c62828" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+  <rect x="230" y="420" width="540" height="80" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="500" y="448" text-anchor="middle" font-size="12" font-weight="bold" fill="#7b1fa2">Ingestion Pipeline</text>
+  <text x="500" y="472" text-anchor="middle" font-size="10" fill="#555">Git Sources &#x2192; Hugo Parser &#x2192; Chunker &#x2192; Embeddings &#x2192; Staging &#x2192; Atomic Publish</text>
+  <text x="500" y="490" text-anchor="middle" font-size="10" fill="#555">42 products | 82 repositories | API refs + Documentation</text>
+  <line x1="650" y1="420" x2="710" y2="330" stroke="#7b1fa2" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowPurple)"/>
+  <line x1="230" y1="290" x2="180" y2="290" stroke="#388e3c" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <text x="205" y="308" text-anchor="middle" font-size="8" fill="#388e3c">Signatures +</text>
+  <text x="205" y="318" text-anchor="middle" font-size="8" fill="#388e3c">Citations</text>
+  <rect x="790" y="350" width="95" height="60" rx="6" fill="#e0f7fa" stroke="#00838f" stroke-width="1.5"/>
+  <text x="837" y="375" text-anchor="middle" font-size="10" font-weight="bold" fill="#00838f">PostgreSQL</text>
+  <text x="837" y="392" text-anchor="middle" font-size="9" fill="#888">Metadata + Audit</text>
+  <rect x="790" y="420" width="95" height="50" rx="6" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+  <text x="837" y="443" text-anchor="middle" font-size="10" font-weight="bold" fill="#d32f2f">Redis</text>
+  <text x="837" y="458" text-anchor="middle" font-size="9" fill="#888">Cache + Rate Limit</text>
+  <rect x="20" y="20" width="200" height="130" rx="6" fill="white" stroke="#ccc" stroke-width="1"/>
+  <text x="30" y="42" font-size="10" font-weight="bold" fill="#333">Data Flow:</text>
+  <line x1="30" y1="58" x2="60" y2="58" stroke="#1976d2" stroke-width="2"/><text x="68" y="62" font-size="9" fill="#555">Query (MCP/REST)</text>
+  <line x1="30" y1="78" x2="60" y2="78" stroke="#388e3c" stroke-width="2"/><text x="68" y="82" font-size="9" fill="#555">Response (citations)</text>
+  <line x1="30" y1="98" x2="60" y2="98" stroke="#f57c00" stroke-width="1.5"/><text x="68" y="102" font-size="9" fill="#555">Vector search</text>
+  <line x1="30" y1="118" x2="60" y2="118" stroke="#c62828" stroke-width="1.5"/><text x="68" y="122" font-size="9" fill="#555">Lexical search</text>
+  <line x1="30" y1="138" x2="60" y2="138" stroke="#7b1fa2" stroke-width="1.5" stroke-dasharray="5,3"/><text x="68" y="142" font-size="9" fill="#555">Index updates</text>
+  <defs>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#1976d2"/></marker>
+    <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#455a64"/></marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6" fill="#388e3c"/></marker>
+    <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f57c00"/></marker>
+    <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#c62828"/></marker>
+    <marker id="arrowPurple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#7b1fa2"/></marker>
+  </defs>
+</svg>
+</body>

@@ -1,0 +1,53 @@
+{
+  "drilldown_links": {
+    "grafana_dashboard_url": "https://grafana.example.local/d/adcs-overview",
+    "loki_logs_url_template": "https://grafana.example.local/explore?left={\"datasource\":\"Loki\",\"queries\":[{\"expr\":\"{service=\\\"adcs\\\"} |= \\\"{request_id}\\\"\"}]}",
+    "tempo_trace_url_template": "https://grafana.example.local/explore?left={\"datasource\":\"Tempo\",\"queries\":[{\"query\":\"{trace_id}\"}]}"
+  },
+  "alert_rules": [
+    {
+      "rule_id": "api-latency-p95-breach",
+      "severity": "critical",
+      "description": "API p95 latency is above SLO for query_docs window.",
+      "window_minutes": 10,
+      "threshold": "p95 > 1200ms"
+    },
+    {
+      "rule_id": "api-5xx-spike",
+      "severity": "critical",
+      "description": "HTTP 5xx ratio exceeded production error budget window.",
+      "window_minutes": 10,
+      "threshold": "5xx > 1%"
+    },
+    {
+      "rule_id": "ingestion-publish-failure",
+      "severity": "high",
+      "description": "One or more publish runs failed or remained blocked.",
+      "window_minutes": 15,
+      "threshold": "failed_or_blocked > 0"
+    },
+    {
+      "rule_id": "zero-result-spike",
+      "severity": "high",
+      "description": "Zero-result ratio exceeded expected operating band.",
+      "window_minutes": 15,
+      "threshold": "zero_result_ratio > 20%"
+    },
+    {
+      "rule_id": "stale-index-freshness",
+      "severity": "warning",
+      "description": "Latest published snapshot freshness lag is above target.",
+      "window_minutes": 30,
+      "threshold": "freshness_lag > 30m"
+    }
+  ],
+  "canary_policy": {
+    "enabled": true,
+    "initial_traffic_pct": 10,
+    "full_traffic_pct": 100,
+    "analysis_window_minutes": 15,
+    "max_error_rate_pct": 1.0,
+    "max_latency_p95_ms": 1200,
+    "auto_rollback": true
+  }
+}

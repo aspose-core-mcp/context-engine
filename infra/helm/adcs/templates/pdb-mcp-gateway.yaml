@@ -1,0 +1,15 @@
+{{- if and .Values.mcpGateway.enabled .Values.mcpGateway.pdb.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "adcs.fullname" . }}-mcp-gateway
+  labels:
+    {{- include "adcs.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mcp-gateway
+spec:
+  minAvailable: {{ .Values.mcpGateway.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "adcs.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mcp-gateway
+{{- end }}

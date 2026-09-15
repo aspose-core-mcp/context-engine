@@ -1,0 +1,283 @@
+# Golden queries for live API acceptance evaluation.
+# Each case targets a specific retrieval mode (task, symbol, migration)
+# and asserts relevance, citation coverage, version accuracy, and latency.
+#
+# Schema per case:
+#   case_id            — unique stable identifier
+#   query              — natural-language or symbol query text
+#   product_id         — canonical product id (e.g. aspose.ocr)
+#   language           — programming language key (net, java, cpp, python-net, ...)
+#   version            — target version (null = latest-stable)
+#   expected_mode      — expected retrieval mode: task | symbol | migration
+#   strict_version     — enforce version isolation (default true)
+#   top_k              — number of results to request (default 5)
+#   expected_keywords  — keywords that MUST appear in at least one top-k excerpt
+#   expected_urls      — canonical URLs that SHOULD appear in top-k results
+#   endpoint           — REST endpoint to call: query_docs | get_symbol_doc
+#
+# Thresholds:
+#   relevance         >= 80%   (at least one top-k result matches expected)
+#   p95 latency       <= 1200ms
+#   citation_coverage  = 100%  (every result has canonical_url + section_anchor)
+#   version_accuracy  >= 95%   (no cross-version leakage under strict_version)
+
+dataset_id: adcs-live-golden-v1
+description: Curated golden queries for live API acceptance testing
+
+cases:
+  # ── Aspose.OCR task queries ────────────────────────────────────────────
+  - case_id: LIVE-OCR-TASK-001
+    query: "How to recognize text from an image in C#?"
+    product_id: aspose.ocr
+    language: net
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - RecognizeImage
+      - image
+    expected_urls:
+      - "https://docs.aspose.com/ocr/net/recognition/"
+
+  - case_id: LIVE-OCR-TASK-002
+    query: "OCR recognition settings and preprocessing filters"
+    product_id: aspose.ocr
+    language: net
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - preprocessing
+      - filter
+    expected_urls: []
+
+  - case_id: LIVE-OCR-TASK-003
+    query: "How to extract text from PDF using Aspose.OCR in Java?"
+    product_id: aspose.ocr
+    language: java
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - PDF
+      - recognize
+    expected_urls: []
+
+  - case_id: LIVE-OCR-TASK-004
+    query: "Batch recognition of multiple images in C++"
+    product_id: aspose.ocr
+    language: cpp
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - batch
+      - image
+    expected_urls: []
+
+  # ── Aspose.OCR symbol queries ──────────────────────────────────────────
+  - case_id: LIVE-OCR-SYM-001
+    query: "Aspose.OCR.AsposeOcr.RecognizeImage"
+    product_id: aspose.ocr
+    language: net
+    version: null
+    expected_mode: symbol
+    strict_version: false
+    top_k: 3
+    endpoint: get_symbol_doc
+    expected_keywords:
+      - RecognizeImage
+      - signature
+    expected_urls:
+      - "https://docs.aspose.com/ocr/net/recognizeimage/"
+
+  - case_id: LIVE-OCR-SYM-002
+    query: "Aspose.OCR.RecognitionSettings"
+    product_id: aspose.ocr
+    language: net
+    version: null
+    expected_mode: symbol
+    strict_version: false
+    top_k: 3
+    endpoint: get_symbol_doc
+    expected_keywords:
+      - RecognitionSettings
+    expected_urls: []
+
+  # ── Aspose.Words task queries ──────────────────────────────────────────
+  - case_id: LIVE-WORDS-TASK-001
+    query: "How to convert a Word document to PDF in .NET?"
+    product_id: aspose.words
+    language: net
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - convert
+      - PDF
+    expected_urls: []
+
+  - case_id: LIVE-WORDS-TASK-002
+    query: "Mail merge with data source in Java"
+    product_id: aspose.words
+    language: java
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - mail merge
+    expected_urls: []
+
+  - case_id: LIVE-WORDS-TASK-003
+    query: "Find and replace text in a document"
+    product_id: aspose.words
+    language: net
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - find
+      - replace
+    expected_urls: []
+
+  # ── Aspose.PDF task queries ────────────────────────────────────────────
+  - case_id: LIVE-PDF-TASK-001
+    query: "How to extract text from PDF pages in .NET?"
+    product_id: aspose.pdf
+    language: net
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - extract
+      - text
+    expected_urls: []
+
+  - case_id: LIVE-PDF-TASK-002
+    query: "Add watermark to PDF document in Java"
+    product_id: aspose.pdf
+    language: java
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - watermark
+    expected_urls: []
+
+  # ── Aspose.Cells task queries ──────────────────────────────────────────
+  - case_id: LIVE-CELLS-TASK-001
+    query: "How to read an Excel spreadsheet in Python?"
+    product_id: aspose.cells
+    language: python-java
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - Excel
+      - workbook
+    expected_urls: []
+
+  # ── Aspose.Email task queries ──────────────────────────────────────────
+  - case_id: LIVE-EMAIL-TASK-001
+    query: "Send email with attachment using SMTP in .NET"
+    product_id: aspose.email
+    language: net
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - SMTP
+      - attachment
+    expected_urls: []
+
+  # ── Version-strict queries (version accuracy testing) ──────────────────
+  - case_id: LIVE-OCR-VERSION-001
+    query: "Aspose.OCR recognition API for .NET version 25.1"
+    product_id: aspose.ocr
+    language: net
+    version: "25.1"
+    expected_mode: task
+    strict_version: true
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - recognize
+    expected_urls: []
+
+  - case_id: LIVE-WORDS-VERSION-001
+    query: "Document conversion API"
+    product_id: aspose.words
+    language: net
+    version: "25.1"
+    expected_mode: task
+    strict_version: true
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - convert
+    expected_urls: []
+
+  # ── Migration / breaking changes queries ───────────────────────────────
+  - case_id: LIVE-OCR-MIGRATION-001
+    query: "Breaking changes between Aspose.OCR 24.12 and 25.1 for .NET"
+    product_id: aspose.ocr
+    language: net
+    version: null
+    expected_mode: migration
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - breaking
+      - change
+    expected_urls: []
+
+  - case_id: LIVE-SLIDES-TASK-001
+    query: "Create PowerPoint presentation from scratch in .NET"
+    product_id: aspose.slides
+    language: net
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - presentation
+      - create
+    expected_urls: []
+
+  - case_id: LIVE-IMAGING-TASK-001
+    query: "Resize and crop images programmatically in Java"
+    product_id: aspose.imaging
+    language: java
+    version: null
+    expected_mode: task
+    strict_version: false
+    top_k: 5
+    endpoint: query_docs
+    expected_keywords:
+      - resize
+      - crop
+    expected_urls: []

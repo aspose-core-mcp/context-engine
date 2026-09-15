@@ -1,0 +1,21 @@
+{
+  "enabled": false,
+  "registry_version": "2026-03-04.v1",
+  "conversion_experiment": {
+    "experiment_id": "conversion.ab.v1",
+    "assignment_unit": "source_path",
+    "seed": "adcs-prompt-registry-seed",
+    "variants": [
+      {
+        "variant_id": "deterministic_v1",
+        "weight_pct": 100,
+        "prompt_pack_version": "v1",
+        "system_prompt_path": "prompts/hugo_conversion/system.v1.txt",
+        "user_base_prompt_path": "prompts/hugo_conversion/user.base.v1.txt",
+        "user_docs_prompt_path": "prompts/hugo_conversion/user.docs.v1.txt",
+        "user_apiref_prompt_path": "prompts/hugo_conversion/user.apiref.v1.txt",
+        "backend_override": "deterministic"
+      }
+    ]
+  }
+}
