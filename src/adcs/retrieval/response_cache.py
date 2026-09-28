@@ -56,6 +56,7 @@ def build_cache_key(
     doc_types: tuple[str, ...],
     include_examples: bool,
     debug: bool,
+    allow_language_fallback: bool = True,
 ) -> str:
     """Return a stable key covering everything that can change the response."""
     payload = {
@@ -71,6 +72,7 @@ def build_cache_key(
         "doc_types": sorted(doc_type.casefold() for doc_type in doc_types),
         "include_examples": include_examples,
         "debug": debug,
+        "allow_language_fallback": allow_language_fallback,
     }
     encoded = json.dumps(payload, separators=(",", ":"), sort_keys=True)
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()

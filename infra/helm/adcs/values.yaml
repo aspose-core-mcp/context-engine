@@ -183,6 +183,9 @@ mcpGateway:
     annotations: {}
     host: mcp.adcs.local
     paths:
+      - "/total/net/mcp"
+      - "/tex/net/mcp"
+      - "/words/net/mcp"
       - "/mcp"
       - "/mcp/"
       - "/webmcp"

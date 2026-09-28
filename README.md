@@ -1,4 +1,35 @@
-# Aspose Context Engine
+# Aspose Product MCP Pilot
+
+Product-first MCP pilot built on [Aspose Context Engine](https://github.com/aspose-mcp/aspose-context-engine).
+Individual Words and TeX scopes are implemented first, then combined through Total.
+The initial verified scope is .NET; this is not a production release or a CLI pilot.
+
+| MCP endpoint | Scope |
+| --- | --- |
+| `/words/net/mcp/v1/streamable-http` | Aspose.Words for .NET |
+| `/tex/net/mcp/v1/streamable-http` | Aspose.TeX for .NET |
+| `/total/net/mcp/v1/streamable-http` | Words and TeX for .NET, grouped or explicitly selected |
+
+All three support GET SSE and POST JSON-RPC. Product and language restrictions are
+server-enforced. Total reuses the individual product dispatch and existing indexes;
+it does not ingest duplicate data or call separate product HTTP servers.
+
+The pilot was verified locally on port 8082 against already ingested Words and TeX
+content. Local credentials, source checkouts, databases, and runtime evidence are
+not included in this repository. Configure and ingest sources for a fresh deployment;
+the Git repository alone does not contain the indexed content. The original local
+checkout also has ingestion-specific configuration and snapshot lifecycle fixes
+that are not included in this endpoint-focused branch.
+
+Validation: 174 endpoint and shared MCP regression tests passed. Live checks verified
+documentation and symbol results from both products, explicit product selection,
+and rejection of unsupported products and SDK languages. Broader platform coverage,
+CLI pilots, catalog publication, and production rollout remain separate work.
+
+The upstream documentation below describes the underlying Context Engine. Its hosted
+service references are upstream references, not deployment claims for this pilot.
+
+## Upstream Aspose Context Engine
 
 [![CI](https://github.com/aspose-mcp/aspose-context-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/aspose-mcp/aspose-context-engine/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -333,3 +364,51 @@ Questions about the project, and private reports under the
 Aspose, GroupDocs and their product names are trademarks of their respective owners. The
 MIT license covers the code in this repository; it does not grant permission to use these
 names or logos.
+
+### Aspose.Words for .NET endpoint
+
+The product-scoped MCP endpoint is `/words/net/mcp/v1/streamable-http`
+(GET SSE and POST JSON-RPC). It supplies `product_id="aspose.words"` and
+`language="net"` for all retrieval tools. Clients can omit these arguments;
+conflicting values are rejected. `resolve_product` returns this fixed scope.
+Documentation searches do not fall back to other SDK languages, and structured
+API lookups keep the same scope even when no Words/.NET data is indexed.
+The shared `/mcp/v1/streamable-http` endpoint keeps its existing behavior.
+
+For a deployment at `mcp.aspose.com`, configure clients with:
+
+```json
+{
+  "mcpServers": {
+    "aspose-words-net": {
+      "url": "https://mcp.aspose.com/words/net/mcp/v1/streamable-http"
+    }
+  }
+}
+```
+
+Deploy the application and allow `/words/net/mcp` through the ingress **without
+rewriting the path**. The Helm default MCP ingress includes this prefix;
+installations overriding `mcpGateway.ingress.paths` must add it to their list.
+Preserve MCP headers and disable response buffering for SSE at the proxy.
+This route scopes retrieval, not authentication or access to the shared endpoint.
+Only the single-slash URL above is supported.
+
+The same API also serves Aspose.TeX for .NET at
+`/tex/net/mcp/v1/streamable-http` (GET SSE and POST JSON-RPC). It fixes
+`product_id="aspose.tex"` and `language="net"`, rejects conflicting scope,
+and reuses existing TeX indexes with no additional ingestion. Its server name
+is `aspose-tex-net-mcp`. Forward `/tex/net/mcp` through the ingress unchanged;
+this prefix is included in the default Helm values. Installations overriding
+`mcpGateway.ingress.paths` must include it explicitly.
+
+The Total .NET endpoint is `/total/net/mcp/v1/streamable-http` (GET/POST).
+Its allowlist is exactly `aspose.words` and `aspose.tex`, with language fixed
+at `net`. Omit `product_id` to query both existing indexes; responses contain
+`results_by_product`, each with `product_id` and `result`, or `not_found` for
+missing symbols/releases. Limits and pagination apply per product, with no
+cross-product score comparison. Explicit product selection returns the normal
+single-product response. `resolve_product` without a selection lists the two
+allowed products; free-text queries do not widen the scope. `aspose.total` is
+not a stored product or an accepted product selection. Ingress must forward
+`/total/net/mcp` unchanged (included in Helm defaults). No re-ingestion is needed.

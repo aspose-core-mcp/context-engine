@@ -90,3 +90,28 @@ make k8s-packaging-gates
 ```
 
 This verifies chart structure and required production guardrails.
+
+The MCP ingress also forwards `/words/net/mcp` unchanged to the gateway for the
+Aspose.Words for .NET scoped endpoint at
+`https://<mcp host>/words/net/mcp/v1/streamable-http`. If overriding
+`mcpGateway.ingress.paths`, include this prefix. Do not rewrite it to `/mcp`: the
+application selects the fixed product/language scope from the dedicated route.
+
+The same API also serves Aspose.TeX for .NET at
+`/tex/net/mcp/v1/streamable-http` (GET SSE and POST JSON-RPC). It fixes
+`product_id="aspose.tex"` and `language="net"`, rejects conflicting scope,
+and reuses existing TeX indexes with no additional ingestion. Its server name
+is `aspose-tex-net-mcp`. Forward `/tex/net/mcp` through the ingress unchanged;
+this prefix is included in the default Helm values. Installations overriding
+`mcpGateway.ingress.paths` must include it explicitly.
+
+The Total .NET endpoint is `/total/net/mcp/v1/streamable-http` (GET/POST).
+Its allowlist is exactly `aspose.words` and `aspose.tex`, with language fixed
+at `net`. Omit `product_id` to query both existing indexes; responses contain
+`results_by_product`, each with `product_id` and `result`, or `not_found` for
+missing symbols/releases. Limits and pagination apply per product, with no
+cross-product score comparison. Explicit product selection returns the normal
+single-product response. `resolve_product` without a selection lists the two
+allowed products; free-text queries do not widen the scope. `aspose.total` is
+not a stored product or an accepted product selection. Ingress must forward
+`/total/net/mcp` unchanged (included in Helm defaults). No re-ingestion is needed.

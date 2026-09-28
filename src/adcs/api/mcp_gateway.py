@@ -42,6 +42,13 @@ from adcs.api.error_codes import (
 )
 from adcs.api.error_messages import public_error_message
 from adcs.api.metrics import InMemoryMetrics
+from adcs.mcp.product_scope import (
+    TEX_NET_SCOPE,
+    TOTAL_NET_SCOPE,
+    WORDS_NET_SCOPE,
+    MCPProductGroup,
+    MCPProductScope,
+)
 from adcs.mcp.tool_gateway import MCPToolError
 
 logger = logging.getLogger("adcs.mcp_gateway")
@@ -158,6 +165,9 @@ async def mcp_sse_call_tool(
     return _sse_response(event="tool_result", payload=payload.model_dump())
 
 
+@router.get("/total/net/mcp/v1/streamable-http")
+@router.get("/tex/net/mcp/v1/streamable-http")
+@router.get("/words/net/mcp/v1/streamable-http")
 @router.get("/mcp/v1/streamable-http")
 async def mcp_streamable_http_sse(request: Request) -> StreamingResponse:
     """GET handler for MCP Streamable HTTP SSE stream.
@@ -186,6 +196,34 @@ async def mcp_streamable_http_sse(request: Request) -> StreamingResponse:
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
     )
+
+
+@router.post("/total/net/mcp/v1/streamable-http", response_model=None)
+async def total_net_streamable_http(
+    request_payload: MCPStreamableHttpRequest,
+    request: Request,
+) -> Response:
+    request.state.mcp_product_scope = TOTAL_NET_SCOPE
+    return await mcp_streamable_http_jsonrpc(request_payload=request_payload, request=request)
+
+
+@router.post("/tex/net/mcp/v1/streamable-http", response_model=None)
+async def tex_net_streamable_http(
+    request_payload: MCPStreamableHttpRequest,
+    request: Request,
+) -> Response:
+    request.state.mcp_product_scope = TEX_NET_SCOPE
+    return await mcp_streamable_http_jsonrpc(request_payload=request_payload, request=request)
+
+
+@router.post("/words/net/mcp/v1/streamable-http", response_model=None)
+async def words_net_streamable_http(
+    request_payload: MCPStreamableHttpRequest,
+    request: Request,
+) -> Response:
+    # Scope is selected by the route, never by client headers or session tokens.
+    request.state.mcp_product_scope = WORDS_NET_SCOPE
+    return await mcp_streamable_http_jsonrpc(request_payload=request_payload, request=request)
 
 
 @router.post("/mcp/v1/streamable-http", response_model=None)
@@ -266,6 +304,7 @@ async def _tool_call_payload(
             session_id=request_payload.session_id,
             tool_name=tool_name,
             arguments=request_payload.arguments,
+            scope=getattr(request.state, "mcp_product_scope", None),
         )
     except KeyError as exc:
         raise _error_response(
@@ -331,6 +370,13 @@ async def _tool_call_payload(
     return MCPToolCallResponseModel(result=result)
 
 
+def _server_name(request: Request) -> str:
+    scope = getattr(request.state, "mcp_product_scope", None)
+    if scope is None:
+        return "adcs-mcp"
+    return f"{scope.product_id.replace('.', '-')}-{scope.language}-mcp"
+
+
 async def _streamable_initialize(
     *,
     request_payload: MCPStreamableHttpRequest,
@@ -361,7 +407,10 @@ async def _streamable_initialize(
             "capabilities": {
                 "tools": {"listChanged": False},
             },
-            "serverInfo": {"name": "adcs-mcp", "version": "v1"},
+            "serverInfo": {
+                "name": _server_name(request),
+                "version": "v1",
+            },
             "session_id": initialize_payload.session_id,
             "negotiated_revision": initialize_payload.negotiated_revision,
             "fallback_applied": initialize_payload.fallback_applied,
@@ -384,9 +433,18 @@ async def _streamable_tools_list(
     except HTTPException as exc:
         return _streamable_error_from_http_exception(request_id=request_payload.id, exc=exc)
 
+    scope = getattr(request.state, "mcp_product_scope", None)
+    manifest = _streamable_tools_manifest(
+        language_enum=[scope.language] if scope else _served_language_enum(request)
+    )
+    if scope is not None:
+        manifest = _scoped_tools_manifest(
+            manifest, scope=scope,
+            supported_tools=request.app.state.mcp_tool_gateway.supported_tools(),
+        )
     return _streamable_success_response(
         request_id=request_payload.id,
-        result={"tools": _streamable_tools_manifest(language_enum=_served_language_enum(request))},
+        result={"tools": manifest},
         headers={"mcp-session-id": session_id},
     )
 
@@ -785,6 +843,58 @@ def _streamable_tools_manifest(
             },
         },
     ]
+
+
+def _scoped_tools_manifest(
+    manifest: list[dict[str, Any]], *, scope: MCPProductScope | MCPProductGroup,
+    supported_tools: tuple[str, ...],
+) -> list[dict[str, Any]]:
+    tools = [tool for tool in manifest if tool["name"] in supported_tools]
+    for tool in tools:
+        schema = tool["inputSchema"]
+        for field, value in (("product_id", scope.product_id), ("language", scope.language)):
+            schema["properties"][field] = {
+                "type": "string", "enum": [value], "default": value,
+                "description": f"Fixed by this endpoint; omit or use {value!r}.",
+            }
+        schema["required"] = [
+            field for field in schema.get("required", [])
+            if field not in {"product_id", "language"}
+        ]
+        tool["description"] = f"{scope.title} only. " + tool["description"]
+        if tool["name"] == "resolve_product":
+            tool["description"] = f"Return this endpoint's fixed scope: {scope.title}."
+            schema["required"] = []
+            schema["properties"]["query"]["description"] = (
+                "Optional context; does not change this endpoint's fixed scope."
+            )
+        elif tool["name"] == "aspose_lookup":
+            tool["description"] = (
+                f"Look up API symbols and signatures for {scope.title}. "
+                "Provide a natural-language query or dotted symbol name. "
+                "Product and SDK language are fixed by this endpoint."
+            )
+    if isinstance(scope, MCPProductGroup):
+        for tool in tools:
+            schema = tool["inputSchema"]
+            schema["properties"]["product_id"] = {
+                "type": "string", "enum": [member.product_id for member in scope.members],
+                "description": "Omit to query both products, or select one product.",
+            }
+            tool["description"] = (
+                f"{tool['name']} for Words and TeX for .NET only. "
+                "Omit product_id to query both: results_by_product contains one "
+                "product_id and result (or not_found) per product. "
+                "Limits and pagination apply per product. Select product_id for "
+                "the normal single-product response."
+            )
+            if tool["name"] == "resolve_product":
+                tool["description"] = (
+                    "List this endpoint's allowed products and fixed .NET language. "
+                    "Select product_id to return one product's scope. "
+                    "Optional query text does not change the allowed products."
+                )
+    return tools
 
 
 def _streamable_notification_response() -> Response:

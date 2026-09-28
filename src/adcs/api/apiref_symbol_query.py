@@ -278,10 +278,16 @@ class ApiRefSymbolService:
         )
 
     def _resolve(
-        self, request: GetSymbolRequest | ListMembersRequest | SearchSymbolsRequest
+        self, request: GetSymbolRequest | ListMembersRequest | SearchSymbolsRequest,
+        *, strict_scope: bool = False,
     ) -> tuple[ApiRefScope, Vocabulary, bool]:
         """Normalise product/language onto the served vocabulary."""
-        vocabulary = self._vocabulary()
+        # A fixed vocabulary prevents forgiving normalization from selecting a
+        # different SDK when the requested product/language is not indexed yet.
+        vocabulary = (
+            Vocabulary({request.product_id: frozenset({request.language})})
+            if strict_scope else self._vocabulary()
+        )
         product = vocabulary.normalize_product(request.product_id)
         language = vocabulary.normalize_language(request.language, product=product)
         locale = request.locale or _DEFAULT_LOCALE
@@ -369,8 +375,10 @@ class ApiRefSymbolService:
         match = next((c for c in candidates if c.name.lower() == leaf), None)
         return match.member_fqn if match is not None else None
 
-    def get_symbol(self, *, request: GetSymbolRequest) -> GetSymbolResponse:
-        scope, vocabulary, changed = self._resolve(request)
+    def get_symbol(
+        self, *, request: GetSymbolRequest, strict_scope: bool = False
+    ) -> GetSymbolResponse:
+        scope, vocabulary, changed = self._resolve(request, strict_scope=strict_scope)
         overloads = self._store.get_symbol(member_fqn=request.symbol_fqn, scope=scope)
         resolved_fqn: str | None = None
         if not overloads:
@@ -419,8 +427,10 @@ class ApiRefSymbolService:
             hint=hint,
         )
 
-    def list_members(self, *, request: ListMembersRequest) -> ListMembersResponse:
-        scope, vocabulary, changed = self._resolve(request)
+    def list_members(
+        self, *, request: ListMembersRequest, strict_scope: bool = False
+    ) -> ListMembersResponse:
+        scope, vocabulary, changed = self._resolve(request, strict_scope=strict_scope)
         members = self._store.list_members(parent_fqn=request.parent_fqn, scope=scope)
         return ListMembersResponse(
             parent_fqn=request.parent_fqn,
@@ -456,8 +466,10 @@ class ApiRefSymbolService:
             ordered.append(symbol)
         return _rank_search_results(ordered, query)[:limit]
 
-    def search_symbols(self, *, request: SearchSymbolsRequest) -> SearchSymbolsResponse:
-        scope, vocabulary, changed = self._resolve(request)
+    def search_symbols(
+        self, *, request: SearchSymbolsRequest, strict_scope: bool = False
+    ) -> SearchSymbolsResponse:
+        scope, vocabulary, changed = self._resolve(request, strict_scope=strict_scope)
         # Reduce to salient keywords like aspose_lookup does, so the two tools give
         # the same answer for the same query (parity) — a prose query must not
         # ground in one tool and return [] in the other.
@@ -519,7 +531,9 @@ class ApiRefSymbolService:
         )
         return scope, (changed_product or changed_language)
 
-    def lookup(self, *, request: LookupRequest) -> LookupResponse:
+    def lookup(
+        self, *, request: LookupRequest, strict_scope: bool = False
+    ) -> LookupResponse:
         """Single forgiving entry point: resolve → (exact FQN | search) in one call.
 
         Collapses the resolve→search→get round-trips so a weak model grounds in
@@ -527,7 +541,12 @@ class ApiRefSymbolService:
         full symbol (all overloads) is returned; otherwise ranked matches with
         their signatures inline — no follow-up ``get_symbol`` needed.
         """
-        vocabulary = self._vocabulary()
+        if strict_scope and (not request.product_id or not request.language):
+            raise ValueError("Strict symbol lookup requires product_id and language.")
+        vocabulary = (
+            Vocabulary({request.product_id: frozenset({request.language})})
+            if strict_scope and request.product_id and request.language else self._vocabulary()
+        )
         scope, changed = self._resolve_lookup_scope(request=request, vocabulary=vocabulary)
 
         for candidate in _fqn_candidates(request.query, exclude=scope.product):

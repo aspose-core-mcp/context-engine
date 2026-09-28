@@ -39,6 +39,7 @@ from adcs.api.public_docs_query import (
     QueryDocsRequest,
     ResolveProductRequest,
 )
+from adcs.mcp.product_scope import MCPProductGroup, MCPProductScope
 from adcs.mcp.revision_negotiation import (
     MCPFallbackReason,
     MCPRevisionNegotiationResult,
@@ -155,9 +156,50 @@ class MCPToolGateway:
         session_id: str,
         tool_name: str,
         arguments: dict[str, Any],
+        scope: MCPProductScope | MCPProductGroup | None = None,
     ) -> dict[str, Any]:
         """Dispatch one MCP tool call after session/revision negotiation."""
         self.get_session(session_id=session_id)
+        if isinstance(scope, MCPProductGroup):
+            selected = scope.select(arguments)
+            if len(selected) == 1:
+                return self.call_tool(
+                    session_id=session_id, tool_name=tool_name,
+                    arguments=arguments, scope=selected[0],
+                )
+            if tool_name == "resolve_product":
+                return {
+                    "product_id": None,
+                    "language": scope.language,
+                    "products": [member.product_id for member in selected],
+                    "message": "Select product_id to narrow a call, or omit it to query both.",
+                }
+            if tool_name not in self.supported_tools():
+                raise MCPToolError(f"Unsupported MCP tool: {tool_name!r}")
+            results = []
+            for member in selected:
+                try:
+                    result = self.call_tool(
+                        session_id=session_id, tool_name=tool_name,
+                        arguments={**arguments, "product_id": member.product_id},
+                        scope=member,
+                    )
+                    results.append({"product_id": member.product_id, "result": result})
+                except LookupError:
+                    # A missing symbol/release in one product must not hide the
+                    # other product's results. Backend and validation errors propagate.
+                    results.append({"product_id": member.product_id, "not_found": True})
+            return {"language": scope.language, "results_by_product": results}
+        if scope is not None:
+            arguments = scope.apply(arguments)
+            if tool_name == "resolve_product":
+                return {
+                    "product_id": scope.product_id,
+                    "language": scope.language,
+                    "aliases": [scope.product_id],
+                    "confidence": 1.0,
+                    "candidates": [{"product_id": scope.product_id, "confidence": 1.0}],
+                }
 
         if tool_name == "resolve_product":
             resolve_request = ResolveProductRequest.model_validate(arguments)
@@ -178,7 +220,9 @@ class MCPToolGateway:
             # unnecessary fallback round-trips and empty results.
             if query_request.strict_version and query_request.version is None:
                 query_request.strict_version = False
-            query_response = self._public_query_service.query_docs(request=query_request)
+            query_response = self._public_query_service.query_docs(
+                request=query_request, allow_language_fallback=scope is None
+            )
             query_result = query_response.model_dump()
             # Inject usage guidance so LLM consumers make follow-up symbol lookups
             symbols_mentioned: list[str] = []
@@ -220,26 +264,32 @@ class MCPToolGateway:
             if self._apiref_symbol_service is None:
                 msg = f"MCP tool {tool_name!r} requires a configured API-reference symbol store."
                 raise MCPToolError(msg)
-            return self._call_apiref_tool(tool_name=tool_name, arguments=arguments)
+            return self._call_apiref_tool(
+                tool_name=tool_name, arguments=arguments, strict_scope=scope is not None
+            )
 
         msg = f"Unsupported MCP tool: {tool_name!r}"
         raise MCPToolError(msg)
 
-    def _call_apiref_tool(self, *, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    def _call_apiref_tool(
+        self, *, tool_name: str, arguments: dict[str, Any], strict_scope: bool = False
+    ) -> dict[str, Any]:
         service = self._apiref_symbol_service
         assert service is not None  # guarded by caller
         if tool_name == "aspose_lookup":
-            return service.lookup(request=LookupRequest.model_validate(arguments)).model_dump()
+            return service.lookup(
+                request=LookupRequest.model_validate(arguments), strict_scope=strict_scope
+            ).model_dump()
         if tool_name == "get_symbol":
             return service.get_symbol(
-                request=GetSymbolRequest.model_validate(arguments)
+                request=GetSymbolRequest.model_validate(arguments), strict_scope=strict_scope
             ).model_dump()
         if tool_name == "list_members":
             return service.list_members(
-                request=ListMembersRequest.model_validate(arguments)
+                request=ListMembersRequest.model_validate(arguments), strict_scope=strict_scope
             ).model_dump()
         return service.search_symbols(
-            request=SearchSymbolsRequest.model_validate(arguments)
+            request=SearchSymbolsRequest.model_validate(arguments), strict_scope=strict_scope
         ).model_dump()
 
 

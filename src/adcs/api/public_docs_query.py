@@ -596,6 +596,7 @@ class PublicQueryService:
         *,
         request: QueryDocsRequest,
         tenant_id: str = DEFAULT_TENANT_ID,
+        allow_language_fallback: bool = True,
     ) -> QueryDocsResponse:
         """Run the public retrieval pipeline for one tenant.
 
@@ -621,6 +622,7 @@ class PublicQueryService:
             doc_types=tuple(request.doc_types),
             include_examples=request.include_examples,
             debug=request.debug,
+            allow_language_fallback=allow_language_fallback,
         )
         cached = self._response_cache.get(cache_key) if self._response_cache else None
         if cached is not None:
@@ -675,7 +677,7 @@ class PublicQueryService:
         # products only have cross-language docs in the index.
         language_was_explicit = bool(request.language)
         _cross_language_fallback = False
-        if not retrieval_result.candidates and programming_language:
+        if allow_language_fallback and not retrieval_result.candidates and programming_language:
             logger.info(
                 "language_fallback product=%s lang=%s query=%s",
                 product_id, programming_language, request.query[:80],
