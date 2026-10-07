@@ -48,6 +48,7 @@ dependencies = [
 
 [project.scripts]
 adcs-mcp-stdio = "adcs.mcp.stdio_server:main"
+adcs-platform-ingest = "adcs.plugins.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/aspose-mcp/aspose-context-engine"

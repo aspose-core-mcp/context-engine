@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Any
 
@@ -35,9 +36,19 @@ WORDS_NET_SCOPE = MCPProductScope(
     language="net",
     title="Aspose.Words for .NET",
     product_aliases=frozenset({"aspose.words", "words", "aspose words"}),
-    language_aliases=frozenset({
-        "net", ".net", "dotnet", "c#", "csharp", "cs", "netcore", "net-core", "net core",
-    }),
+    language_aliases=frozenset(
+        {
+            "net",
+            ".net",
+            "dotnet",
+            "c#",
+            "csharp",
+            "cs",
+            "netcore",
+            "net-core",
+            "net core",
+        }
+    ),
 )
 
 
@@ -64,12 +75,14 @@ class MCPProductGroup:
         selected = self.members
         if product is not None:
             selected = tuple(
-                member for member in self.members
-                if isinstance(product, str)
-                and product.strip().casefold() in member.product_aliases
+                member
+                for member in self.members
+                if isinstance(product, str) and product.strip().casefold() in member.product_aliases
             )
             if not selected:
-                raise ValueError("This endpoint allows only aspose.words and aspose.tex.")
+                raise ValueError("This endpoint allows only " + " and ".join(
+                    member.product_id for member in self.members
+                ) + ".")
         # Validate language even for resolve_product and empty data partitions.
         for member in selected:
             member.apply({**arguments, "product_id": member.product_id})
@@ -82,3 +95,32 @@ TOTAL_NET_SCOPE = MCPProductGroup(
     title="Aspose.Total for .NET (Words and TeX)",
     members=(WORDS_NET_SCOPE, TEX_NET_SCOPE),
 )
+
+
+# Opt-in catalog-driven serving; legacy images need not contain extractor packages.
+_catalog_path = os.environ.get("ADCS_PRODUCT_PLUGIN_CATALOG")
+if _catalog_path:
+    from adcs.plugins.catalog import PluginCatalog
+
+    _catalog = PluginCatalog(_catalog_path)
+    if _catalog.compositions["aspose.total.net"].language != "net":
+        raise ValueError("The Total/.NET endpoint requires a .NET composition")
+    _members = []
+    for _plugin_id in _catalog.compositions["aspose.total.net"].members:
+        _plugin = _catalog.extractor(_plugin_id)
+        _name = _plugin.product_id.removeprefix("aspose.")
+        _members.append(
+            MCPProductScope(
+                product_id=_plugin.product_id,
+                language=_plugin.language,
+                title=_plugin.title,
+                product_aliases=frozenset({_plugin.product_id, _name, f"aspose {_name}"}),
+                language_aliases=WORDS_NET_SCOPE.language_aliases,
+            )
+        )
+    TOTAL_NET_SCOPE = MCPProductGroup(
+        product_id="aspose.total",
+        language="net",
+        title="Aspose.Total for .NET",
+        members=tuple(_members),
+    )

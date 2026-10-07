@@ -172,19 +172,21 @@ class MCPToolGateway:
                     "product_id": None,
                     "language": scope.language,
                     "products": [member.product_id for member in selected],
-                    "message": "Select product_id to narrow a call, or omit it to query both.",
+                    "message": (
+                        "Select product_id to narrow a call, or omit it to query all members."
+                    ),
                 }
             if tool_name not in self.supported_tools():
                 raise MCPToolError(f"Unsupported MCP tool: {tool_name!r}")
-            results = []
+            results: list[dict[str, Any]] = []
             for member in selected:
                 try:
-                    result = self.call_tool(
+                    member_result = self.call_tool(
                         session_id=session_id, tool_name=tool_name,
                         arguments={**arguments, "product_id": member.product_id},
                         scope=member,
                     )
-                    results.append({"product_id": member.product_id, "result": result})
+                    results.append({"product_id": member.product_id, "result": member_result})
                 except LookupError:
                     # A missing symbol/release in one product must not hide the
                     # other product's results. Backend and validation errors propagate.

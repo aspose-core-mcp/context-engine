@@ -1,0 +1,37 @@
+{
+  "contract": "adcs.extraction.v1",
+  "plugin_id": "aspose.tex.net",
+  "version": "0.1.0",
+  "product_id": "aspose.tex",
+  "language": "net",
+  "title": "Aspose.TeX for .NET",
+  "worker": [
+    "{python}",
+    "-I",
+    "{plugin_dir}/worker.py"
+  ],
+  "sources": {
+    "docs": {
+      "repo_id": "aspose.tex.net.docs",
+      "path": "source-repo-docs/Aspose.TeX",
+      "prefix": "net",
+      "layout": {
+        "layout_type": "programming_language/content"
+      },
+      "canonical_base_url": "https://docs.aspose.com/tex",
+      "url": "https://github.com/aspose-tex/Aspose.TeX-Documentation.git",
+      "branch": "master"
+    },
+    "apiref": {
+      "repo_id": "aspose.tex.net.apiref",
+      "path": "source-repo-apiref/Aspose.TeX",
+      "prefix": "english/net",
+      "layout": {
+        "layout_type": "doc_locale/programming_language/namespace"
+      },
+      "canonical_base_url": "https://reference.aspose.com/tex",
+      "url": "https://github.com/aspose-tex/Aspose.TeX-API-References.git",
+      "branch": "master"
+    }
+  }
+}

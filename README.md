@@ -1,3 +1,21 @@
+# Product-platform plugin architecture evaluation
+
+This is Muhammad Sabir's reference implementation for Imran Anwar to evaluate and
+extend into the complete plugin architecture. It provides independent Words/.NET
+and TeX/.NET extraction packages with isolated workers and a shared output contract.
+Total/.NET composes member data. Extraction remains plugin-owned; common engine
+orchestration, staging, indexing and serving remain shared.
+
+This evaluation does not enforce plugin-only ingestion across all entry points,
+and full live ingestion/retrieval has not been validated. It incorporates the
+source-kind snapshot prerequisite from upstream MR !1 at `0534897`; it does not
+include that MR's other changes or imply that the MR has been merged.
+See [setup, architecture, commands and limitations](docs/product-platform-plugins.md)
+and [verification evidence](docs/plugin-evaluation-verification.md).
+
+The pilot README below describes the original `d00ac79` baseline; its statements
+about excluded snapshot fixes apply to that baseline, not this evaluation branch.
+
 # Aspose Product MCP Pilot
 
 Product-first MCP pilot built on [Aspose Context Engine](https://github.com/aspose-mcp/aspose-context-engine).

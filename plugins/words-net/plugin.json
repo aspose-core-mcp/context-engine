@@ -1,0 +1,37 @@
+{
+  "contract": "adcs.extraction.v1",
+  "plugin_id": "aspose.words.net",
+  "version": "0.1.0",
+  "product_id": "aspose.words",
+  "language": "net",
+  "title": "Aspose.Words for .NET",
+  "worker": [
+    "{python}",
+    "-I",
+    "{plugin_dir}/worker.py"
+  ],
+  "sources": {
+    "docs": {
+      "repo_id": "aspose.words.net.docs",
+      "path": "source-repo-docs/Words-Net-Custom",
+      "prefix": "net",
+      "layout": {
+        "layout_type": "programming_language/content"
+      },
+      "canonical_base_url": "https://docs.aspose.com/words",
+      "url": "https://github.com/sabir-aspose/words-docs-com.git",
+      "branch": "API-Reference-Aspose-Link-Update"
+    },
+    "apiref": {
+      "repo_id": "aspose.words.net.apiref",
+      "path": "source-repo-apiref/Aspose.Words",
+      "prefix": "english/net",
+      "layout": {
+        "layout_type": "doc_locale/programming_language/namespace"
+      },
+      "canonical_base_url": "https://reference.aspose.com/words",
+      "url": "https://github.com/aspose-words/Aspose.Words-API-References.git",
+      "branch": "main"
+    }
+  }
+}

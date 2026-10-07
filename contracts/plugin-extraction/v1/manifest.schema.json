@@ -1,0 +1,117 @@
+{
+  "$defs": {
+    "SourceDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "repo_id": {
+          "pattern": "^[a-z][a-z0-9_.-]+$",
+          "title": "Repo Id",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "prefix": {
+          "title": "Prefix",
+          "type": "string"
+        },
+        "layout": {
+          "additionalProperties": true,
+          "title": "Layout",
+          "type": "object"
+        },
+        "canonical_base_url": {
+          "title": "Canonical Base Url",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "branch": {
+          "default": "main",
+          "title": "Branch",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repo_id",
+        "path",
+        "prefix",
+        "layout",
+        "canonical_base_url",
+        "url"
+      ],
+      "title": "SourceDefinition",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "const": "adcs.extraction.v1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "plugin_id": {
+      "pattern": "^[a-z][a-z0-9_.-]+$",
+      "title": "Plugin Id",
+      "type": "string"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    },
+    "product_id": {
+      "minLength": 1,
+      "title": "Product Id",
+      "type": "string"
+    },
+    "language": {
+      "minLength": 1,
+      "title": "Language",
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "worker": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Worker",
+      "type": "array"
+    },
+    "sources": {
+      "additionalProperties": {
+        "$ref": "#/$defs/SourceDefinition"
+      },
+      "propertyNames": {
+        "enum": [
+          "docs",
+          "apiref"
+        ]
+      },
+      "title": "Sources",
+      "type": "object"
+    }
+  },
+  "required": [
+    "contract",
+    "plugin_id",
+    "version",
+    "product_id",
+    "language",
+    "title",
+    "worker",
+    "sources"
+  ],
+  "title": "PluginManifest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

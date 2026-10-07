@@ -123,6 +123,7 @@ from adcs.ops import (
     NotificationStatus,
     SmtpNotificationDispatch,
 )
+from adcs.plugins.extraction import ExtractionError, PlatformExtractionBackend
 
 logger = logging.getLogger(__name__)
 
@@ -559,6 +560,7 @@ class SourceHugoNormalizationOrchestrationService:
         workspace_root: str | Path | None = None,
         registry_path: str | Path | None = None,
         canonical_base_url: str = "https://docs.aspose.com",
+        extraction_backend: PlatformExtractionBackend | None = None,
         parser: HugoMarkdownParser | None = None,
         converter: HugoToNormalizedDocumentConverter | None = None,
         validator: NormalizedDocumentValidator | None = None,
@@ -608,6 +610,7 @@ class SourceHugoNormalizationOrchestrationService:
             else default_registry_path.resolve()
         )
         self._canonical_base_url = canonical_base_url.rstrip("/")
+        self._extraction_backend = extraction_backend
         self._parser = parser or HugoMarkdownParser()
         self._converter = converter or HugoToNormalizedDocumentConverter(
             canonical_base_url=self._canonical_base_url
@@ -704,6 +707,11 @@ class SourceHugoNormalizationOrchestrationService:
         store = self._apiref_symbol_store
         if store is None or getattr(repository, "source_kind", None) != "apiref":
             return
+        if self._extraction_backend is not None:
+            self._extraction_backend.publish_symbols(
+                repo_id=getattr(repository, "repo_id"), snapshot_id=snapshot_id, store=store,
+            )
+            return
         # Imported lazily: the publisher pulls in adcs.ingestion.chunking, which
         # would re-enter adcs.ingestion's package init during module import.
         from adcs.indexing.apiref_legacy_staging import CanonicalUrlRewritingStaging
@@ -749,6 +757,11 @@ class SourceHugoNormalizationOrchestrationService:
         execute_immediately: bool = True,
     ) -> SourceHugoNormalizationOperation:
         """Execute one Hugo parse + normalize operation and persist result in memory."""
+        if self._extraction_backend is not None:
+            # Until extraction fingerprints participate in cache keys, never replay
+            # a legacy/plugin-version staging result in an evaluation run.
+            force_full_reindex = True
+            bypass_staging_replay = True
         normalized_repo_ids = _normalize_repo_ids(repo_ids)
         threshold_pct = self._resolve_threshold_pct(partial_publish_threshold_pct)
         resolved_quarantine_policy = self._resolve_metadata_quarantine_policy(
@@ -1152,6 +1165,8 @@ class SourceHugoNormalizationOrchestrationService:
                     # retry/backoff policy rather than silently isolating it.
                     raise
                 except Exception as repo_exc:
+                    if self._extraction_backend is not None:
+                        raise
                     # Resilience: isolate ANY single repo's failure (parse,
                     # validation, or an unexpected error type) — log it and keep
                     # going so one bad repo never aborts the whole batch under any
@@ -1898,7 +1913,9 @@ class SourceHugoNormalizationOrchestrationService:
             }
         else:
             markdown_files = sorted(
-                self._discover_markdown_files(repo_root=repo_root, repository=repository)
+                self._extraction_backend.discover(repo_root=repo_root, repository=repository)
+                if self._extraction_backend is not None
+                else self._discover_markdown_files(repo_root=repo_root, repository=repository)
             )
             if self._english_only_strict:
                 english_doc_count, non_english_locales = summarize_english_documents(
@@ -2009,7 +2026,10 @@ class SourceHugoNormalizationOrchestrationService:
         # parse loop only processes files that weren't completed before.
         processed_source_paths: set[str] = set()
         if staging_replay_snapshot is None:
-            intra_checkpoint = _load_intra_checkpoint(repository.repo_id, source_revision)
+            intra_checkpoint = (
+                _load_intra_checkpoint(repository.repo_id, source_revision)
+                if self._extraction_backend is None else None
+            )
             if intra_checkpoint is not None:
                 processed_source_paths.update(intra_checkpoint.processed_source_paths)
                 parsed_chunk_records.extend(intra_checkpoint.parsed_chunk_records)
@@ -2096,16 +2116,27 @@ class SourceHugoNormalizationOrchestrationService:
                     )
                     continue
                 try:
-                    page = self._parser.parse_document(
-                        repo_id=repository.repo_id,
-                        source_path=scanned_file.source_path,
-                        source_kind=repository.source_kind,
-                        raw_markdown=raw_markdown,
-                        product_id=repository.product_id,
-                        product_family=repository.product_family,
-                        relative_repo_path=scanned_file.relative_repo_path,
-                        layout_detection=repository.layout_detection,
-                    )
+                    plugin_document = None
+                    plugin_records = None
+                    if self._extraction_backend is not None:
+                        page, plugin_document, plugin_records = self._extraction_backend.extract(
+                            repository=repository,
+                            source_path=scanned_file.source_path,
+                            relative_repo_path=scanned_file.relative_repo_path,
+                            raw_markdown=raw_markdown,
+                            source_revision=source_revision,
+                        )
+                    else:
+                        page = self._parser.parse_document(
+                            repo_id=repository.repo_id,
+                            source_path=scanned_file.source_path,
+                            source_kind=repository.source_kind,
+                            raw_markdown=raw_markdown,
+                            product_id=repository.product_id,
+                            product_family=repository.product_family,
+                            relative_repo_path=scanned_file.relative_repo_path,
+                            layout_detection=repository.layout_detection,
+                        )
                     # Parser has copied/consumed raw_markdown into the page
                     # structures; explicit release helps the next iteration.
                     del raw_markdown
@@ -2128,9 +2159,11 @@ class SourceHugoNormalizationOrchestrationService:
                         )
                         continue
 
-                    normalized_document = self._converter.convert_page(
-                        page=page,
-                        source_revision=source_revision,
+                    normalized_document = (
+                        plugin_document if plugin_document is not None
+                        else self._converter.convert_page(
+                            page=page, source_revision=source_revision
+                        )
                     )
                     mapping_context = CanonicalUrlMappingContext.from_values(
                         product_id=normalized_document.document.product_id,
@@ -2205,10 +2238,12 @@ class SourceHugoNormalizationOrchestrationService:
                         != normalized_document.document.canonical_url
                     ):
                         remap_applied_count += 1
-                    chunked_document, page_chunk_records = self._chunking_policy.chunk_document(
-                        page=page,
-                        normalized_document=remapped_document,
-                    )
+                    if plugin_records is not None:
+                        chunked_document, page_chunk_records = remapped_document, plugin_records
+                    else:
+                        chunked_document, page_chunk_records = self._chunking_policy.chunk_document(
+                            page=page, normalized_document=remapped_document,
+                        )
                     self._validator.validate_or_raise(
                         chunked_document,
                         input_source_path=page.source_path,
@@ -2223,6 +2258,8 @@ class SourceHugoNormalizationOrchestrationService:
                     )
                     continue
                 except ValueError as exc:
+                    if isinstance(exc, ExtractionError):
+                        raise
                     metadata_quarantine_items.append(
                         MetadataQuarantineItem(
                             source_path=scanned_file.source_path,
@@ -2241,6 +2278,8 @@ class SourceHugoNormalizationOrchestrationService:
                     )
                     continue
 
+                if self._extraction_backend is not None:
+                    self._extraction_backend.accept(repository, chunked_document)
                 # Feed accumulators inline instead of growing
                 # `pages` / `canonical_documents` lists. The local `page` /
                 # `chunked_document` references go out of scope after this

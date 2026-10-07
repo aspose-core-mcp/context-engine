@@ -48,3 +48,10 @@ artifacts/quality-gates/retrieval_corpus_stale.json
 .vscode/
 .idea/
 .DS_Store
+
+# Independent extraction package build output
+/plugins/*/build/
+
+# Local handoff archive and generated evaluation output
+/Archive.zip
+/output/

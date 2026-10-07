@@ -879,11 +879,12 @@ def _scoped_tools_manifest(
             schema = tool["inputSchema"]
             schema["properties"]["product_id"] = {
                 "type": "string", "enum": [member.product_id for member in scope.members],
-                "description": "Omit to query both products, or select one product.",
+                "description": "Omit to query all configured products, or select one product.",
             }
             tool["description"] = (
-                f"{tool['name']} for Words and TeX for .NET only. "
-                "Omit product_id to query both: results_by_product contains one "
+                f"{tool['name']} for {scope.title}: "
+                + ", ".join(member.title for member in scope.members) + ". "
+                "Omit product_id to query all members: results_by_product contains one "
                 "product_id and result (or not_found) per product. "
                 "Limits and pagination apply per product. Select product_id for "
                 "the normal single-product response."

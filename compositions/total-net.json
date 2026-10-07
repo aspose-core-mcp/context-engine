@@ -1,0 +1,9 @@
+{
+  "composition_id": "aspose.total.net",
+  "language": "net",
+  "members": [
+    "aspose.words.net",
+    "aspose.tex.net"
+  ],
+  "owns_sources": false
+}

@@ -284,6 +284,7 @@ class IndexPublishOrchestrator:
             product_id=scope.product_id,
             programming_language=scope.programming_language,
             version=scope.version,
+            source_kind=scope.source_kind,
         )
         _superseded_snapshot_id = (
             _prior_active.snapshot_id if _prior_active is not None else None
@@ -460,6 +461,7 @@ class IndexPublishOrchestrator:
             product_id=scope.product_id,
             programming_language=scope.programming_language,
             version=scope.version,
+            source_kind=scope.source_kind,
         )
         active_snapshot_id = (
             active_snapshot.snapshot_id if active_snapshot is not None else snapshot.snapshot_id
@@ -531,6 +533,7 @@ class IndexPublishOrchestrator:
             product_id=scope.product_id,
             programming_language=scope.programming_language,
             version=scope.version,
+            source_kind=scope.source_kind,
         )
         if active_snapshot is not None:
             active_snapshot_id = active_snapshot.snapshot_id

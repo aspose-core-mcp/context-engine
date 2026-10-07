@@ -59,6 +59,7 @@ class SnapshotRegistry(Protocol):
         product_id: str,
         programming_language: str,
         version: str,
+        source_kind: str | None = None,
     ) -> SnapshotRecord | None:
         """Return current active snapshot for one retrieval scope."""
 
@@ -98,7 +99,7 @@ class InMemorySnapshotRegistry:
         self._counter = 0
         self._snapshots: dict[str, SnapshotRecord] = {}
         self._snapshot_order: list[str] = []
-        self._active_by_scope: dict[tuple[str, str, str], str] = {}
+        self._active_by_scope: dict[tuple[str, str, str, str], str] = {}
 
     def create_snapshot(
         self,
@@ -110,7 +111,7 @@ class InMemorySnapshotRegistry:
         source_revision: str,
         indexed_chunks_count: int,
     ) -> SnapshotRecord:
-        scope = (product_id, programming_language, version)
+        scope = (product_id, programming_language, version, source_kind)
         with self._lock:
             self._counter += 1
             snapshot_id = f"snap-{self._counter:08d}"
@@ -148,9 +149,23 @@ class InMemorySnapshotRegistry:
         product_id: str,
         programming_language: str,
         version: str,
+        source_kind: str | None = None,
     ) -> SnapshotRecord | None:
-        scope = (product_id, programming_language, version)
         with self._lock:
+            if source_kind is None:
+                return next(
+                    (
+                        self._snapshots[snapshot_id]
+                        for snapshot_id in reversed(self._snapshot_order)
+                        if self._snapshots[snapshot_id].product_id == product_id
+                        and self._snapshots[snapshot_id].programming_language
+                        == programming_language
+                        and self._snapshots[snapshot_id].version == version
+                        and self._snapshots[snapshot_id].status is SnapshotStatus.ACTIVE
+                    ),
+                    None,
+                )
+            scope = (product_id, programming_language, version, source_kind)
             active_snapshot_id = self._active_by_scope.get(scope)
             if active_snapshot_id is None:
                 return None
@@ -186,7 +201,12 @@ class InMemorySnapshotRegistry:
             if snapshot is None:
                 return None
 
-            scope = (snapshot.product_id, snapshot.programming_language, snapshot.version)
+            scope = (
+                snapshot.product_id,
+                snapshot.programming_language,
+                snapshot.version,
+                snapshot.source_kind,
+            )
             previous_active_snapshot_id = self._active_by_scope.get(scope)
             if (
                 previous_active_snapshot_id is not None
@@ -215,7 +235,12 @@ class InMemorySnapshotRegistry:
             if target is None:
                 return None
 
-            scope = (target.product_id, target.programming_language, target.version)
+            scope = (
+                target.product_id,
+                target.programming_language,
+                target.version,
+                target.source_kind,
+            )
             current_active_snapshot_id = self._active_by_scope.get(scope)
             if current_active_snapshot_id is None:
                 raise SnapshotRollbackConflictError(
@@ -325,6 +350,7 @@ class PostgresSnapshotRegistry:
                         product_id = :product_id
                         AND programming_language = :programming_language
                         AND version = :version
+                        AND source_kind = :source_kind
                         AND status = :active_status
                     """
                 ),
@@ -334,6 +360,7 @@ class PostgresSnapshotRegistry:
                     "product_id": product_id,
                     "programming_language": programming_language,
                     "version": version,
+                    "source_kind": source_kind,
                 },
             )
             sequence_value = int(
@@ -421,6 +448,7 @@ class PostgresSnapshotRegistry:
         product_id: str,
         programming_language: str,
         version: str,
+        source_kind: str | None = None,
     ) -> SnapshotRecord | None:
         with self._engine.connect() as connection:
             row = connection.execute(
@@ -441,6 +469,7 @@ class PostgresSnapshotRegistry:
                         product_id = :product_id
                         AND programming_language = :programming_language
                         AND version = :version
+                        AND (CAST(:source_kind AS TEXT) IS NULL OR source_kind = :source_kind)
                         AND status = :status
                     ORDER BY created_at DESC, snapshot_id DESC
                     LIMIT 1
@@ -450,6 +479,7 @@ class PostgresSnapshotRegistry:
                     "product_id": product_id,
                     "programming_language": programming_language,
                     "version": version,
+                    "source_kind": source_kind,
                     "status": SnapshotStatus.ACTIVE.value,
                 },
             ).mappings().first()
@@ -531,6 +561,7 @@ class PostgresSnapshotRegistry:
                         product_id = :product_id
                         AND programming_language = :programming_language
                         AND version = :version
+                        AND source_kind = :source_kind
                         AND snapshot_id <> :snapshot_id
                         AND status = :active_status
                     """
@@ -541,6 +572,7 @@ class PostgresSnapshotRegistry:
                     "product_id": current["product_id"],
                     "programming_language": current["programming_language"],
                     "version": current["version"],
+                    "source_kind": current["source_kind"],
                     "snapshot_id": snapshot_id,
                 },
             )
@@ -617,6 +649,7 @@ class PostgresSnapshotRegistry:
                         product_id = :product_id
                         AND programming_language = :programming_language
                         AND version = :version
+                        AND source_kind = :source_kind
                         AND status = :status
                     ORDER BY created_at DESC, snapshot_id DESC
                     LIMIT 1
@@ -627,6 +660,7 @@ class PostgresSnapshotRegistry:
                     "product_id": target["product_id"],
                     "programming_language": target["programming_language"],
                     "version": target["version"],
+                    "source_kind": target["source_kind"],
                     "status": SnapshotStatus.ACTIVE.value,
                 },
             ).mappings().first()

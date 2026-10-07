@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    "../plugins/words-net/plugin.json",
+    "../plugins/tex-net/plugin.json"
+  ],
+  "compositions": [
+    "../compositions/total-net.json"
+  ]
+}

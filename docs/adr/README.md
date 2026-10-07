@@ -29,6 +29,8 @@ We follow the lightweight ADR format: Context, Decision, Consequences, Status, R
 | ADR-010 | MCP/REST functional parity invariant | Accepted | [`src/adcs/mcp/tool_gateway.py`](../../src/adcs/mcp/tool_gateway.py); verified by [`tests/test_mcp_rest_parity_offline.py`](../../tests/test_mcp_rest_parity_offline.py), [`tests/test_public_rest_parity.py`](../../tests/test_public_rest_parity.py) |
 | ADR-011 | Low-RAM retrieval: corpus split + storage engine + fan-out harness (revisits ADR-001) | Accepted | [`docs/adr/011-low-ram-retrieval-storage-and-harness.md`](011-low-ram-retrieval-storage-and-harness.md) |
 
+| ADR-012 | Independent product-platform extraction | Proposed | [ADR-012](012-independent-product-platform-extraction.md) |
+
 ## How to Add a New ADR
 
 1. Create `docs/adr/{NNN}-{slug}.md` with the sections listed under Format (Context, Decision, Consequences, Status, Revisit Conditions)
