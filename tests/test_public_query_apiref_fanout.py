@@ -8,7 +8,7 @@ Without a store, behaviour is docs-only and unchanged.
 
 from __future__ import annotations
 
-from adcs.api.public_docs_query import PublicQueryService
+from adcs.api.public_docs_query import PublicQueryService, _candidate_selection_trace
 from adcs.indexing.apiref_symbol_store import (
     ApiRefScope,
     ApiRefSymbol,
@@ -71,6 +71,38 @@ def _empty_result() -> HybridRetrievalResult:
         dense_weight=0.55,
         lexical_weight=0.45,
     )
+
+
+def test_candidate_trace_distinguishes_budget_from_top_k():
+    from dataclasses import replace
+
+    candidate = PublicQueryService._apiref_symbol_to_candidate(symbol=_symbol(), rank=0)
+    candidates = tuple(
+        replace(candidate, metadata=replace(candidate.metadata, candidate_id=f"c{i}"))
+        for i in range(3)
+    )
+    trace = _candidate_selection_trace(candidates=candidates, packed_ids={"c0"}, top_k=2)
+    assert [row["selection"] for row in trace] == [
+        "packed", "excluded_by_context_budget", "outside_top_k"
+    ]
+    assert [row["rank"] for row in trace] == [1, 2, 3]
+
+
+def test_fanout_trace_records_generated_candidates_without_changing_ranking():
+    service = _service(_store_with(_symbol()))
+    plan = service._query_planner.plan(request=QueryPlannerInput(
+        query="Workbook", product_id="aspose.cells", programming_language="net"
+    ))
+    options = dict(
+        retrieval_result=_empty_result(), plan=plan, query="Workbook",
+        product_id="aspose.cells", programming_language="net", version=None,
+    )
+    trace = {}
+    traced = service._fuse_apiref_symbols(**options, diagnostic_trace=trace)
+    normal = service._fuse_apiref_symbols(**options)
+    assert traced == normal
+    assert len(trace["api_candidates"]) == 1
+    assert trace["api_candidates"][0]["symbol_fqn"] == "aspose.cells.workbook"
 
 
 def test_resolve_active_version_picks_latest_numeric_aware() -> None:
@@ -214,3 +246,33 @@ def test_exact_fqn_query_pins_symbol() -> None:
         limit=20,
     )
     assert candidates[0].metadata.symbol_fqn == "aspose.cells.workbook"
+
+
+def test_mail_merge_question_keeps_relevant_api_candidate_in_fanout():
+    scope = ApiRefScope(product="aspose.words", language="net", version="25.4", locale="en")
+    store = InMemoryApiRefSymbolStore()
+    store.upsert_symbols([
+        _symbol(product="aspose.words", name="Performer",
+                member_fqn="Aspose.Words.Bibliography.Contributorcollection.Performer",
+                summary="A performer.", signature="public Contributor Performer { get; set; }"),
+        _symbol(product="aspose.words", name="MailMerge",
+                member_fqn="Aspose.Words.Document.Mailmerge",
+                summary="Returns the mail merge functionality for the document.",
+                signature="public MailMerge MailMerge { get; }",
+                canonical_url="https://reference.aspose.com/words/net/aspose.words/document/mailmerge/"),
+    ])
+    store.flip_active_snapshot(scope=scope, snapshot_id="snap-1")
+    service = _service(store)
+    query = "How do I perform mail merge in Aspose.Words for .NET?"
+    plan = service._query_planner.plan(request=QueryPlannerInput(
+        query=query, product_id="aspose.words", programming_language="net"
+    ))
+    trace = {}
+    result = service._fuse_apiref_symbols(
+        retrieval_result=_empty_result(), plan=plan, query=query,
+        product_id="aspose.words", programming_language="net", version=None,
+        diagnostic_trace=trace,
+    )
+    assert plan.intent == "how_to"
+    assert trace["api_candidates"][0]["symbol_fqn"] == "Aspose.Words.Document.Mailmerge"
+    assert result.candidates[0].metadata.symbol_fqn == "Aspose.Words.Document.Mailmerge"

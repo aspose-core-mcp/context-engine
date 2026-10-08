@@ -3,6 +3,7 @@
 .env.local
 .env.compose
 .env.compose.local
+.env.vm
 infra/pact-broker/.env
 
 # Python
@@ -52,6 +53,23 @@ artifacts/quality-gates/retrieval_corpus_stale.json
 # Independent extraction package build output
 /plugins/*/build/
 
+# Words plugin source checkouts (maintained independently from extractor code)
+/plugins/words-net/sources/
+
 # Local handoff archive and generated evaluation output
 /Archive.zip
 /output/
+
+# Single-VM deployment evidence and one-off supervisor outputs
+/build.log
+/startup.log
+/prepare-words.log
+/validate-words.log
+/ingestion-pipeline.log
+/publication-jobs.json
+/ingestion-status.json
+/service-status.json
+/words-query-check.json
+/finish-ingestion.sh
+/adcs-vm-deploy.tar.gz
+/adcs-vm.env

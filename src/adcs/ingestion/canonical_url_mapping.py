@@ -7,7 +7,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from threading import Lock
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 _SCHEMA_VERSION = 1
 
@@ -170,11 +170,25 @@ class CanonicalUrlMappingRegistry:
             canonical_base_url=self._canonical_base_url,
         )
         visited: set[str] = set()
-        while current_url in self._mappings:
+        while True:
             if current_url in visited:
                 break
             visited.add(current_url)
-            next_url = self._mappings[current_url]
+            next_url = self._mappings.get(current_url)
+            if next_url is None:
+                # A page-level redirect also applies to citations into that page.
+                # Exact query/fragment mappings above take precedence. A target
+                # query/fragment overrides the original only when supplied.
+                parsed = urlsplit(current_url)
+                page_url = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, "", ""))
+                target = self._mappings.get(page_url)
+                if target is None:
+                    break
+                resolved = urlsplit(target)
+                next_url = urlunsplit((
+                    resolved.scheme, resolved.netloc, resolved.path,
+                    resolved.query or parsed.query, resolved.fragment or parsed.fragment,
+                ))
             if next_url == current_url:
                 break
             current_url = next_url
@@ -204,7 +218,9 @@ class FileSystemCanonicalUrlMappingStore:
         self._canonical_base_url = canonical_base_url.rstrip("/")
         self._lock = Lock()
 
-    def load(self, *, context: CanonicalUrlMappingContext) -> CanonicalUrlMappingRegistry:
+    def load(
+        self, *, context: CanonicalUrlMappingContext, canonical_base_url: str | None = None
+    ) -> CanonicalUrlMappingRegistry:
         mapping_path = self._mapping_path(context=context)
         if mapping_path.exists():
             payload = _read_mapping_payload(mapping_path)
@@ -213,7 +229,7 @@ class FileSystemCanonicalUrlMappingStore:
             if not legacy_mapping_path.exists():
                 return CanonicalUrlMappingRegistry(
                     context=context,
-                    canonical_base_url=self._canonical_base_url,
+                    canonical_base_url=canonical_base_url or self._canonical_base_url,
                     initial_mappings={},
                 )
             payload = _read_mapping_payload(legacy_mapping_path)
@@ -221,7 +237,7 @@ class FileSystemCanonicalUrlMappingStore:
         mappings = _parse_mapping_payload(payload)
         return CanonicalUrlMappingRegistry(
             context=context,
-            canonical_base_url=self._canonical_base_url,
+            canonical_base_url=canonical_base_url or self._canonical_base_url,
             initial_mappings=mappings,
         )
 
@@ -382,7 +398,7 @@ def normalize_canonical_url(url: str, *, canonical_base_url: str) -> str:
         msg = f"canonical URL contains whitespace: `{url}`."
         raise ValueError(msg)
 
-    if normalized.startswith(("http://", "https://")):
+    if normalized.lower().startswith(("http://", "https://")):
         parsed = urlsplit(normalized)
         if parsed.scheme not in {"http", "https"} or not parsed.netloc:
             msg = f"canonical URL is invalid: `{url}`."
@@ -390,13 +406,13 @@ def normalize_canonical_url(url: str, *, canonical_base_url: str) -> str:
         path = parsed.path or "/"
         if path != "/" and not path.endswith("/"):
             path = f"{path}/"
-        return urlunsplit((parsed.scheme, parsed.netloc, path, "", ""))
+        return urlunsplit((parsed.scheme, parsed.netloc, path, parsed.query, parsed.fragment))
 
     base_url = canonical_base_url.rstrip("/")
-    if normalized.startswith("/"):
-        absolute = f"{base_url}{normalized}"
-    else:
-        absolute = f"{base_url}/{normalized}"
+    parsed = urlsplit(normalized)
+    if parsed.scheme or parsed.netloc or normalized.startswith("//"):
+        raise ValueError("Canonical URL must use HTTP(S) or a local URL path")
+    absolute = urljoin(base_url + "/", normalized)
     return normalize_canonical_url(absolute, canonical_base_url=canonical_base_url)
 
 

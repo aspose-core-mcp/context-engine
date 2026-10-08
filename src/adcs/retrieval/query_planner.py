@@ -146,6 +146,13 @@ def normalize_query(query: str) -> QueryNormalizationResult:
         prefers_latest_stable=prefers_latest_stable,
     )
 
+    if intent == "general_reference" and any(
+        prefix in {"how do i", "how to", "i need to"} for prefix in removed_noise_prefixes
+    ):
+        intent, intent_subtype, intent_reason_codes = "how_to", _how_to_subtype(
+            normalized_query.casefold()
+        ), ("how_to_prefix",)
+
     return QueryNormalizationResult(
         normalized_query=normalized_query,
         removed_noise_prefixes=removed_noise_prefixes,
@@ -178,6 +185,14 @@ def _extract_symbol_candidates(query: str) -> tuple[str, ...]:
     symbol_candidates: list[str] = []
     seen: set[str] = set()
     for candidate in _SYMBOL_CANDIDATE_RE.findall(query):
+        # A product name in a sentence is scope, not a requested API member.
+        # Preserve bare namespace lookups and longer type/member identifiers.
+        if (
+            candidate.casefold().startswith("aspose.")
+            and candidate.count(".") == 1
+            and query.strip().rstrip("? ") != candidate
+        ):
+            continue
         if candidate in seen:
             continue
         seen.add(candidate)

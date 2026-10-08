@@ -65,6 +65,12 @@ from adcs.retrieval import (
     build_candidate_reranker,
     normalize_version_hint,
 )
+from adcs.retrieval.profiles import (
+    EligibleSymbolStore,
+    candidate_allowed,
+    profile_for,
+    symbol_allowed,
+)
 from adcs.retrieval.response_cache import ResponseCache, build_cache_key
 from adcs.retrieval.tenant_lane_adapter import TenantAwareLaneAdapter
 from adcs.retrieval.two_source_retriever import ApiRefRetriever, looks_like_fqn
@@ -480,7 +486,9 @@ class PublicQueryService:
         # get_symbol_doc prefers it over the legacy apiref_dense_v1 collection,
         # falling back to dense lookup when the symbol is absent — so the cutover
         # is safe while the structured store is only partially populated.
-        self._apiref_symbol_store = apiref_symbol_store
+        self._apiref_symbol_store = (
+            EligibleSymbolStore(apiref_symbol_store) if apiref_symbol_store is not None else None
+        )
         # Per-product retrieval settings. The admin API lets an operator PATCH
         # these and writes the change to the audit trail, but the service was
         # injected nowhere — so every operator adjustment was an audited no-op
@@ -732,6 +740,7 @@ class PublicQueryService:
         # lets the apiref_dense_v1 Qdrant lane be retired.
         # No-op (docs-only behaviour preserved) when the structured store is
         # unavailable or has no symbols for the resolved scope.
+        retrieval_trace: dict[str, object] | None = {} if request.debug else None
         retrieval_result = self._fuse_apiref_symbols(
             retrieval_result=retrieval_result,
             plan=plan,
@@ -739,6 +748,7 @@ class PublicQueryService:
             product_id=product_id,
             programming_language=programming_language,
             version=request.version,
+            diagnostic_trace=retrieval_trace,
         )
 
         packed_context = self._context_packer.pack(
@@ -749,6 +759,14 @@ class PublicQueryService:
             # is an operator control rather than another inert field.
             max_total_tokens=self._resolve_max_context_tokens(product_id=product_id),
         )
+        if retrieval_trace is not None:
+            retrieval_trace["selection"] = _candidate_selection_trace(
+                candidates=retrieval_result.candidates,
+                packed_ids={item.candidate_id for item in packed_context.items},
+                top_k=request.top_k,
+            )
+            retrieval_trace["packing_warnings"] = list(packed_context.warnings)
+            retrieval_trace["requested_top_k"] = request.top_k
         t_pack = perf_counter()
         version_resolution = _resolve_version_resolution(
             plan=plan,
@@ -778,6 +796,12 @@ class PublicQueryService:
                 items=(),
                 fallback_reason="low_confidence_suppressed",
             )
+
+        if retrieval_trace is not None:
+            retrieval_trace["final_returned_candidate_ids"] = [
+                item.candidate_id for item in packed_context.items
+            ]
+            retrieval_trace["post_packing_fallback"] = packed_context.fallback_reason
 
         warnings = list(translated_query.metadata.warning_reasons)
         if _cross_language_fallback:
@@ -903,7 +927,10 @@ class PublicQueryService:
                 why_version=explainability["why_version"],
                 why_fallback=explainability["why_fallback"],
             ),
-            debug=_to_debug_payload(plan) if request.debug else None,
+            debug=(
+                {**_to_debug_payload(plan), "retrieval_trace": retrieval_trace}
+                if request.debug else None
+            ),
         )
         if self._response_cache is not None:
             self._response_cache.put(cache_key, response)
@@ -1078,6 +1105,7 @@ class PublicQueryService:
         product_id: str | None,
         programming_language: str | None,
         version: str | None,
+        diagnostic_trace: dict[str, object] | None = None,
     ) -> HybridRetrievalResult:
         """Fuse Postgres API-reference symbols into the docs retrieval result.
 
@@ -1092,6 +1120,14 @@ class PublicQueryService:
         test — when the structured store is absent or the resolved scope has no
         symbols.
         """
+        eligible_candidates = tuple(
+            c for c in retrieval_result.candidates if candidate_allowed(c.metadata)
+        )
+        if len(eligible_candidates) != len(retrieval_result.candidates):
+            retrieval_result = _dataclass_replace(
+                retrieval_result, candidates=eligible_candidates,
+                fused_candidates_count=len(eligible_candidates),
+            )
         apiref_candidates = self._apiref_symbol_candidates(
             query=query,
             product_id=product_id,
@@ -1099,9 +1135,22 @@ class PublicQueryService:
             version=version,
             limit=_APIREF_FANOUT_POOL,
         )
+        if diagnostic_trace is not None:
+            profile = profile_for(product_id or "", programming_language or "")
+            diagnostic_trace["retrieval_profile"] = profile.explain(query) if profile else None
+            diagnostic_trace["api_candidates"] = [
+                {
+                    "candidate_id": candidate.metadata.candidate_id,
+                    "symbol_fqn": candidate.metadata.symbol_fqn,
+                    "canonical_url": candidate.metadata.canonical_url,
+                    "initial_score": candidate.blended_score,
+                }
+                for candidate in apiref_candidates
+            ]
         if not apiref_candidates:
             return retrieval_result
-        combined = (*retrieval_result.candidates, *apiref_candidates)
+        combined = tuple(c for c in (*retrieval_result.candidates, *apiref_candidates)
+                         if candidate_allowed(c.metadata))
         reranked = self._candidate_reranker.rerank(
             plan=plan,
             candidates=combined,
@@ -1461,16 +1510,27 @@ class PublicQueryService:
         )
         summary = (primary.summary or "")[:480].strip()
 
-        example_codes: list[str] = []
+        example_items: list[tuple[str, str]] = []
         for symbol in overloads:
+            snippets = symbol.payload.get("example_snippets")
+            if isinstance(snippets, list):
+                for snippet in snippets:
+                    if (
+                        isinstance(snippet, dict)
+                        and isinstance(snippet.get("code"), str)
+                        and isinstance(snippet.get("language"), str)
+                    ):
+                        example_items.append((snippet["language"], snippet["code"]))
+                continue
             payload_examples = symbol.payload.get("examples")
             if isinstance(payload_examples, list):
-                example_codes.extend(
-                    item for item in payload_examples if isinstance(item, str)
+                example_items.extend(
+                    (request.language, item)
+                    for item in payload_examples if isinstance(item, str)
                 )
         examples = [
-            SymbolExampleResponse(language=request.language, code=code)
-            for code in dict.fromkeys(example_codes)
+            SymbolExampleResponse(language=language, code=code)
+            for language, code in dict.fromkeys(example_items)
         ][:3]
 
         signature_variants = [
@@ -1519,6 +1579,8 @@ class PublicQueryService:
         # Preferred path: the Postgres structured symbol store (ADR-011). Falls
         # through to the legacy dense path when the structured store is
         # unavailable or has no match for this symbol.
+        if not symbol_allowed(request.product_id, request.language, request.symbol_fqn):
+            raise LookupError(f"Symbol `{request.symbol_fqn}` is outside this API surface.")
         structured = self._structured_get_symbol_doc(request=request)
         if structured is not None:
             return structured
@@ -1552,6 +1614,7 @@ class PublicQueryService:
                     and record.symbol_fqn.casefold().endswith(symbol)
                 )
 
+        matching = tuple(record for record in matching if candidate_allowed(record))
         if not matching:
             raise LookupError(f"Symbol `{request.symbol_fqn}` was not found.")
 
@@ -2550,6 +2613,28 @@ def _build_public_repro_handoff_notes(*, query_record: object) -> list[str]:
             "fallback reasons, and top citations to isolate freshness, coverage, "
             "or ranking drift."
         ),
+    ]
+
+
+def _candidate_selection_trace(
+    *, candidates: Sequence[HybridCandidate], packed_ids: set[str], top_k: int
+) -> list[dict[str, object]]:
+    """Observe existing selection without altering ranking or token budgeting."""
+    return [
+        {
+            "rank": rank,
+            "candidate_id": candidate.metadata.candidate_id,
+            "source_kind": candidate.metadata.source_kind,
+            "title": candidate.metadata.title,
+            "canonical_url": candidate.metadata.canonical_url,
+            "score": candidate.rerank_score,
+            "selection": (
+                "packed" if candidate.metadata.candidate_id in packed_ids
+                else "outside_top_k" if rank > top_k
+                else "excluded_by_context_budget"
+            ),
+        }
+        for rank, candidate in enumerate(candidates, 1)
     ]
 
 

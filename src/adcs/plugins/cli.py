@@ -40,43 +40,18 @@ def registry_payload(
     return {"source_roots": roots, "repositories": repositories}
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("plugin_id")
-    parser.add_argument(
-        "--catalog", type=Path, default=Path("config/product-platform-plugins.json")
-    )
-    parser.add_argument("--workspace", type=Path, default=Path.cwd())
-    parser.add_argument("--source-kind", choices=("docs", "apiref", "both"), default="both")
-    parser.add_argument("--python", help="Dedicated plugin environment's Python executable")
-    parser.add_argument("--timeout", type=float, default=60)
-    mode_group = parser.add_mutually_exclusive_group()
-    mode_group.add_argument("--stage", action="store_true", help="Write REVIEW staging only")
-    mode_group.add_argument(
-        "--publish", action="store_true", help="Publish using configured stores"
-    )
-    args = parser.parse_args()
-    catalog = PluginCatalog(args.catalog)
-    backend = PlatformExtractionBackend(
-        catalog, args.plugin_id, python=args.python, timeout=args.timeout
-    )
-    kinds = list(backend.manifest.sources) if args.source_kind == "both" else [args.source_kind]
-    if any(kind not in backend.manifest.sources for kind in kinds):
-        parser.error("Selected plugin does not implement that source kind")
-    from adcs.indexing.index_models import IngestionRunMode
-    from adcs.ingestion.source_hugo_normalization_orchestrator import (
-        SourceHugoNormalizationOrchestrationService,
-    )
-
+def runtime_options_for(*, publish: bool, kinds: list[str]) -> dict[str, Any]:
     runtime_options: dict[str, Any] = {}
-    if args.publish:
+    if publish:
         from adcs.config import get_settings
         from adcs.indexing.apiref_symbol_store import build_apiref_symbol_store
         from adcs.runtime.components import build_runtime_components
 
         settings = get_settings()
         if "apiref" in kinds and not settings.apiref_structured_store_enabled:
-            parser.error("API reference publication requires a configured structured symbol store")
+            raise ValueError(
+                "API reference publication requires a configured structured symbol store"
+            )
         runtime = build_runtime_components(settings=settings)
         runtime_options = {
             "index_publish_orchestrator": runtime.index_publish_orchestrator,
@@ -89,6 +64,82 @@ def main() -> None:
             "publish_safety_min_coverage_pct": settings.ingestion_publish_safety_min_coverage_pct,
             "metadata_quarantine_policy": settings.ingestion_metadata_quarantine_policy,
         }
+    return runtime_options
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("plugin_id", nargs="?")
+    parser.add_argument(
+        "--catalog", type=Path, default=Path("config/product-platform-plugins.json")
+    )
+    parser.add_argument("--workspace", type=Path, default=Path.cwd())
+    parser.add_argument("--source-kind", choices=("docs", "apiref", "both"), default="both")
+    parser.add_argument("--python", help="Dedicated plugin environment's Python executable")
+    parser.add_argument("--timeout", type=float, default=60)
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument("--stage", action="store_true", help="Write REVIEW staging only")
+    mode_group.add_argument(
+        "--publish", action="store_true", help="Publish using configured stores"
+    )
+    parser.add_argument("--enqueue", action="store_true", help="Submit one durable job per source")
+    parser.add_argument("--job-status", metavar="OPERATION_ID", help="Read a queued plugin job")
+    parser.add_argument("--resubmit", metavar="OPERATION_ID", help="Redispatch an unstarted job")
+    args = parser.parse_args()
+    if args.job_status or args.resubmit:
+        if (
+            args.plugin_id
+            or args.enqueue
+            or args.stage
+            or args.publish
+            or (args.job_status and args.resubmit)
+        ):
+            parser.error("Job status/resubmit cannot be combined with ingestion options")
+        from adcs.plugins.queued_jobs import dispatch_job, read_job
+
+        job = read_job(args.workspace, args.job_status or args.resubmit)
+        if args.resubmit:
+            job = dispatch_job(job)
+        print(json.dumps(job, default=str))
+        if args.resubmit and job["status"] == "dispatch_failed":
+            raise SystemExit(1)
+        return
+    if not args.plugin_id:
+        parser.error("plugin_id is required")
+    catalog = PluginCatalog(args.catalog)
+    backend = PlatformExtractionBackend(
+        catalog, args.plugin_id, python=args.python, timeout=args.timeout
+    )
+    kinds = list(backend.manifest.sources) if args.source_kind == "both" else [args.source_kind]
+    if any(kind not in backend.manifest.sources for kind in kinds):
+        parser.error("Selected plugin does not implement that source kind")
+    from adcs.indexing.index_models import IngestionRunMode
+    from adcs.ingestion.source_hugo_normalization_orchestrator import (
+        SourceHugoNormalizationOrchestrationService,
+    )
+
+    if args.enqueue:
+        from adcs.plugins.queued_jobs import enqueue_sources
+
+        try:
+            jobs = enqueue_sources(
+                catalog=catalog,
+                plugin_id=args.plugin_id,
+                catalog_path=args.catalog,
+                workspace=args.workspace,
+                kinds=kinds,
+                python=args.python,
+                timeout=args.timeout,
+                stage=args.stage,
+                publish=args.publish,
+            )
+        finally:
+            backend.close()
+        print(json.dumps({"jobs": jobs}, default=str))
+        if any(job["status"] == "dispatch_failed" for job in jobs):
+            raise SystemExit(1)
+        return
+    runtime_options = runtime_options_for(publish=args.publish, kinds=kinds)
     with TemporaryDirectory(prefix="adcs-plugin-registry-") as temporary:
         registry = Path(temporary) / "registry.json"
         registry.write_text(json.dumps(registry_payload(backend, kinds)))

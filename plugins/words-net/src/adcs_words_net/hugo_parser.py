@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import html
 import re
 import tomllib
 from dataclasses import dataclass
@@ -124,6 +125,9 @@ class HugoMarkdownParser:
             raw_markdown
         )
         metadata = self._normalize_metadata(front_matter)
+        if source_kind == "apiref":
+            metadata = {k: _unescape_prose(v) if isinstance(v, str) else v
+                        for k, v in metadata.items()}
 
         relative_path = relative_repo_path or Path(source_path).name
         doc_locale, programming_language = _infer_path_context(
@@ -181,6 +185,11 @@ class HugoMarkdownParser:
                 continue
 
             if inside_code:
+                if source_kind == "apiref":
+                    # Generator artifacts, not general C# escape decoding: regexes,
+                    # paths, string escapes and operators must remain executable.
+                    body_line = re.sub(r"\\(?=</?summary>)", "", body_line)
+                    body_line = re.sub(r"\\(?=\.(?:docx?|pdf|rtf)\b)", "", body_line)
                 code_lines.append(body_line)
                 body_plain_lines.append(body_line.rstrip())
                 continue
@@ -210,6 +219,13 @@ class HugoMarkdownParser:
                 shortcode_stack=shortcode_stack,
             )
 
+            if source_kind == "apiref":
+                line_without_shortcodes = _unescape_prose(line_without_shortcodes)
+            # Remove presentation HTML only outside fenced code (XML examples survive).
+            line_without_shortcodes = re.sub(
+                r"</?(?:img|div|span|p|br|a|strong|em|ul|ol|li|h[1-6])\b[^>]*>",
+                "", line_without_shortcodes, flags=re.IGNORECASE,
+            )
             heading_match = _HEADING_RE.match(line_without_shortcodes.strip())
             if heading_match is not None:
                 heading_text = heading_match.group(2).strip()
@@ -220,7 +236,7 @@ class HugoMarkdownParser:
                         line_hint=line_number,
                     )
                 )
-                body_plain_lines.append(heading_text)
+                body_plain_lines.append(re.sub(r"\s*\{#[\w:.-]+\}\s*$", "", heading_text))
                 continue
 
             body_plain_lines.append(line_without_shortcodes.rstrip())
@@ -695,3 +711,8 @@ def _infer_path_context(
 
     resolved_locale = doc_locale if doc_locale is not None else locale_default
     return resolved_locale, programming_language
+
+
+def _unescape_prose(text: str) -> str:
+    """Decode Markdown punctuation escapes in narrative, never C# literals."""
+    return re.sub(r"\\([!\"#$%&'()*+,\-./:;<=>?@\[\]^_`{|}~])", r"\1", html.unescape(text))

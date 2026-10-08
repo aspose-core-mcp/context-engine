@@ -9,11 +9,13 @@ and retains scheduling, quarantine, URL remapping, staging, indexing and serving
 ## Start here
 
 From this worktree, use Python 3.12+ with the engine dependencies installed.
-For this Mac, the existing environment can run the engine without changing it:
+From the repository root, create an engine environment first:
 
 ```sh
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -e .
 export PYTHONPATH="$PWD/src"
-ENGINE_PYTHON=/path/to/context-engine/.venv/bin/python
+ENGINE_PYTHON="$PWD/.venv/bin/python"
 
 # Create separate dependency environments for the two extractors (no network).
 "$ENGINE_PYTHON" -m venv --without-pip plugins/words-net/.venv
@@ -90,7 +92,10 @@ Every request supplies `contract`, `plugin_id`, `product_id`, `language`,
 `source_kind` and `operation` (`discover` or `extract`). Discovery additionally
 supplies `repo_root` and `source_prefix`. Extraction supplies `repo_id`,
 `product_family`, `source_path`, `relative_repo_path`, `layout_detection`,
-`raw_markdown`, `source_revision` and `canonical_base_url`.
+`raw_markdown`, `source_revision`, `canonical_base_url` and `source_prefix`.
+The host supplies the configured prefix so a plugin can derive canonical page
+paths independently of the local checkout directory. The Words worker also
+accepts older requests without this field using its original per-source prefixes.
 
 Response envelope:
 
@@ -187,3 +192,93 @@ Tests cover separate sources, standalone worker environments, independent theme
 changes, scope/provenance rejection, failed/time-limited workers, third-plugin
 registration, and docs/API publication preserving an existing other-product
 snapshot. Live PostgreSQL/Qdrant/OpenSearch services are not required for these tests.
+
+## Queued plugin ingestion through the CLI
+
+Add `--enqueue` to submit one job per selected source to the existing RabbitMQ /
+Celery infrastructure. `--source-kind both` creates two independent jobs.
+Submission persists the operation and plugin execution parameters, sends only the
+operation ID and absolute workspace path, and prints a small JSON job summary.
+Extraction and publication happen in the worker. The synchronous CLI remains available.
+
+This first implementation supports workers on the same Mac/Linux host with the
+same absolute workspace, catalog, source and Python-environment paths. All source
+checkouts must be clean Git repositories. The job records the source commit and
+a fingerprint of the plugin manifest, local Python source and optional gist cache;
+the worker rejects changed inputs. Keep checkouts, plugin code and environments
+unchanged until their jobs finish. Installed dependency versions and arbitrary
+external plugin assets are not fingerprinted.
+
+Use one ingestion worker process initially. Publication jobs also take a
+workspace-wide filesystem lock; jobs for the same plugin serialize. These locks
+coordinate this new plugin task only: do not run synchronous ingestion, admin
+ingestion, source sync, or another workspace publishing to the same stores at the
+same time. This is not distributed scheduling across independent workspaces.
+
+RabbitMQ, Redis and the configured publication stores must already be available.
+Use the same environment settings as the current direct publication command.
+Ensure the broker's consumer acknowledgement timeout allows the longest complete
+source ingestion: acknowledgement happens after execution, not at task receipt.
+The API does not need to run. Restart an existing worker to load the new task.
+
+In the worker terminal:
+
+```sh
+cd /path/to/aspose-product-mcp-plugins
+export ENGINE_PYTHON="$PWD/.venv/bin/python"
+export PYTHONPATH="$PWD/src"
+"$ENGINE_PYTHON" -m celery -A adcs.worker.celery_app:celery_app worker \
+  -Q adcs.ingestion --concurrency=1 --prefetch-multiplier=1 --loglevel=INFO
+```
+
+In a separate submission terminal:
+
+```sh
+cd /path/to/aspose-product-mcp-plugins
+export ENGINE_PYTHON="$PWD/.venv/bin/python"
+export PYTHONPATH="$PWD/src"
+"$ENGINE_PYTHON" -m adcs.plugins.cli aspose.words.net \
+  --python "$PWD/plugins/words-net/.venv/bin/python" \
+  --source-kind both --publish --enqueue
+```
+
+Replace `--publish` with `--stage` for staging only. Omit both for validation
+without staging or publication. Repeat submission with another registered plugin
+ID and its own Python environment to build the backlog; no engine registration
+code or new Celery task is needed for each plugin.
+
+Copy an `operation_id` from the submission JSON to inspect progress:
+
+```sh
+"$ENGINE_PYTHON" -m adcs.plugins.cli --job-status OPERATION_ID
+```
+
+Job state lives in `artifacts/plugin-jobs/<operation-id>.json`; detailed operation
+results/logs are in `artifacts/runtime-state/ingestion/<operation-id>.json`.
+Symbol exports retain the existing
+`artifacts/plugin-extraction/<plugin-id>/<operation-id>/` location.
+Treat this shared state as trusted operational data and retain it while jobs exist.
+It is the plugin queue's status record; existing generic admin ingestion retry
+and resume actions do not reconstruct plugins and must not be used for these jobs.
+
+If broker submission fails, the CLI exits nonzero and retains the operation ID.
+Redispatch the same unstarted job without creating another operation:
+
+```sh
+"$ENGINE_PYTHON" -m adcs.plugins.cli --resubmit OPERATION_ID
+```
+
+Only `prepared`, `queued` and `dispatch_failed` jobs can be resubmitted.
+Duplicate completed deliveries return the saved result. Lock contention retries
+after 15 seconds. Extraction/publication failures are terminal `failed`, not
+automatically retried. Interrupted execution becomes `needs_attention`; inspect
+the operation and publication receipts before submitting a fresh job.
+A `running` status can remain until redelivery after worker loss; it is not a heartbeat.
+If a newer publication for the same source has already started, an older job
+becomes `stale`, even if the newer attempt later fails. This conservatively prevents
+out-of-order publication. Documentation and API jobs are independent, not one
+atomic transaction.
+
+For 100+ plugins this supplies a durable backlog and controlled sequential
+processing. Multi-host leases, immutable checkout management, automatic failure
+recovery, bulk scheduling and an administrative queue UI remain separate work.

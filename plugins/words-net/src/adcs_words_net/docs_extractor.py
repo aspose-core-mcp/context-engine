@@ -2,11 +2,13 @@
 
 import re
 
+from adcs_words_net.gist_examples import expand
 from adcs_words_net.hugo_parser import HugoMarkdownParser
 
 
 def extract(request):
     text = request["raw_markdown"].removeprefix("\ufeff")
+    text = expand(text)
     # Convert paired Hugo highlight shortcodes to fenced examples before parsing.
     # Unknown shortcodes retain the parser's explicit warnings.
     text = re.sub(

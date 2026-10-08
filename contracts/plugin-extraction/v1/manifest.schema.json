@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$defs": {
     "SourceDefinition": {
       "additionalProperties": false,
@@ -99,6 +100,18 @@
       },
       "title": "Sources",
       "type": "object"
+    },
+    "retrieval_profile": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Retrieval Profile"
     }
   },
   "required": [
@@ -112,6 +125,5 @@
     "sources"
   ],
   "title": "PluginManifest",
-  "type": "object",
-  "$schema": "https://json-schema.org/draft/2020-12/schema"
+  "type": "object"
 }

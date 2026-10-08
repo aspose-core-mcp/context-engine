@@ -96,6 +96,91 @@ def test_worker_contract_and_bom_metadata(tmp_path, kind):
         assert document.document.symbol_fqn == "Aspose.Words.Document"
 
 
+@pytest.mark.parametrize("kind", ["docs", "apiref"])
+def test_plugin_citations_survive_host_remapping(tmp_path, kind):
+    from adcs.ingestion.canonical_url_mapping import (
+        CanonicalUrlMappingContext,
+        FileSystemCanonicalUrlMappingStore,
+    )
+    from adcs.ingestion.source_hugo_normalization_orchestrator import (
+        _apply_canonical_mapping_to_chunk_records,
+        _apply_canonical_mapping_to_document,
+    )
+
+    worker, _, sources = prepare(tmp_path, kinds=(kind,))
+    source = sources[0]
+    definition = worker.manifest.sources[kind]
+    relative = definition.prefix + "/_index.md"
+    path = (source.git.submodule_path / relative).as_posix()
+    raw = (tmp_path / path).read_text()
+    old_override = "/guide/" if kind == "docs" else "/api/document/"
+    raw = raw.replace(old_override, "guide/?view=net#member")
+    _, document, records = worker.extract(
+        repository=source, source_path=path, relative_repo_path=relative,
+        raw_markdown=raw, source_revision="citation-sha",
+    )
+    old = definition.canonical_base_url + "/guide/?view=net#member"
+    new = definition.canonical_base_url + "/renamed/?view=net#member"
+    context = CanonicalUrlMappingContext.from_values(
+        product_id="aspose.words", source_kind=kind,
+        programming_language="net", version="latest-stable",
+    )
+    store = FileSystemCanonicalUrlMappingStore(workspace_root=tmp_path)
+    registry = store.load(context=context, canonical_base_url=definition.canonical_base_url)
+    assert registry.resolve(old) == old
+    registry.register_mapping(old_url=old, new_url=new, source_path=path)
+    mapped = _apply_canonical_mapping_to_document(
+        normalized_document=document, mapping_registry=registry,
+    )
+    mapped_records, _ = _apply_canonical_mapping_to_chunk_records(
+        chunk_records=records, mapping_registries={context: registry}, mapping_store=store,
+    )
+    assert mapped.document.canonical_url == new
+    assert mapped.document.source_revision == "citation-sha"
+    assert any(record.executable_snippets for record in mapped_records)
+    for chunk in mapped.chunks:
+        assert chunk.canonical_url == new
+        for citation in chunk.citations:
+            assert citation.canonical_url == new
+            assert citation.source_path == path
+    for record in mapped_records:
+        assert record.canonical_url == new
+        assert record.source_revision == "citation-sha"
+        assert record.section_anchor == "#"
+        for snippet in record.executable_snippets:
+            assert snippet.parent_canonical_url == new
+            assert snippet.parent_section_anchor == "#"
+    worker.close()
+
+
+def test_apiref_orchestrator_uses_plugin_base_for_remap(tmp_path):
+    worker, registry, sources = prepare(tmp_path, kinds=("apiref",))
+    definition = worker.manifest.sources["apiref"]
+    path = tmp_path / definition.path / definition.prefix / "_index.md"
+    path.write_text(
+        '+++\ntitle = "Document Class"\nsymbol_fqn = "Aspose.Words.Document"\n'
+        'symbol_kind = "class"\nurl = "old/"\n'
+        '[canonical_url_remap]\n"old/" = "new/?view=net#member"\n+++\n'
+        '# Document class\n```csharp\npublic class Document {}\n```\n'
+    )
+    service = SourceHugoNormalizationOrchestrationService(
+        workspace_root=tmp_path, registry_path=registry, extraction_backend=worker,
+        source_revision_resolver=lambda _: "citation-sha",
+    )
+    operation = service.run(repo_ids=[sources[0].repo_id], mode=IngestionRunMode.VALIDATE_ONLY)
+    assert operation.status == SourceHugoNormalizationStatus.COMPLETED
+    result = operation.results[0]
+    assert not result.failed_items
+    expected = definition.canonical_base_url + "/new/?view=net#member"
+    assert result.chunk_records
+    assert all(record.canonical_url == expected for record in result.chunk_records)
+    assert all(
+        snippet.parent_canonical_url == expected
+        for record in result.chunk_records for snippet in record.executable_snippets
+    )
+    worker.close()
+
+
 def test_discovery_excludes_other_platforms_and_symlinks(tmp_path):
     worker, _, sources = prepare(tmp_path)
     source = sources[0]

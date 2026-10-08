@@ -144,6 +144,22 @@ def test_get_symbol_doc_answers_from_structured_store() -> None:
     )
 
 
+def test_get_symbol_doc_prefers_typed_examples_over_legacy_chunk_text() -> None:
+    symbol = _symbol(payload={
+        "examples": ["prose and See Also must not be returned"],
+        "example_snippets": [{"language": "csharp", "code": "var doc = new Document();"}],
+    })
+    response = _service(_FakeSymbolStore(overloads=[symbol])).get_symbol_doc(
+        request=GetSymbolDocRequest(
+            product_id="aspose.slides", language="net",
+            symbol_fqn=symbol.member_fqn,
+        )
+    )
+    assert [(e.language, e.code) for e in response.examples] == [
+        ("csharp", "var doc = new Document();")
+    ]
+
+
 def test_get_symbol_doc_marks_deprecated_from_structured_store() -> None:
     store = _FakeSymbolStore(overloads=[_symbol(is_deprecated=True)])
     service = _service(store)

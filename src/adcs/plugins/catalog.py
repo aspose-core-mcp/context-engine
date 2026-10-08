@@ -38,6 +38,16 @@ class PluginManifest(BaseModel):
     title: str = Field(min_length=1)
     worker: list[str] = Field(min_length=1)
     sources: dict[Literal["docs", "apiref"], SourceDefinition]
+    retrieval_profile: str | None = None
+
+    @field_validator("retrieval_profile")
+    @classmethod
+    def profile_path(cls, value: str | None) -> str | None:
+        if value is not None and (
+            not value or Path(value).is_absolute() or ".." in Path(value).parts
+        ):
+            raise ValueError("Retrieval profile must be a contained relative path")
+        return value
 
     @model_validator(mode="after")
     def valid_sources(self) -> PluginManifest:

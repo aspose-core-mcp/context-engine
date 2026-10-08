@@ -13,10 +13,48 @@ from adcs.retrieval.retrieval_models import HybridCandidate, RetrievalCandidateM
 from adcs.retrieval.two_source_retriever import (
     ApiRefRetriever,
     TwoSourceRetriever,
+    api_search_queries,
     looks_like_fqn,
 )
 
 SCOPE = ApiRefScope(product="aspose.slides", language="net", version="24.1", locale="en")
+
+
+def test_question_expansion_is_bounded_and_preserves_identifiers():
+    query = "How do I convert a Word document to PDF?"
+    assert api_search_queries(query) == (query, "convert", "Word", "document", "PDF")
+    assert api_search_queries("Aspose.Words.Document.Save") == ("Aspose.Words.Document.Save",)
+    assert len(api_search_queries("one two three four five six seven")) <= 5
+
+
+def test_question_candidates_interleave_terms_without_losing_overloads():
+    class Store:
+        def __init__(self):
+            self.calls = []
+
+        def search_symbols(self, *, pattern, scope, limit):
+            assert scope == SCOPE
+            self.calls.append(pattern)
+            if pattern == "PDF":
+                return [_sym(member_fqn="PdfSaveOptions", name="PdfSaveOptions")]
+            if pattern == "document":
+                return [
+                    _sym(member_fqn="Document.Save", name="Save", signature="Save(string)"),
+                    _sym(member_fqn="Document.Save", name="Save", signature="Save(Stream)"),
+                ]
+            return []
+
+        def fts_search(self, *, query, scope, limit):
+            return self.search_symbols(pattern=query, scope=scope, limit=limit)
+
+    store = Store()
+    hits = ApiRefRetriever(store=store).search(
+        query="How do I convert a Word document to PDF?", scope=SCOPE, limit=3
+    )
+    assert len(hits) == 3
+    assert {s.signature for s in hits if s.name == "Save"} == {"Save(string)", "Save(Stream)"}
+    assert any(s.name == "PdfSaveOptions" for s in hits)
+    assert len(store.calls) <= 10
 
 
 def _doc(*, chunk_id: str, title: str, url: str, text: str) -> HybridCandidate:
@@ -239,3 +277,69 @@ def test_dedup_merges_shared_canonical_url_and_sums_rrf() -> None:
     assert merged[0].rrf_score == pytest.approx(2.0 / 61)
     # Representative prefers the structured apiref record.
     assert merged[0].source == "apiref"
+
+
+def test_mail_merge_relevance_beats_early_fuzzy_performer_before_limit():
+    unrelated = _sym(member_fqn="Aspose.Words.Bibliography.Contributorcollection.Performer",
+                     name="Performer")
+    relevant = [
+        _sym(member_fqn="Aspose.Words.Mailmerging.Mailmerge.Execute", name="Execute",
+             signature=signature)
+        for signature in ("Execute(DataTable)", "Execute(string[], object[])")
+    ]
+
+    class Store:
+        def search_symbols(self, *, pattern, scope, limit):
+            return [unrelated] if pattern != "merge" else relevant
+
+        def fts_search(self, *, query, scope, limit):
+            return []
+
+    query = "How do I perform mail merge in Aspose.Words for .NET?"
+    assert api_search_queries(query) == (query, "mail", "merge")
+    hits = ApiRefRetriever(store=Store()).search(query=query, scope=SCOPE, limit=2)
+    assert list(hits) == relevant
+
+
+@pytest.mark.parametrize('product,owner,operation', [
+    ('Words', 'MailMerge', 'Execute'), ('Cells', 'Cells', 'ImportData'),
+])
+def test_generic_ranking_prefers_requested_parameter_and_output(product, owner, operation):
+    from adcs.retrieval.two_source_retriever import _api_relevance
+
+    def candidate(name, parameters):
+        return _sym(member_fqn=f'Aspose.{product}.{owner}.{name}', name=name,
+                    signature=f'public void {name}({parameters})')
+
+    basic = candidate(operation, 'DataTable table')
+    other_type = candidate(operation, 'DataSet data')
+    images = candidate(operation + 'ToImages', 'DataTable table, ImageOptions options')
+    query = f'How do I use {owner} with a DataTable in Aspose.{product} for .NET?'
+    assert sorted([images, other_type, basic], key=lambda s: _api_relevance(s, query),
+                  reverse=True)[0] == basic
+    image_query = query + ' Output images.'
+    assert _api_relevance(images, image_query) > _api_relevance(basic, image_query)
+
+
+def test_generic_ranking_searches_beyond_output_limit_and_keeps_scope():
+    scope = ApiRefScope(product='aspose.cells', language='net', version='25.4', locale='en')
+    unrelated = _sym(member_fqn='Aspose.Cells.Cells.ImportDataToImages',
+                     name='Importdatatoimages',
+                     signature='public void ImportDataToImages(DataTable table, Options options)')
+    relevant = _sym(member_fqn='Aspose.Cells.Cells.ImportData', name='Importdata',
+                   signature='public void ImportData(DataTable table)')
+
+    class Store:
+        def search_symbols(self, *, pattern, scope, limit):
+            assert scope.product == 'aspose.cells'
+            assert scope.language == 'net' and scope.version == '25.4'
+            assert 2 <= limit <= 150
+            return [unrelated, relevant][:limit]
+
+        def fts_search(self, *, query, scope, limit):
+            return []
+
+    hits = ApiRefRetriever(store=Store()).search(
+        query='How do I import data from DataTable in Aspose.Cells?', scope=scope, limit=1,
+    )
+    assert list(hits) == [relevant]

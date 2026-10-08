@@ -8,7 +8,7 @@ from pathlib import Path
 from adcs_words_net import apiref_extractor, docs_extractor
 from adcs_words_net.chunking import StageDChunkingPolicy
 from adcs_words_net.normalized_document import HugoToNormalizedDocumentConverter
-from adcs_words_net.symbols import extract_symbol
+from adcs_words_net.symbols import extract_symbols
 
 CONTRACT = "adcs.extraction.v1"
 PLUGIN_ID = "aspose.words.net"
@@ -47,20 +47,27 @@ def handle(request):
         raise ValueError("Configured layout did not identify .NET content")
     document = HugoToNormalizedDocumentConverter(
         canonical_base_url=request["canonical_base_url"]
-    ).convert_page(page=page, source_revision=request["source_revision"])
+    ).convert_page(
+        page=page,
+        source_revision=request["source_revision"],
+        relative_repo_path=request["relative_repo_path"],
+        source_prefix=request.get(
+            "source_prefix", "net" if request["source_kind"] == "docs" else "english/net"
+        ),
+    )
     document, chunks = StageDChunkingPolicy().chunk_document(
         page=page,
         normalized_document=document,
     )
     symbols = []
     if request["source_kind"] == "apiref":
-        symbol = extract_symbol(
+        extracted = extract_symbols(
+            page=page,
             page_chunks=list(chunks),
             snapshot_id="",
             kind_map={document.document.symbol_fqn: document.document.symbol_kind},
         )
-        if symbol is not None:
-            symbols.append(asdict(symbol))
+        symbols.extend(asdict(symbol) for symbol in extracted)
     return {
         "page": asdict(page),
         "normalized_document": asdict(document),

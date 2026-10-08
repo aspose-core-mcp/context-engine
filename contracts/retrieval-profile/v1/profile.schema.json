@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "RetrievalRule": {
+      "additionalProperties": false,
+      "properties": {
+        "rule_id": {
+          "minLength": 1,
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "all_terms": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 12,
+          "minItems": 1,
+          "title": "All Terms",
+          "type": "array"
+        },
+        "any_terms": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 12,
+          "title": "Any Terms",
+          "type": "array"
+        },
+        "any_phrases": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 12,
+          "title": "Any Phrases",
+          "type": "array"
+        },
+        "exclude_terms": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Exclude Terms",
+          "type": "array"
+        },
+        "preferred_symbols": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 4,
+          "minItems": 1,
+          "title": "Preferred Symbols",
+          "type": "array"
+        }
+      },
+      "required": [
+        "rule_id",
+        "all_terms",
+        "preferred_symbols"
+      ],
+      "title": "RetrievalRule",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "profile_id": {
+      "minLength": 1,
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    },
+    "product_id": {
+      "minLength": 1,
+      "title": "Product Id",
+      "type": "string"
+    },
+    "language": {
+      "minLength": 1,
+      "title": "Language",
+      "type": "string"
+    },
+    "excluded_namespaces": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 50,
+      "title": "Excluded Namespaces",
+      "type": "array"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/RetrievalRule"
+      },
+      "maxItems": 20,
+      "title": "Rules",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "profile_id",
+    "version",
+    "product_id",
+    "language",
+    "rules"
+  ],
+  "title": "RetrievalProfile",
+  "type": "object"
+}

@@ -189,6 +189,7 @@ class PlatformExtractionBackend:
             raw_markdown=raw_markdown,
             source_revision=source_revision,
             canonical_base_url=source.canonical_base_url,
+            source_prefix=source.prefix,
         )
         try:
             page = TypeAdapter(HugoNormalizedPage).validate_python(result["page"])

@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import html
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from adcs_words_net.chunking import StageDChunkRecord
+from adcs_words_net.hugo_parser import HugoNormalizedPage
 
 
 @dataclass(frozen=True, slots=True)
@@ -85,6 +86,7 @@ def extract_symbol(
     page_chunks: list[StageDChunkRecord],
     snapshot_id: str,
     kind_map: dict[str, str],
+    page: HugoNormalizedPage,
 ) -> ApiRefSymbol | None:
     head = page_chunks[0]
     if head.doc_type != _SYMBOL_DOC_TYPE or not head.symbol_fqn:
@@ -164,8 +166,25 @@ def extract_symbol(
         payload["returns"] = sep_returns
     if description:
         payload["remarks"] = description
-    if examples:
-        payload["examples"] = examples
+    # Chunk grouping is for retrieval, not code boundaries. Use fenced blocks
+    # under an Examples section; declarations and trailing prose are not examples.
+    clean_examples = []
+    for block in page.code_blocks:
+        sections = []
+        for heading in page.headings:
+            if heading.line_hint >= block.line_start:
+                break
+            while sections and sections[-1].level >= heading.level:
+                sections.pop()
+            sections.append(heading)
+        if block.code.strip() and any(
+            re.sub(r"\s*\{.*\}\s*$", "", h.text).strip().casefold() in {"example", "examples"}
+            for h in sections
+        ):
+            clean_examples.append({"language": block.language or "csharp", "code": block.code})
+    payload["examples"] = list(dict.fromkeys(item["code"] for item in clean_examples))
+    payload["example_snippets"] = clean_examples
+    payload["source_revision"] = head.source_revision
     if body:
         payload["body"] = body
 
@@ -191,6 +210,69 @@ def _join(texts: list[str] | None) -> str | None:
     if not texts:
         return None
     return "\n\n".join(texts)
+
+
+def extract_symbols(*, page_chunks, snapshot_id, kind_map, page):
+    """Extract declarations from source fences, retaining each overload separately."""
+    base = extract_symbol(
+        page_chunks=page_chunks, snapshot_id=snapshot_id, kind_map=kind_map, page=page
+    )
+    if base is None:
+        return ()
+    declarations = []
+    for block in page.code_blocks:
+        sections = []
+        for heading in page.headings:
+            if heading.line_hint >= block.line_start:
+                break
+            while sections and sections[-1].level >= heading.level:
+                sections.pop()
+            sections.append(heading)
+        if any(h.text.strip().casefold() in {"example", "examples"} for h in sections):
+            continue
+        code = block.code.strip()
+        if not code.startswith(_ACCESS_MODIFIERS):
+            continue
+        identifier, category = _classify_declaration(" ".join(code.split()))
+        if identifier is None or identifier.casefold() != base.name.casefold():
+            continue
+        signature = " ".join(code.split())
+        if category == "type":
+            signature = signature.split("{", 1)[0].strip()
+        anchor = "#"
+        for heading in reversed(sections):
+            match = re.search(r"\{#([^}]+)\}", heading.text)
+            if match:
+                anchor = "#" + match[1]
+                break
+        declarations.append((block, signature, anchor))
+    if not declarations:
+        # Never advertise an example usage or Markdown heading as a declaration.
+        payload = dict(base.payload)
+        payload.pop("signature", None)
+        return (replace(base, signature=None, payload=payload),)
+    symbols = []
+    seen = set()
+    for index, (block, signature, anchor) in enumerate(declarations):
+        if signature in seen:
+            continue
+        seen.add(signature)
+        end = (
+            declarations[index + 1][0].line_start
+            if index + 1 < len(declarations) else float("inf")
+        )
+        # Restrict examples to this declaration's section rather than duplicating
+        # every page example onto every overload.
+        scoped_page = replace(page, code_blocks=tuple(
+            b for b in page.code_blocks if block.line_start <= b.line_start < end
+        ))
+        scoped = extract_symbol(
+            page_chunks=page_chunks, snapshot_id=snapshot_id, kind_map=kind_map, page=scoped_page
+        )
+        payload = dict(scoped.payload)
+        payload.update(signature=signature, section_anchor=anchor)
+        symbols.append(replace(base, signature=signature, payload=payload))
+    return tuple(symbols)
 
 
 # Trailing title word → canonical kind (Aspose apiref convention). Mirrors
@@ -395,3 +477,26 @@ _USAGE_LINE_RE = re.compile(
     r"|^[a-z_][\w.]*\s*="  # python/js bare assignment: builder = aw.X(...)
 )
 _ANCHOR_RE = re.compile(r"\s*\{#[^}]*\}\s*$")
+
+
+def declaration_identifiers(page: HugoNormalizedPage) -> tuple[str, ...]:
+    """Source spelling from declarations outside Examples sections."""
+    identifiers = []
+    for block in page.code_blocks:
+        sections = []
+        for heading in page.headings:
+            if heading.line_hint >= block.line_start:
+                break
+            while sections and sections[-1].level >= heading.level:
+                sections.pop()
+            sections.append(heading)
+        if any(re.sub(r"\s*\{.*\}\s*$", "", h.text).strip().casefold()
+               in {"example", "examples"} for h in sections):
+            continue
+        code = " ".join(block.code.split())
+        if not code.startswith(_ACCESS_MODIFIERS):
+            continue
+        identifier, _ = _classify_declaration(code)
+        if identifier:
+            identifiers.append(identifier)
+    return tuple(identifiers)

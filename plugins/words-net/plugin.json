@@ -13,25 +13,26 @@
   "sources": {
     "docs": {
       "repo_id": "aspose.words.net.docs",
-      "path": "source-repo-docs/Words-Net-Custom",
+      "path": "plugins/words-net/sources/documentation",
       "prefix": "net",
       "layout": {
         "layout_type": "programming_language/content"
       },
-      "canonical_base_url": "https://docs.aspose.com/words",
+      "canonical_base_url": "https://docs.aspose.com/words/net",
       "url": "https://github.com/sabir-aspose/words-docs-com.git",
       "branch": "API-Reference-Aspose-Link-Update"
     },
     "apiref": {
       "repo_id": "aspose.words.net.apiref",
-      "path": "source-repo-apiref/Aspose.Words",
+      "path": "plugins/words-net/sources/api-reference",
       "prefix": "english/net",
       "layout": {
         "layout_type": "doc_locale/programming_language/namespace"
       },
-      "canonical_base_url": "https://reference.aspose.com/words",
+      "canonical_base_url": "https://reference.aspose.com/words/net",
       "url": "https://github.com/aspose-words/Aspose.Words-API-References.git",
       "branch": "main"
     }
-  }
+  },
+  "retrieval_profile": "retrieval-profile.json"
 }

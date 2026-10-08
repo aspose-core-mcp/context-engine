@@ -30,6 +30,7 @@ from adcs.indexing.apiref_symbol_store import (
     ApiRefSymbol,
     ApiRefSymbolStore,
 )
+from adcs.retrieval.profiles import EligibleSymbolStore, symbol_allowed
 
 _DEFAULT_LOCALE = "en"
 _VOCAB_TTL_SECONDS = 60.0
@@ -240,7 +241,7 @@ class ApiRefSymbolService:
     """Postgres-backed structured API-reference query service."""
 
     def __init__(self, *, store: ApiRefSymbolStore) -> None:
-        self._store = store
+        self._store = EligibleSymbolStore(store)
         self._vocab_cache: tuple[float, Vocabulary] | None = None
 
     def _vocabulary(self) -> Vocabulary:
@@ -381,7 +382,7 @@ class ApiRefSymbolService:
         scope, vocabulary, changed = self._resolve(request, strict_scope=strict_scope)
         overloads = self._store.get_symbol(member_fqn=request.symbol_fqn, scope=scope)
         resolved_fqn: str | None = None
-        if not overloads:
+        if not overloads and symbol_allowed(scope.product, scope.language, request.symbol_fqn):
             candidate = self._resolve_bare_symbol(symbol_fqn=request.symbol_fqn, scope=scope)
             if candidate is not None:
                 overloads = self._store.get_symbol(member_fqn=candidate, scope=scope)

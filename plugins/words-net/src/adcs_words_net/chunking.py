@@ -162,7 +162,7 @@ def _extract_semantic_units(
                     _SemanticUnit(
                         text=code_text,
                         section_path=(*base_section_path, f"code-{code_index}"),
-                        section_anchor=f"{base_section_anchor}-code-{code_index}",
+                        section_anchor=base_section_anchor,
                         chunk_type="api_example" if is_api else "guide_step",
                         is_narrative=False,
                         snippet_language=span.code_block.language or "unknown",
@@ -188,7 +188,7 @@ def _extract_semantic_units(
                 _SemanticUnit(
                     text=table_text,
                     section_path=(*base_section_path, f"unit-{unit_index}"),
-                    section_anchor=f"{base_section_anchor}-u-{unit_index}",
+                    section_anchor=base_section_anchor,
                     chunk_type=_resolve_table_chunk_type(table_text=table_text, is_api=is_api),
                     is_narrative=False,
                 )
@@ -204,7 +204,7 @@ def _extract_semantic_units(
                 _SemanticUnit(
                     text=signature_text,
                     section_path=(*base_section_path, f"unit-{unit_index}"),
-                    section_anchor=f"{base_section_anchor}-u-{unit_index}",
+                    section_anchor=base_section_anchor,
                     chunk_type="api_signature",
                     is_narrative=False,
                 )
@@ -225,7 +225,7 @@ def _extract_semantic_units(
                 _SemanticUnit(
                     text=paragraph_text,
                     section_path=(*base_section_path, f"unit-{unit_index}"),
-                    section_anchor=f"{base_section_anchor}-u-{unit_index}",
+                    section_anchor=base_section_anchor,
                     chunk_type=_resolve_narrative_chunk_type(
                         text=paragraph_text,
                         doc_type=doc_type,

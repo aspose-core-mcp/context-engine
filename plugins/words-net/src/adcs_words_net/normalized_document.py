@@ -7,8 +7,8 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
-from adcs_words_net.dimension_vocabulary import classify_segment
 from adcs_words_net.hugo_parser import HugoNormalizedPage
 
 NORMALIZED_DOCUMENT_SCHEMA: Final[str] = "adcs.normalized_document.v1"
@@ -211,13 +211,16 @@ class HugoToNormalizedDocumentConverter:
         *,
         page: HugoNormalizedPage,
         source_revision: str,
+        relative_repo_path: str,
+        source_prefix: str,
     ) -> NormalizedDocument:
         canonical_url = _resolve_canonical_url(
             metadata=page.metadata,
-            source_path=page.source_path,
+            source_path=relative_repo_path,
+            source_prefix=source_prefix,
             canonical_base_url=self._canonical_base_url,
         )
-        symbol_fqn = _resolve_symbol_fqn(page)
+        symbol_fqn = _resolve_symbol_fqn(page, relative_repo_path=relative_repo_path)
         doc_type = _resolve_doc_type(page=page, symbol_fqn=symbol_fqn)
         symbol_kind = _resolve_symbol_kind(page=page, doc_type=doc_type)
         section_anchor = _resolve_section_anchor(page)
@@ -260,7 +263,7 @@ class HugoToNormalizedDocumentConverter:
 
         code_chunks: list[NormalizedChunk] = []
         for index, code_block in enumerate(page.code_blocks):
-            code_anchor = f"{section_anchor}-code-{index + 1}"
+            code_anchor = section_anchor
             code_chunks.append(
                 NormalizedChunk(
                     chunk_key=f"{page.repo_id}:{page.source_path}:code:{index}",
@@ -446,8 +449,14 @@ def _resolve_section_path(page: HugoNormalizedPage) -> tuple[str, ...]:
 
 
 def _resolve_section_anchor(page: HugoNormalizedPage) -> str:
-    anchor_source = page.headings[0].text if page.headings else page.title
-    return _to_anchor(anchor_source)
+    # Explicit Markdown heading IDs are source-backed. Automatic heading IDs
+    # depend on Hugo/theme configuration, which is not part of this contract.
+    # Fall back to the page top rather than invent a deep link from a chunk ID.
+    if page.headings:
+        explicit = re.search(r"\{#([A-Za-z][\w:.-]*)\}\s*$", page.headings[0].text)
+        if explicit:
+            return "#" + explicit.group(1)
+    return "#"
 
 
 def _resolve_version(metadata: dict[str, object]) -> str:
@@ -458,14 +467,16 @@ def _resolve_version(metadata: dict[str, object]) -> str:
     return "latest-stable"
 
 
-def _resolve_symbol_fqn(page: HugoNormalizedPage) -> str | None:
+def _resolve_symbol_fqn(
+    page: HugoNormalizedPage, *, relative_repo_path: str
+) -> str | None:
     metadata_symbol = page.metadata.get("symbol_fqn")
     if isinstance(metadata_symbol, str) and metadata_symbol.strip():
         return metadata_symbol.strip()
     if page.source_kind != "apiref":
         return None
 
-    path_without_file = list(Path(page.source_path).parts[:-1])
+    path_without_file = list(Path(relative_repo_path).parts[:-1])
     namespace_index = next(
         (
             index
@@ -481,51 +492,74 @@ def _resolve_symbol_fqn(page: HugoNormalizedPage) -> str | None:
 
     namespace = _pascalize_namespace(path_without_file[namespace_index])
     raw_after_ns = path_without_file[namespace_index + 1 :]
-    # Strip directory segments that classify as structural (locale /
-    # programming_language / version) — they are layout artefacts that appear
-    # in the LEADING zone immediately after the dotted-namespace segment.
-    # Structural directories never appear once real namespace/class/method
-    # tokens start; therefore we only strip while still in the leading run.
-    # The moment we encounter the first segment that does NOT classify as
-    # structural we stop stripping and keep ALL subsequent segments verbatim,
-    # even if their spelling would match a structural classifier (e.g. `node`
-    # → Aspose.CAD Node class, `ruby` → Aspose.PDF Ruby property,
-    # `id`/`is` → Aspose.HTML DOM properties).
-    in_leading_zone = True
-    symbol_parts: list[str] = []
-    for raw in raw_after_ns:
-        pascalized = _pascalize_token(raw)
-        if not pascalized:
-            continue
-        if in_leading_zone and classify_segment(raw) is not None:
-            # Still in the leading structural zone — drop this layout segment.
-            continue
-        # First real API token (or any token once we left the leading zone).
-        in_leading_zone = False
-        symbol_parts.append(pascalized)
+    # In the Words layout locale/platform precede the namespace. Every
+    # subsequent segment is API identity, including real types such as Node.
+    symbol_parts = [token for raw in raw_after_ns if (token := _pascalize_token(raw))]
     if not symbol_parts:
         return None
-    return ".".join((namespace, *symbol_parts))
+    parts = [*namespace.split("."), *symbol_parts]
+    # Paths establish identity, but lowercase URL slugs cannot preserve C#
+    # spelling. Only copy casing from source identifiers that match a suffix.
+    labels = [page.title, page.metadata.get("articleTitle"), page.metadata.get("linktitle")]
+    if page.headings:
+        labels.append(page.headings[0].text)
+    for label in labels:
+        if not isinstance(label, str):
+            continue
+        for identifier in re.findall(r"[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*", label):
+            tokens = identifier.split(".")
+            if len(tokens) <= len(parts) and [t.casefold() for t in tokens] == [
+                p.casefold() for p in parts[-len(tokens):]
+            ]:
+                parts[-len(tokens):] = tokens
+
+    # Reuse declaration recognition after module initialization (symbols and
+    # chunking depend on this normalized model). Never infer names from examples.
+    from adcs_words_net.symbols import declaration_identifiers
+
+    names = {name for name in declaration_identifiers(page)
+             if name.casefold() == parts[-1].casefold()}
+    if len(names) == 1:
+        parts[-1] = names.pop()
+    return ".".join(parts)
 
 
 def _resolve_canonical_url(
     *,
     metadata: dict[str, object],
     source_path: str,
+    source_prefix: str,
     canonical_base_url: str,
 ) -> str:
+    path = Path(source_path)
+    prefix = Path(source_prefix)
+    if (
+        path.is_absolute() or prefix.is_absolute()
+        or ".." in path.parts or ".." in prefix.parts or not prefix.parts
+    ):
+        raise ValueError("Canonical source paths must be relative and contained")
+    relative_parts = list(path.relative_to(prefix).parts)
     metadata_url = metadata.get("url")
     if isinstance(metadata_url, str) and metadata_url.strip():
         normalized_url = metadata_url.strip()
-        if normalized_url.startswith(("https://", "http://")):
+        parsed = urlsplit(normalized_url)
+        if parsed.scheme.lower() in {"https", "http"} and parsed.netloc:
             return normalized_url
-        if normalized_url.startswith("/"):
-            return f"{canonical_base_url}{normalized_url}"
-        return f"{canonical_base_url}/{normalized_url}"
+        if parsed.scheme or parsed.netloc or normalized_url.startswith("//"):
+            raise ValueError("Canonical URL overrides must use HTTP(S) or a local URL path")
+        # Words corpora declare /net/... relative to their product site mount.
+        # Strip that platform prefix and resolve against the configured .NET base.
+        # Match a complete path segment so /network/... is not rewritten.
+        if parsed.path == "/net" or parsed.path.startswith("/net/"):
+            relative_override = parsed.path[len("/net"):].lstrip("/")
+            target = urlsplit(urljoin(canonical_base_url.rstrip("/") + "/", relative_override))
+            return urlunsplit((
+                target.scheme, target.netloc, target.path, parsed.query, parsed.fragment
+            ))
+        # Already product-qualified and other root-relative overrides use the
+        # origin; relative overrides use the platform base directory.
+        return urljoin(canonical_base_url.rstrip("/") + "/", normalized_url)
 
-    relative_parts = list(Path(source_path).parts)
-    if len(relative_parts) >= 3:
-        relative_parts = relative_parts[2:]
     if relative_parts and relative_parts[-1] == "_index.md":
         relative_parts = relative_parts[:-1]
     elif relative_parts:

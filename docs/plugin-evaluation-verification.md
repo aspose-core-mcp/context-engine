@@ -34,3 +34,23 @@ changed-code mypy passed; both package-local unittest suites passed again.
 The ZIP handoff, generated output, virtual environments, credentials, downloaded
 corpora and build artifacts are excluded from the publication commit. The earlier
 5 October statements above describe the original verification session.
+
+## Repository publication review — 8 October 2026
+
+The earlier sections are historical evidence for their stated revisions. For the
+`aspose-product-mcp-plugins` handoff, the affected plugin, queued-job, retrieval-profile,
+namespace, conversion, canonical URL, query-planning and context-packing suites
+passed: **128 pytest tests**, plus **18 Words and 1 TeX standalone unittest tests**.
+`git diff --check` also passed. This was a focused regression run, not the full suite.
+
+The VM container image previously built successfully, Compose configuration and
+non-root volume permissions passed checks, and the live API/MCP health checks
+passed. Full Words corpus validation subsequently passed; documentation publication
+completed and API publication was running at the handoff check. See
+[DEPLOYMENT.md](../DEPLOYMENT.md) for operation IDs and live status commands.
+
+The publication review updated portable setup commands, separated the dated
+workflow examination from current behavior, documented VM progress monitoring,
+and checked publication candidates for matches to local credentials and common
+private-key/token patterns. Runtime credentials, corpora, indexes and logs are
+excluded. These checks do not establish complete end-to-end retrieval acceptance.

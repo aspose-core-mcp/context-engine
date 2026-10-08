@@ -1752,6 +1752,10 @@ class SourceHugoNormalizationOrchestrationService:
         semantic_review_trigger_type: SemanticReviewTriggerType = "major_change",
         conversion_backend: IngestionLLMBackend = IngestionLLMBackend.DETERMINISTIC,
     ) -> SourceHugoNormalizationResult:
+        source_canonical_base_url = (
+            self._extraction_backend.source(repository).canonical_base_url
+            if self._extraction_backend is not None else self._canonical_base_url
+        )
         repo_root = (self._workspace_root / repository.git.submodule_path).resolve()
         if not repo_root.exists():
             msg = (
@@ -2017,7 +2021,9 @@ class SourceHugoNormalizationOrchestrationService:
         ) -> CanonicalUrlMappingRegistry:
             registry = canonical_mapping_registries.get(context)
             if registry is None:
-                registry = self._canonical_url_mapping_store.load(context=context)
+                registry = self._canonical_url_mapping_store.load(
+                    context=context, canonical_base_url=source_canonical_base_url
+                )
                 canonical_mapping_registries[context] = registry
             return registry
 
@@ -2145,7 +2151,7 @@ class SourceHugoNormalizationOrchestrationService:
                     )
                     page_quarantine_items = classify_metadata_quarantine(
                         page=page,
-                        canonical_base_url=self._canonical_base_url,
+                        canonical_base_url=source_canonical_base_url,
                         relative_repo_path=scanned_file.relative_repo_path,
                         layout_detection=repository.layout_detection,
                     )
@@ -2176,7 +2182,7 @@ class SourceHugoNormalizationOrchestrationService:
                         remap_pairs = extract_metadata_remap_pairs(
                             metadata=page.metadata,
                             resolved_canonical_url=normalized_document.document.canonical_url,
-                            canonical_base_url=self._canonical_base_url,
+                            canonical_base_url=source_canonical_base_url,
                         )
                     except ValueError as exc:
                         metadata_quarantine_items.append(
@@ -2239,7 +2245,12 @@ class SourceHugoNormalizationOrchestrationService:
                     ):
                         remap_applied_count += 1
                     if plugin_records is not None:
-                        chunked_document, page_chunk_records = remapped_document, plugin_records
+                        chunked_document = remapped_document
+                        page_chunk_records, _ = _apply_canonical_mapping_to_chunk_records(
+                            chunk_records=plugin_records,
+                            mapping_registries=canonical_mapping_registries,
+                            mapping_store=self._canonical_url_mapping_store,
+                        )
                     else:
                         chunked_document, page_chunk_records = self._chunking_policy.chunk_document(
                             page=page, normalized_document=remapped_document,
@@ -4109,9 +4120,15 @@ def _apply_canonical_mapping_to_chunk_records(
             registry = mapping_store.load(context=context)
             mapping_registries[context] = registry
         mapped_url = registry.resolve(record.canonical_url)
-        if mapped_url != record.canonical_url:
+        mapped_snippets = tuple(
+            replace(snippet, parent_canonical_url=registry.resolve(snippet.parent_canonical_url))
+            for snippet in record.executable_snippets
+        )
+        if mapped_url != record.canonical_url or mapped_snippets != record.executable_snippets:
             mapped_count += 1
-            mapped_records.append(replace(record, canonical_url=mapped_url))
+            mapped_records.append(replace(
+                record, canonical_url=mapped_url, executable_snippets=mapped_snippets
+            ))
         else:
             mapped_records.append(record)
     return tuple(mapped_records), mapped_count

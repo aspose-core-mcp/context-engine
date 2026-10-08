@@ -122,3 +122,23 @@ def test_query_planner_truncates_excessively_long_queries() -> None:
     )
 
     assert len(plan.normalized_query) <= 2000
+
+
+def test_mail_merge_product_mention_is_how_to_not_symbol():
+    plan = QueryPlanner().plan(request=QueryPlannerInput(
+        query="How do I perform mail merge in Aspose.Words for .NET?",
+        product_id="aspose.words", programming_language="net",
+    ))
+    assert plan.intent == "how_to"
+    assert plan.symbol_candidates == ()
+
+
+def test_bare_product_namespace_and_document_member_remain_symbol_lookups():
+    for query in (
+        "Aspose.Words", "Aspose.Words.Document", "How do I use Aspose.Words.Document.Save?"
+    ):
+        plan = QueryPlanner().plan(request=QueryPlannerInput(
+            query=query, product_id="aspose.words", programming_language="net",
+        ))
+        assert plan.intent == "symbol_lookup"
+        assert plan.symbol_candidates

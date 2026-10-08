@@ -42,11 +42,35 @@ from adcs.indexing.apiref_symbol_store import (
 )
 from adcs.retrieval.hybrid_retriever import HybridRetriever
 from adcs.retrieval.models import QueryPlannerInput
+from adcs.retrieval.profiles import (
+    EligibleSymbolStore,
+    candidate_allowed,
+    profile_for,
+    symbol_allowed,
+)
 from adcs.retrieval.query_planner import QueryPlanner
 from adcs.retrieval.retrieval_models import HybridCandidate
 
 DEFAULT_RRF_K = 60
 _FQN_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+$")
+
+_QUESTION_WORDS = frozenset(
+    "how do does i a an the to for with using can could would should in on of "
+    "is are my me please what which from into and or it this that perform "
+    "use aspose net java python cpp".split()
+)
+
+
+def api_search_queries(query: str) -> tuple[str, ...]:
+    """Keep identifier queries intact; bound natural-language expansion to four terms."""
+    if looks_like_fqn(query):
+        return (query,)
+    concept_query = re.sub(r"\bAspose\.[A-Za-z_]+\b", "", query, flags=re.I)
+    terms = list(dict.fromkeys(
+        word for word in re.findall(r"[A-Za-z_][A-Za-z_0-9]*", concept_query)
+        if word.casefold() not in _QUESTION_WORDS
+    ))[:4]
+    return tuple(dict.fromkeys((query, *terms)))
 
 SOURCE_DOCS = "docs"
 SOURCE_APIREF = "apiref"
@@ -107,11 +131,11 @@ class ApiRefRetriever:
     """Concrete ApiRefLane over an :class:`ApiRefSymbolStore`.
 
     `search` blends name search (prefix/fuzzy) and full-text into one ranked
-    list, deduped by (member_fqn, signature), preserving best rank.
+    list, deduped by (member_fqn, signature), with concept relevance reranking.
     """
 
     def __init__(self, *, store: ApiRefSymbolStore) -> None:
-        self._store = store
+        self._store = EligibleSymbolStore(store)
 
     def lookup_exact(self, *, member_fqn: str, scope: ApiRefScope) -> Sequence[ApiRefSymbol]:
         return self._store.get_symbol(member_fqn=member_fqn, scope=scope)
@@ -119,20 +143,79 @@ class ApiRefRetriever:
     def search(self, *, query: str, scope: ApiRefScope, limit: int) -> Sequence[ApiRefSymbol]:
         ordered: list[ApiRefSymbol] = []
         seen: set[str] = set()
-        # Name search first (identifiers beat prose for symbol intent), then
-        # full-text over name+summary fills in conceptual matches.
-        for symbol in (
-            *self._store.search_symbols(pattern=query, scope=scope, limit=limit),
-            *self._store.fts_search(query=query, scope=scope, limit=limit),
-        ):
+        if limit <= 0:
+            return ()
+        # Round-robin bounded pools so a broad first term cannot exhaust the
+        # candidate budget before a specific later term contributes candidates.
+        pool_limit = min(max(limit * 3, 30), 150)
+        profile = profile_for(scope.product, scope.language)
+        targets = profile.targets(query) if profile and not looks_like_fqn(query) else ()
+        pools = [self._store.get_symbol(member_fqn=target, scope=scope) for target in targets]
+        for search_query in api_search_queries(query):
+            pools.append(self._store.search_symbols(
+                pattern=search_query, scope=scope, limit=pool_limit
+            ))
+            pools.append(self._store.fts_search(query=search_query, scope=scope, limit=pool_limit))
+        interleaved = (
+            pool[index] for index in range(pool_limit) for pool in pools if index < len(pool)
+        )
+        for symbol in interleaved:
             key = _symbol_key(symbol)
             if key in seen:
                 continue
             seen.add(key)
             ordered.append(symbol)
-            if len(ordered) >= limit:
-                break
-        return tuple(ordered)
+        # Rank the entire bounded union before trimming: an early fuzzy name
+        # match (perform -> Performer) must not displace a multiword concept.
+        if not looks_like_fqn(query):
+            ordered.sort(key=lambda symbol: (
+                symbol.member_fqn.casefold() in {target.casefold() for target in targets},
+                *_api_relevance(symbol, query),
+            ), reverse=True)
+        return tuple(ordered[:limit])
+
+
+def _identifier_words(value: str) -> set[str]:
+    # Split CamelCase before case folding; signatures retain casing even when
+    # URL-derived symbol identities do not. Normalize ordinary English plurals.
+    expanded = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", value)
+    return {word[:-1] if word.endswith("s") and len(word) > 3 else word
+            for word in re.findall(r"[a-z0-9]+", expanded.casefold())}
+
+
+def _api_relevance(symbol: ApiRefSymbol, query: str) -> tuple[int, int, int, int]:
+    """Product-independent concept, explicit type and specialization signals.
+
+    No API-specific synonyms or method preferences. Store order breaks ties;
+    signature complexity only separates otherwise equally relevant candidates.
+    """
+    concept_query = re.sub(r"\bAspose\.[A-Za-z_]+\b", "", query, flags=re.I)
+    terms = [word for word in re.findall(r"[A-Za-z_][A-Za-z_0-9]*", concept_query)
+             if word.casefold() not in _QUESTION_WORDS]
+    wanted = _identifier_words(" ".join(terms))
+    identity = re.sub(r"[^a-z0-9]", "", symbol.member_fqn.casefold())
+    prose = _identifier_words(symbol.summary or "")
+    signature = symbol.signature or ""
+    parameters = signature.partition("(")[2].rpartition(")")[0]
+    parameter_types = set(re.findall(r"\b[A-Za-z_][\w.]*", parameters))
+    # Exact identifier matches, not substrings (DataTable must not match DataSet).
+    explicit_types = sum(term.casefold() in {t.casefold() for t in parameter_types}
+                         for term in terms if any(c.isupper() for c in term))
+    identity_words = _identifier_words(symbol.member_fqn + " " + signature)
+    coverage = sum(word in identity_words or word in prose or word in identity
+                   for word in wanted)
+    # Adjacent concept words also match lowercased generated names like mailmerge.
+    phrases = ["".join(terms[i:i + 2]).casefold() for i in range(len(terms) - 1)]
+    phrase_matches = sum(phrase in identity for phrase in phrases)
+    # Penalize additional name qualifiers only after matching requested concepts
+    # and types. Requested specializations (e.g. images/regions) increase coverage.
+    declaration_name = re.search(r"(\w+)\s*\(", signature)
+    member_words = _identifier_words(
+        declaration_name[1] if declaration_name else symbol.name
+    )
+    extra_qualifiers = len(member_words - wanted - {"with", "to", "as", "by"})
+    parameter_count = parameters.count(",") + 1 if parameters.strip() else 0
+    return coverage + phrase_matches, explicit_types, -extra_qualifiers, -parameter_count
 
 
 def _docs_hit(candidate: HybridCandidate, rrf_score: float) -> UnifiedHit:
@@ -188,6 +271,11 @@ class TwoSourceRetriever:
                 self._apiref.lookup_exact(member_fqn=query.strip().removesuffix("()"), scope=scope)
             )
 
+        docs_hits = tuple(c for c in docs_hits if candidate_allowed(c.metadata))
+        apiref_hits = tuple(s for s in apiref_hits
+                            if symbol_allowed(scope.product, scope.language, s.member_fqn))
+        exact_symbols = tuple(s for s in exact_symbols
+                              if symbol_allowed(scope.product, scope.language, s.member_fqn))
         hits = self._fuse(
             docs_hits=docs_hits,
             apiref_hits=apiref_hits,
@@ -214,7 +302,6 @@ class TwoSourceRetriever:
         # dedup) and carry the representative hit.
         contrib: dict[str, float] = {}
         representative: dict[str, UnifiedHit] = {}
-        exact_keys = {_symbol_key(s) for s in exact_symbols}
 
         def _accumulate(key: str, score: float, hit: UnifiedHit) -> None:
             contrib[key] = contrib.get(key, 0.0) + score
@@ -224,6 +311,12 @@ class TwoSourceRetriever:
             if existing is None or (existing.source == SOURCE_DOCS and hit.source == SOURCE_APIREF):
                 representative[key] = hit
 
+        docs_hits = tuple(c for c in docs_hits if candidate_allowed(c.metadata))
+        apiref_hits = tuple(s for s in apiref_hits
+                            if symbol_allowed(s.product, s.language, s.member_fqn))
+        exact_symbols = tuple(s for s in exact_symbols
+                              if symbol_allowed(s.product, s.language, s.member_fqn))
+        exact_keys = {_symbol_key(s) for s in exact_symbols}
         for rank, candidate in enumerate(docs_hits, start=1):
             score = 1.0 / (k + rank)
             key = candidate.metadata.canonical_url or f"docs:{candidate.metadata.chunk_id}"

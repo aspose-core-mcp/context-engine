@@ -30,6 +30,7 @@ _TASK_ROUTES = {
     "adcs.source_sync.execute": {"queue": "adcs.source-sync"},
     "adcs.layout_detection.execute": {"queue": "adcs.layout-detection"},
     "adcs.ingestion.execute": {"queue": "adcs.ingestion"},
+    "adcs.plugins.ingestion.execute": {"queue": "adcs.ingestion"},
 }
 
 
@@ -122,7 +123,9 @@ def create_celery_app() -> Celery:
         # layout-detection and ingestion tasks would never run.
         task_queues=tuple(
             Queue(name, Exchange(name, type="direct"), routing_key=name)
-            for name in (_DEFAULT_QUEUE, *(route["queue"] for route in _TASK_ROUTES.values()))
+            for name in dict.fromkeys(
+                (_DEFAULT_QUEUE, *(route["queue"] for route in _TASK_ROUTES.values()))
+            )
         ),
         adcs_persistence_backend=runtime_components.adapter_modes.persistence_backend.value,
         adcs_retrieval_backend=runtime_components.adapter_modes.retrieval_backend.value,
@@ -173,3 +176,16 @@ def execute_ingestion(*, operation_id: str) -> dict[str, str]:
     service = _build_ingestion_service(settings, runtime_components)
     operation = service.execute_operation(operation_id=operation_id)
     return {"operation_id": operation.operation_id, "status": operation.status.value}
+
+
+@celery_app.task(name="adcs.plugins.ingestion.execute", bind=True,
+                 acks_late=True, reject_on_worker_lost=True, max_retries=None)
+def execute_plugin_ingestion(self, *, operation_id: str, workspace: str) -> dict[str, str]:
+    """Reconstruct the registered plugin from durable shared-workspace state."""
+    from adcs.plugins.queued_jobs import PluginJobBusy, execute_job
+
+    try:
+        job = execute_job(operation_id=operation_id, workspace=workspace)
+    except PluginJobBusy as exc:
+        raise self.retry(exc=exc, countdown=15)
+    return {"operation_id": operation_id, "status": job["status"]}

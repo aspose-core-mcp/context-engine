@@ -13,6 +13,7 @@ from adcs.retrieval.filter_resolver import normalize_version_hint
 from adcs.retrieval.models import QueryPlan
 from adcs.retrieval.release_catalog import ReleaseCatalog
 from adcs.retrieval.retrieval_models import HybridCandidate
+from adcs.retrieval.task_relevance import api_task_relevant, preferred_api
 
 logger = logging.getLogger("adcs.reranker")
 
@@ -192,6 +193,14 @@ def _compute_rerank_score(
         + freshness_score
         + lane_agreement_bonus
     )
+    if preferred_api(plan, candidate):
+        score += 0.30
+    elif not api_task_relevant(plan, candidate):
+        score -= 0.25
+    if plan.intent == "how_to" and _is_release_candidate(candidate) and not (
+        plan.detected_version_tokens or plan.filters.preferred_version
+    ):
+        score -= 0.25
     if not advanced:
         return score
     return score + _advanced_bonus(

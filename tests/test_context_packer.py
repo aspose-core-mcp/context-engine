@@ -320,6 +320,64 @@ def test_token_budget_drops_lowest_ranked_items_and_says_so() -> None:
     assert _apply_token_budget(items=(), max_total_tokens=3500) == ((), False)
 
 
+def test_context_packer_reserves_budget_for_the_best_api_reference_candidate() -> None:
+    """A documentation-heavy rank list must still return API context when present."""
+    planner = QueryPlanner()
+    plan = planner.plan(
+        request=QueryPlannerInput(
+            query="How do I convert a Word document to PDF?",
+            product_id="aspose.words",
+            programming_language="net",
+        )
+    )
+    documentation_text = "d" * 500  # 125 estimated tokens per excerpt.
+    api_text = "public void Save(string fileName)\nSave a Word document to PDF. " + "a" * 430
+    candidates = tuple(
+        _hybrid_candidate(
+            candidate_id=f"docs-{index}",
+            title=f"Documentation {index}",
+            text=documentation_text,
+            rerank_score=1.0 - (index / 10),
+            dense_score=0.8,
+            lexical_score=0.8,
+        )
+        for index in range(1, 5)
+    ) + (
+        _hybrid_candidate(
+            candidate_id="api-convert",
+            title="Aspose.Words.Document.Save",
+            text=api_text,
+            rerank_score=0.5,
+            dense_score=0.7,
+            lexical_score=0.7,
+            source_kind="apiref",
+            doc_type="api_signature",
+            symbol_fqn="Aspose.Words.Document.Save",
+        ),
+    )
+    retrieval_result = HybridRetrievalResult(
+        query_fingerprint=plan.query_fingerprint,
+        normalized_query=plan.normalized_query,
+        candidates=candidates,
+        dense_candidates_count=len(candidates),
+        lexical_candidates_count=len(candidates),
+        fused_candidates_count=len(candidates),
+        dense_weight=0.55,
+        lexical_weight=0.45,
+    )
+
+    packed = ContextPacker(max_total_tokens=256).pack(
+        plan=plan,
+        retrieval_result=retrieval_result,
+        top_k=5,
+    )
+
+    # Two 125-token excerpts fit in a 256-token budget, while a third does not. The second
+    # packed item must therefore be the best API result, rather than docs-2.
+    assert [item.candidate_id for item in packed.items] == ["docs-1", "api-convert"]
+    assert packed.warnings == ("CONTEXT_TOKEN_BUDGET_TRUNCATED",)
+
+
 def test_packer_clamps_a_budget_above_the_documented_maximum() -> None:
     """An operator setting is clamped, not rejected — the documented max is 12000."""
     from adcs.retrieval.context_packer import ContextPacker

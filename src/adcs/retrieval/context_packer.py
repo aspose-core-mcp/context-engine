@@ -7,8 +7,10 @@ from dataclasses import dataclass, replace
 
 from adcs.retrieval.filter_resolver import normalize_version_hint
 from adcs.retrieval.models import QueryPlan
+from adcs.retrieval.profiles import candidate_allowed
 from adcs.retrieval.release_catalog import ReleaseCatalog
 from adcs.retrieval.retrieval_models import HybridCandidate, HybridRetrievalResult
+from adcs.retrieval.task_relevance import api_task_relevant
 
 _LOW_CONFIDENCE_WARNING = "LOW_CONFIDENCE"
 # Emitted when the token budget dropped candidates the ranking would have kept.
@@ -142,7 +144,12 @@ class ContextPacker:
             msg = "top_k must be >= 1."
             raise ValueError(msg)
 
-        selected_candidates = retrieval_result.candidates[:effective_top_k]
+        eligible_candidates = tuple(
+            c for c in retrieval_result.candidates if candidate_allowed(c.metadata)
+        )
+        selected_candidates = _prioritize_source_coverage(
+            eligible_candidates[:effective_top_k], plan=plan,
+        )
         packed_items, truncated = _apply_token_budget(
             items=tuple(
                 _to_packed_item(
@@ -225,6 +232,52 @@ def _apply_token_budget(
         kept.append(item)
         spent += cost
     return tuple(kept), False
+
+
+def _prioritize_source_coverage(
+    candidates: tuple[HybridCandidate, ...], *, plan: QueryPlan,
+) -> tuple[HybridCandidate, ...]:
+    """Place the strongest relevant missing source immediately after rank one.
+
+    Retrieval ranking remains the authority for the first result.  The context
+    budget, however, is applied sequentially; a run of large documentation
+    chunks could previously exhaust it before a relevant API-reference result
+    was considered.  When both primary sources are available, move the
+    strongest candidate from the source absent from rank one into the second
+    packing position.  The relative order of every other candidate is kept.
+
+    Only ``docs`` and ``apiref`` participate because they are the two response
+    lanes with complementary purposes.  Other source kinds retain their
+    ranked position.
+    """
+    if len(candidates) < 2:
+        return candidates
+
+    first = candidates[0]
+    first_source = first.metadata.source_kind
+    complementary_source = {"docs": "apiref", "apiref": "docs"}.get(first_source)
+    if complementary_source is None:
+        return candidates
+
+    complementary_index = next(
+        (
+            index
+            for index, candidate in enumerate(candidates[1:], start=1)
+            if candidate.metadata.source_kind == complementary_source
+            and api_task_relevant(plan, candidate)
+        ),
+        None,
+    )
+    if complementary_index is None:
+        return candidates
+
+    complementary_candidate = candidates[complementary_index]
+    return (
+        first,
+        complementary_candidate,
+        *candidates[1:complementary_index],
+        *candidates[complementary_index + 1 :],
+    )
 
 
 def _to_packed_item(*, candidate: HybridCandidate, excerpt_limit_chars: int) -> PackedContextItem:

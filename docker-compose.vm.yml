@@ -1,0 +1,173 @@
+# Single Linux VM, API + ingestion only. Invoke with scripts/deploy/vm.sh.
+# Databases have no host ports. OpenSearch security is disabled only on this
+# isolated internal network; use secured external stores for multi-host deployments.
+x-runtime: &runtime
+  ADCS_ENV: prod
+  ADCS_API_KEY: ${ADCS_API_KEY:?Set ADCS_API_KEY in .env.vm}
+  ADCS_HASH_SECRET: ${ADCS_HASH_SECRET:?Set ADCS_HASH_SECRET in .env.vm}
+  ADCS_ADMIN_KEYS_SOURCE: env
+  POSTGRES_DSN: postgresql+psycopg://adcs:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/adcs
+  REDIS_URL: redis://redis:6379/0
+  RABBITMQ_URL: amqp://adcs:${RABBITMQ_PASSWORD:?Set RABBITMQ_PASSWORD}@rabbitmq:5672//
+  QDRANT_URL: http://qdrant:6333
+  OPENSEARCH_URL: http://opensearch:9200
+  ADCS_PERSISTENCE_BACKEND: postgres
+  ADCS_RETRIEVAL_BACKEND: qdrant_opensearch
+  APIREF_STRUCTURED_STORE_ENABLED: "true"
+  ADCS_EMBEDDING_BACKEND: openai_compatible
+  ADCS_EMBEDDING_API_URL: ${ADCS_EMBEDDING_API_URL:?Set the embedding /v1 base URL}
+  ADCS_EMBEDDING_API_KEY: ${ADCS_EMBEDDING_API_KEY:-}
+  ADCS_EMBEDDING_MODEL: ${ADCS_EMBEDDING_MODEL:?Set the embedding model}
+  ADCS_RETRIEVAL_PLUGIN_CATALOG: /app/config/product-platform-plugins.json
+  ADCS_TEST_MODE: "false"
+  # The legacy all-product registry has no corpus here; the plugin CLI validates
+  # its own source paths and preparation verifies the independent Git checkouts.
+  ADCS_VALIDATE_SOURCE_SUBMODULES: "false"
+  ADCS_ABUSE_GUARD_MODE: enforce
+
+x-app: &app
+  image: adcs-vm:local
+  build:
+    context: .
+    dockerfile: Dockerfile.worker
+  environment: *runtime
+  networks: [backend, outbound]
+  restart: unless-stopped
+  init: true
+  logging:
+    driver: json-file
+    options: {max-size: 10m, max-file: "3"}
+  volumes:
+    - artifacts:/app/artifacts
+    - data_docs:/app/data-docs
+    - data_apiref:/app/data-apiref
+    - words_sources:/app/plugins/words-net/sources:ro
+  depends_on:
+    postgres: {condition: service_healthy}
+    redis: {condition: service_healthy}
+    rabbitmq: {condition: service_healthy}
+    qdrant: {condition: service_healthy}
+    opensearch: {condition: service_healthy}
+
+services:
+  api:
+    <<: *app
+    mem_limit: ${ADCS_API_MEM_LIMIT:-4g}
+    command: [python, -m, uvicorn, 'adcs.api.main:app', --host, 0.0.0.0, --port, "8080"]
+    ports: ["${ADCS_API_BIND_ADDRESS:-127.0.0.1}:${ADCS_API_PORT:-8080}:8080"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
+
+  worker:
+    <<: *app
+    mem_limit: ${ADCS_WORKER_MEM_LIMIT:-24g}
+    # Bound ingestion to one job at a time on a single VM.
+    command: [python, -m, celery, -A, 'adcs.worker.celery_app:celery_app', worker, --loglevel=info, --concurrency=1, --prefetch-multiplier=1]
+    stop_grace_period: 2m
+
+  prepare-words:
+    <<: *app
+    profiles: [tools]
+    restart: "no"
+    depends_on: {}
+    healthcheck: {disable: true}
+    command: [python, scripts/deploy/prepare_words.py]
+    volumes:
+      - words_sources:/app/plugins/words-net/sources
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: adcs
+      POSTGRES_USER: adcs
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    networks: [backend]
+    mem_limit: 1g
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U adcs -d adcs']
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  redis:
+    image: valkey/valkey:8.1-alpine
+    command: [valkey-server, --appendonly, "yes"]
+    networks: [backend]
+    mem_limit: 512m
+    volumes: [redis_data:/data]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, valkey-cli, ping]
+      interval: 10s
+      timeout: 3s
+      retries: 15
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: adcs
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?Set RABBITMQ_PASSWORD}
+    networks: [backend]
+    mem_limit: 1g
+    volumes: [rabbitmq_data:/var/lib/rabbitmq]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, rabbitmq-diagnostics, -q, ping]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  qdrant:
+    image: qdrant/qdrant:v1.13.2
+    networks: [backend]
+    mem_limit: 2g
+    volumes: [qdrant_data:/qdrant/storage]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD-SHELL, "bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333 && printf \"GET /readyz HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3 && cat <&3 | grep -q \"200 OK\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  opensearch:
+    image: opensearchproject/opensearch:2.19.1
+    environment:
+      discovery.type: single-node
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+      DISABLE_SECURITY_PLUGIN: "true"
+      OPENSEARCH_JAVA_OPTS: -Xms1g -Xmx1g
+    networks: [backend]
+    mem_limit: 2g
+    volumes: [opensearch_data:/usr/share/opensearch/data]
+    restart: unless-stopped
+    ulimits:
+      nofile: {soft: 65536, hard: 65536}
+      memlock: {soft: -1, hard: -1}
+    healthcheck:
+      test: [CMD-SHELL, 'curl -fsS "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s" > /dev/null']
+      interval: 15s
+      timeout: 8s
+      retries: 20
+
+networks:
+  backend:
+    internal: true
+  outbound: {}
+
+volumes:
+  artifacts:
+  data_docs:
+  data_apiref:
+  words_sources:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
+  qdrant_data:
+  opensearch_data:

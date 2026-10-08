@@ -1,4 +1,4 @@
-# Product-platform plugin architecture evaluation
+# Aspose Product MCP Plugins
 
 This is Muhammad Sabir's reference implementation for Imran Anwar to evaluate and
 extend into the complete plugin architecture. It provides independent Words/.NET
@@ -7,7 +7,9 @@ Total/.NET composes member data. Extraction remains plugin-owned; common engine
 orchestration, staging, indexing and serving remain shared.
 
 This evaluation does not enforce plugin-only ingestion across all entry points,
-and full live ingestion/retrieval has not been validated. It incorporates the
+and remains an evaluation rather than a production release. A Linux VM deployment
+now runs the API and queued Words/.NET ingestion; see [deployment notes](DEPLOYMENT.md)
+for the dated validation and publication status. It incorporates the
 source-kind snapshot prerequisite from upstream MR !1 at `0534897`; it does not
 include that MR's other changes or imply that the MR has been merged.
 See [setup, architecture, commands and limitations](docs/product-platform-plugins.md)
@@ -156,6 +158,10 @@ the same semantics and error model.
    jobs, the source registry, snapshots, configuration history and quality reviews.
 
 ## Run it yourself
+
+For this plugin checkout on a Linux VM, use the
+[API and Words/.NET ingestion deployment guide](docs/linux-vm-deployment.md).
+It includes a separate VM Compose profile, persistent storage and queued ingestion.
 
 ### Requirements
 

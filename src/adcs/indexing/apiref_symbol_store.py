@@ -241,6 +241,8 @@ class InMemoryApiRefSymbolStore:
         return _latest_version(versions)
 
     def _active_rows(self, scope: ApiRefScope) -> list[ApiRefSymbol]:
+        from adcs.retrieval.profiles import symbol_allowed
+
         active = self._active.get(_scope_key(scope))
         if active is None:
             return []
@@ -252,6 +254,7 @@ class InMemoryApiRefSymbolStore:
             and r.language == scope.language
             and r.version == scope.version
             and r.locale == scope.locale
+            and symbol_allowed(scope.product, scope.language, r.member_fqn)
         ]
 
     def get_symbol(self, *, member_fqn: str, scope: ApiRefScope) -> tuple[ApiRefSymbol, ...]:
@@ -441,8 +444,26 @@ class PostgresApiRefSymbolStore:
             ).all()
         return _latest_version({str(row[0]) for row in rows})
 
+    def _active_subquery(self, scope: ApiRefScope) -> str:
+        from adcs.retrieval.profiles import profile_for
+
+        profile = profile_for(scope.product, scope.language)
+        excluded = profile.excluded_namespaces if profile else ()
+        clauses = "".join(
+            f" AND NOT (lower(member_fqn)=:excluded_ns_{i} OR "
+            f"left(lower(member_fqn), length(:excluded_ns_{i}) + 1)="
+            f"(:excluded_ns_{i} || '.'))"
+            for i, _ in enumerate(excluded)
+        )
+        return self._ACTIVE_SUBQUERY + clauses
+
     def _scope_params(self, scope: ApiRefScope) -> dict[str, str]:
+        from adcs.retrieval.profiles import profile_for
+
+        profile = profile_for(scope.product, scope.language)
+        excluded = profile.excluded_namespaces if profile else ()
         return {
+            **{f"excluded_ns_{i}": ns.casefold() for i, ns in enumerate(excluded)},
             "product": scope.product,
             "language": scope.language,
             "version": scope.version,
@@ -487,7 +508,7 @@ class PostgresApiRefSymbolStore:
         # list_overloads; Postgres returns rows in arbitrary order otherwise).
         return self._query(
             self._SELECT
-            + self._ACTIVE_SUBQUERY
+            + self._active_subquery(scope)
             + " AND LOWER(member_fqn)=LOWER(:member_fqn)"
             + " ORDER BY length(signature) NULLS LAST, signature NULLS LAST",
             {**self._scope_params(scope), "member_fqn": member_fqn},
@@ -496,7 +517,7 @@ class PostgresApiRefSymbolStore:
     def list_members(self, *, parent_fqn: str, scope: ApiRefScope) -> tuple[ApiRefSymbol, ...]:
         return self._query(
             self._SELECT
-            + self._ACTIVE_SUBQUERY
+            + self._active_subquery(scope)
             + " AND LOWER(parent_fqn)=LOWER(:parent_fqn) ORDER BY kind, name",
             {**self._scope_params(scope), "parent_fqn": parent_fqn},
         )
@@ -510,7 +531,7 @@ class PostgresApiRefSymbolStore:
         # parameter interpolation, so the function form is the safe choice.
         return self._query(
             self._SELECT
-            + self._ACTIVE_SUBQUERY
+            + self._active_subquery(scope)
             + " AND (name ILIKE :prefix OR similarity(name, :pattern) > :sim_threshold)"
             + " ORDER BY (name ILIKE :prefix) DESC,"
             + " similarity(name, :pattern) DESC, name LIMIT :limit",
@@ -541,7 +562,7 @@ class PostgresApiRefSymbolStore:
             params["kind"] = kind
         return self._query(
             self._SELECT
-            + self._ACTIVE_SUBQUERY
+            + self._active_subquery(scope)
             + kind_clause
             + " AND fts @@ websearch_to_tsquery('simple', :q)"
             + " ORDER BY ts_rank(fts, websearch_to_tsquery('simple', :q)) DESC"
@@ -552,7 +573,7 @@ class PostgresApiRefSymbolStore:
     def list_overloads(self, *, member_fqn: str, scope: ApiRefScope) -> tuple[ApiRefSymbol, ...]:
         return self._query(
             self._SELECT
-            + self._ACTIVE_SUBQUERY
+            + self._active_subquery(scope)
             + " AND LOWER(member_fqn)=LOWER(:member_fqn) AND kind IN ('method','constructor')"
             + " ORDER BY length(signature)",
             {**self._scope_params(scope), "member_fqn": member_fqn},

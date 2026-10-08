@@ -70,12 +70,19 @@ COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /opt/licenses /licenses
 COPY src ./src
 COPY config ./config
+COPY plugins ./plugins
+COPY compositions ./compositions
+COPY contracts ./contracts
+COPY prompts ./prompts
+COPY scripts/deploy ./scripts/deploy
 # The source registry accepts repositories that are registered but not cloned yet
 # (materialization_state: lazy_registered) only when they appear in .gitmodules,
 # which it reads from the workspace root (/app). Without it the API refuses to start
 # unless every source directory exists.
 COPY .gitmodules ./
 RUN mkdir -p /app/artifacts/config-history /app/artifacts/semantic-review \
+    /app/source-repo-apiref /app/source-repo-docs \
+    /app/data-apiref /app/data-docs /app/plugins/words-net/sources \
     && chown -R appuser:appuser /app
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=5 \

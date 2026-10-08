@@ -20,3 +20,15 @@ source-repo-apiref
 source-repo-docs
 data-apiref
 data-docs
+
+# Independent plugin corpora and local build environments never enter images.
+**/sources
+**/.venv
+**/.git
+**/__pycache__
+**/*.egg-info
+**/build
+**/dist
+*.zip
+output
+logs

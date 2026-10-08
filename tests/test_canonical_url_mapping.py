@@ -2,11 +2,65 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from adcs.ingestion.canonical_url_mapping import (
     CanonicalUrlMappingContext,
     FileSystemCanonicalUrlMappingStore,
     extract_metadata_remap_pairs,
+    normalize_canonical_url,
 )
+
+
+@pytest.mark.parametrize("url, expected", [
+    ("guide/?view=net#example", "https://reference.aspose.com/words/net/guide/?view=net#example"),
+    ("/words/net/old/#example", "https://reference.aspose.com/words/net/old/#example"),
+    ("https://example.com/page?q=1#anchor", "https://example.com/page/?q=1#anchor"),
+])
+def test_source_relative_urls_preserve_query_and_fragment(url, expected):
+    assert normalize_canonical_url(
+        url, canonical_base_url="https://reference.aspose.com/words/net"
+    ) == expected
+
+
+def test_mapping_store_uses_source_base_for_relative_aliases(tmp_path):
+    store = FileSystemCanonicalUrlMappingStore(workspace_root=tmp_path)
+    context = CanonicalUrlMappingContext.from_values(
+        product_id="aspose.words", source_kind="apiref",
+        programming_language="net", version="latest-stable",
+    )
+    base = "https://reference.aspose.com/words/net"
+    registry = store.load(context=context, canonical_base_url=base)
+    registry.register_mappings(
+        remap_pairs=extract_metadata_remap_pairs(
+            metadata={"canonical_url_aliases": ["old/", "/words/net/old-root/"]},
+            resolved_canonical_url=base + "/new/?view=net#member",
+            canonical_base_url=base,
+        ),
+        source_path="source.md",
+    )
+    store.save(registry=registry)
+    registry = store.load(context=context, canonical_base_url=base)
+    for alias in ("old/", "/words/net/old-root/"):
+        assert registry.resolve(alias) == base + "/new/?view=net#member"
+
+
+def test_page_redirect_preserves_citation_suffix_and_exact_override(tmp_path):
+    context = CanonicalUrlMappingContext.from_values(
+        product_id="aspose.words", source_kind="docs",
+        programming_language="net", version="latest-stable",
+    )
+    registry = FileSystemCanonicalUrlMappingStore(workspace_root=tmp_path).load(context=context)
+    registry.register_mapping(old_url="/old/", new_url="/new/", source_path="page.md")
+    assert registry.resolve("/old/?view=net#example") == (
+        "https://docs.aspose.com/new/?view=net#example"
+    )
+    registry.register_mapping(
+        old_url="/old/?view=net#example", new_url="/specific/#renamed", source_path="page.md"
+    )
+    assert registry.resolve("/old/?view=net#example") == (
+        "https://docs.aspose.com/specific/#renamed"
+    )
 
 
 def test_extract_metadata_remap_pairs_supports_legacy_and_explicit_shapes() -> None:
