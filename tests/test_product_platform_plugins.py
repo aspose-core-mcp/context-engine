@@ -20,6 +20,12 @@ from adcs.plugins.extraction import ExtractionError, PlatformExtractionBackend
 
 ROOT = Path(__file__).resolve().parents[1]
 
+if not (ROOT / "plugins/words-net/plugin.json").is_file():
+    pytest.skip(
+        "Requires separately installed Words plugin; see docs/engine-only.md",
+        allow_module_level=True,
+    )
+
 
 def backend(product="words", **kwargs):
     return PlatformExtractionBackend(
@@ -50,6 +56,8 @@ def prepare(tmp_path, product="words", kinds=("docs",)):
     registry = tmp_path / "registry.json"
     registry.write_text(json.dumps(registry_payload(worker, list(kinds))))
     sources = SourceRegistryService(registry, workspace_root=tmp_path).list_repositories()
+    for source in sources:
+        worker.discover(repo_root=tmp_path / source.git.submodule_path, repository=source)
     return worker, registry, sources
 
 
@@ -116,24 +124,32 @@ def test_plugin_citations_survive_host_remapping(tmp_path, kind):
     old_override = "/guide/" if kind == "docs" else "/api/document/"
     raw = raw.replace(old_override, "guide/?view=net#member")
     _, document, records = worker.extract(
-        repository=source, source_path=path, relative_repo_path=relative,
-        raw_markdown=raw, source_revision="citation-sha",
+        repository=source,
+        source_path=path,
+        relative_repo_path=relative,
+        raw_markdown=raw,
+        source_revision="citation-sha",
     )
     old = definition.canonical_base_url + "/guide/?view=net#member"
     new = definition.canonical_base_url + "/renamed/?view=net#member"
     context = CanonicalUrlMappingContext.from_values(
-        product_id="aspose.words", source_kind=kind,
-        programming_language="net", version="latest-stable",
+        product_id="aspose.words",
+        source_kind=kind,
+        programming_language="net",
+        version="latest-stable",
     )
     store = FileSystemCanonicalUrlMappingStore(workspace_root=tmp_path)
     registry = store.load(context=context, canonical_base_url=definition.canonical_base_url)
     assert registry.resolve(old) == old
     registry.register_mapping(old_url=old, new_url=new, source_path=path)
     mapped = _apply_canonical_mapping_to_document(
-        normalized_document=document, mapping_registry=registry,
+        normalized_document=document,
+        mapping_registry=registry,
     )
     mapped_records, _ = _apply_canonical_mapping_to_chunk_records(
-        chunk_records=records, mapping_registries={context: registry}, mapping_store=store,
+        chunk_records=records,
+        mapping_registries={context: registry},
+        mapping_store=store,
     )
     assert mapped.document.canonical_url == new
     assert mapped.document.source_revision == "citation-sha"
@@ -161,10 +177,12 @@ def test_apiref_orchestrator_uses_plugin_base_for_remap(tmp_path):
         '+++\ntitle = "Document Class"\nsymbol_fqn = "Aspose.Words.Document"\n'
         'symbol_kind = "class"\nurl = "old/"\n'
         '[canonical_url_remap]\n"old/" = "new/?view=net#member"\n+++\n'
-        '# Document class\n```csharp\npublic class Document {}\n```\n'
+        "# Document class\n```csharp\npublic class Document {}\n```\n"
     )
     service = SourceHugoNormalizationOrchestrationService(
-        workspace_root=tmp_path, registry_path=registry, extraction_backend=worker,
+        workspace_root=tmp_path,
+        registry_path=registry,
+        extraction_backend=worker,
         source_revision_resolver=lambda _: "citation-sha",
     )
     operation = service.run(repo_ids=[sources[0].repo_id], mode=IngestionRunMode.VALIDATE_ONLY)
@@ -176,7 +194,8 @@ def test_apiref_orchestrator_uses_plugin_base_for_remap(tmp_path):
     assert all(record.canonical_url == expected for record in result.chunk_records)
     assert all(
         snippet.parent_canonical_url == expected
-        for record in result.chunk_records for snippet in record.executable_snippets
+        for record in result.chunk_records
+        for snippet in record.executable_snippets
     )
     worker.close()
 
@@ -187,7 +206,7 @@ def test_discovery_excludes_other_platforms_and_symlinks(tmp_path):
     root = tmp_path / source.git.submodule_path
     (root / "java").mkdir()
     (root / "java/other.md").write_text("# Java")
-    (root / "net/escape.md").symlink_to(root / "java/other.md")
+    (root / worker.manifest.sources["docs"].prefix / "escape.md").symlink_to(root / "java/other.md")
     paths = worker.discover(repo_root=root, repository=source)
     assert [p.name for p in paths] == ["_index.md"]
     with pytest.raises(ExtractionError, match="scope"):
@@ -242,8 +261,8 @@ def test_wrong_scope_output_rejected(tmp_path, monkeypatch):
     with pytest.raises(ExtractionError, match="scope"):
         worker.extract(
             repository=source,
-            source_path=f"{source.git.submodule_path}/net/_index.md",
-            relative_repo_path="net/_index.md",
+            source_path=f"{source.git.submodule_path}/{worker.manifest.sources['docs'].prefix}/_index.md",
+            relative_repo_path=worker.manifest.sources["docs"].prefix + "/_index.md",
             raw_markdown="---\ntitle: Guide\n---\nHello",
             source_revision="sha",
         )

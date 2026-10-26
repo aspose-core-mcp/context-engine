@@ -13,6 +13,12 @@ from adcs.plugins.catalog import PluginCatalog
 
 ROOT = Path(__file__).resolve().parents[1]
 
+if not (ROOT / "plugins/words-net/plugin.json").is_file():
+    pytest.skip(
+        "Requires separately installed Words plugin; see docs/engine-only.md",
+        allow_module_level=True,
+    )
+
 
 class Publisher:
     def __init__(self, fail=False):

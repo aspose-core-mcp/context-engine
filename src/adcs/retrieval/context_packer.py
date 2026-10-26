@@ -7,7 +7,7 @@ from dataclasses import dataclass, replace
 
 from adcs.retrieval.filter_resolver import normalize_version_hint
 from adcs.retrieval.models import QueryPlan
-from adcs.retrieval.profiles import candidate_allowed
+from adcs.retrieval.profiles import candidate_allowed, profile_for
 from adcs.retrieval.release_catalog import ReleaseCatalog
 from adcs.retrieval.retrieval_models import HybridCandidate, HybridRetrievalResult
 from adcs.retrieval.task_relevance import api_task_relevant
@@ -147,8 +147,11 @@ class ContextPacker:
         eligible_candidates = tuple(
             c for c in retrieval_result.candidates if candidate_allowed(c.metadata)
         )
-        selected_candidates = _prioritize_source_coverage(
-            eligible_candidates[:effective_top_k], plan=plan,
+        selected_candidates = _select_diverse_candidates(
+            _prioritize_profile_coverage(
+                _prioritize_source_coverage(eligible_candidates, plan=plan), plan=plan,
+            ),
+            plan=plan, limit=effective_top_k,
         )
         packed_items, truncated = _apply_token_budget(
             items=tuple(
@@ -232,6 +235,71 @@ def _apply_token_budget(
         kept.append(item)
         spent += cost
     return tuple(kept), False
+
+
+def _select_diverse_candidates(
+    candidates: tuple[HybridCandidate, ...], *, plan: QueryPlan, limit: int,
+) -> tuple[HybridCandidate, ...]:
+    """Soft-cap overload slots for how-to context, without discarding evidence.
+
+    Preserve rank within the first pass and defer the third and later overload
+    of a member. Fill spare slots from the deferred tail. Symbol lookups retain
+    their full overload ranking. Scope identities to product/language/version so
+    records from different scopes are never treated as one overload family.
+    """
+    if plan.intent != "how_to":
+        return candidates[:limit]
+    counts: dict[tuple[str, str, str, str], int] = {}
+    selected: list[HybridCandidate] = []
+    deferred: list[HybridCandidate] = []
+    for candidate in candidates:
+        meta = candidate.metadata
+        if meta.source_kind == "apiref" and meta.symbol_fqn:
+            key = (meta.product_id, meta.programming_language, meta.version,
+                   meta.symbol_fqn.casefold())
+            counts[key] = counts.get(key, 0) + 1
+            if counts[key] > 2:
+                deferred.append(candidate)
+                continue
+        selected.append(candidate)
+        if len(selected) == limit:
+            break
+    return tuple((selected + deferred)[:limit])
+
+
+def _prioritize_profile_coverage(
+    candidates: tuple[HybridCandidate, ...], *, plan: QueryPlan,
+) -> tuple[HybridCandidate, ...]:
+    """Preserve the leading source pair, then up to three preferred API families.
+
+    Long guides must not consume the budget before complementary product-policy
+    evidence (such as both APIs in a comparison). The cap is shared; the symbols
+    are supplied exclusively by scoped plugin profiles. Overloads stay available
+    in the ranked tail and never consume multiple reserved family slots.
+    """
+    leading = list(candidates[:2])
+    selected = {c.metadata.candidate_id for c in leading}
+    families = {(c.metadata.product_id, c.metadata.programming_language,
+                 c.metadata.version, (c.metadata.symbol_fqn or "").casefold())
+                for c in leading if c.metadata.source_kind == "apiref"}
+    for candidate in candidates[2:]:
+        if len(families) >= 3:
+            break
+        meta = candidate.metadata
+        if meta.source_kind != "apiref" or not meta.symbol_fqn:
+            continue
+        family = (meta.product_id, meta.programming_language, meta.version,
+                  meta.symbol_fqn.casefold())
+        profile = profile_for(meta.product_id, meta.programming_language)
+        if family in families or not profile or meta.symbol_fqn.casefold() not in {
+            s.casefold() for s in profile.targets(plan.normalized_query)
+        }:
+            continue
+        leading.append(candidate)
+        selected.add(meta.candidate_id)
+        families.add(family)
+    return tuple(leading) + tuple(c for c in candidates[2:]
+                                  if c.metadata.candidate_id not in selected)
 
 
 def _prioritize_source_coverage(

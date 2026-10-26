@@ -30,6 +30,7 @@ from adcs.indexing.apiref_symbol_store import (
     ApiRefSymbol,
     ApiRefSymbolStore,
 )
+from adcs.indexing.symbol_resolution import find_symbol_candidates
 from adcs.retrieval.profiles import EligibleSymbolStore, symbol_allowed
 
 _DEFAULT_LOCALE = "en"
@@ -105,6 +106,7 @@ class GetSymbolResponse(BaseModel):
     parent_fqn: str | None
     overloads: list[SymbolOverloadResponse]
     hint: ResolutionHint | None = None
+    suggested_symbols: list[dict[str, str]] = Field(default_factory=list)
 
 
 class SymbolSummaryResponse(BaseModel):
@@ -355,26 +357,10 @@ class ApiRefSymbolService:
         )
 
     def _resolve_bare_symbol(self, *, symbol_fqn: str, scope: ApiRefScope) -> str | None:
-        """Map a bare name / partial FQN onto a real member FQN by leaf search.
-
-        The tool schema invites bare names (``Workbook``, ``Document.Save``) but the
-        store matches exact FQNs only. Search by the leaf and accept a candidate
-        whose FQN equals or ends with the requested (partial) path, else one whose
-        name matches the leaf exactly — reusing the canonical-class rerank so a bare
-        type name lands on the top-level class, not a namesake accessor.
-        """
-        norm = symbol_fqn.strip().lower().strip(".")
-        if not norm:
-            return None
-        leaf = norm.rsplit(".", 1)[-1]
-        tail = f".{norm}"
-        candidates = self._search_ordered(query=leaf, scope=scope, limit=25)
-        for candidate in candidates:
-            fqn = candidate.member_fqn.lower()
-            if fqn == norm or fqn.endswith(tail):
-                return candidate.member_fqn
-        match = next((c for c in candidates if c.name.lower() == leaf), None)
-        return match.member_fqn if match is not None else None
+        """Resolve only an unambiguous candidate in the requested scope."""
+        return find_symbol_candidates(
+            store=self._store, scope=scope, requested=symbol_fqn,
+        ).unique_fqn
 
     def get_symbol(
         self, *, request: GetSymbolRequest, strict_scope: bool = False
@@ -390,6 +376,9 @@ class ApiRefSymbolService:
         if not overloads:
             return GetSymbolResponse(
                 found=False,
+                suggested_symbols=find_symbol_candidates(
+                    store=self._store, scope=scope, requested=request.symbol_fqn,
+                ).suggestions(),
                 member_fqn=request.symbol_fqn,
                 name=request.symbol_fqn.rsplit(".", 1)[-1],
                 kind=None,

@@ -30,7 +30,9 @@ from adcs.api.public_docs_query import _enforce_abuse_guard
 router = APIRouter(tags=["public-apiref-symbols"])
 
 
-def _error(*, request: Request, code: str, message: str) -> HTTPException:
+def _error(
+    *, request: Request, code: str, message: str, details: dict[str, object] | None = None,
+) -> HTTPException:
     """The standard public error envelope.
 
     These four routes used to raise `HTTPException(detail="...")` with a bare
@@ -43,7 +45,7 @@ def _error(*, request: Request, code: str, message: str) -> HTTPException:
             "error": {
                 "code": code,
                 "message": message,
-                "details": {},
+                "details": details or {},
                 "request_id": getattr(request.state, "request_id", None),
             }
         },
@@ -70,6 +72,10 @@ async def get_symbol(request_payload: GetSymbolRequest, request: Request) -> Get
             request=request,
             code=NOT_FOUND,
             message=f"Symbol `{request_payload.symbol_fqn}` was not found.",
+            details={
+                "requested_symbol": request_payload.symbol_fqn,
+                "suggested_symbols": response.suggested_symbols,
+            },
         )
     return response
 

@@ -1,24 +1,19 @@
-# Aspose Product MCP Plugins
+# ADCS engine
 
-This is Muhammad Sabir's reference implementation for Imran Anwar to evaluate and
-extend into the complete plugin architecture. It provides independent Words/.NET
-and TeX/.NET extraction packages with isolated workers and a shared output contract.
-Total/.NET composes member data. Extraction remains plugin-owned; common engine
-orchestration, staging, indexing and serving remain shared.
+This checkout contains the engine only. No extraction plugins or compositions are
+bundled or registered. The initial catalog is `config/product-platform-plugins.json`
+with empty `plugins` and `compositions` arrays.
 
-This evaluation does not enforce plugin-only ingestion across all entry points,
-and remains an evaluation rather than a production release. A Linux VM deployment
-now runs the API and queued Words/.NET ingestion; see [deployment notes](DEPLOYMENT.md)
-for the dated validation and publication status. It incorporates the
-source-kind snapshot prerequisite from upstream MR !1 at `0534897`; it does not
-include that MR's other changes or imply that the MR has been merged.
-See [setup, architecture, commands and limitations](docs/product-platform-plugins.md)
-and [verification evidence](docs/plugin-evaluation-verification.md).
+See [engine-only setup and separation notes](docs/engine-only.md) before deployment.
+Plugin repositories will be supplied separately in a later step.
 
-The pilot README below describes the original `d00ac79` baseline; its statements
-about excluded snapshot fixes apply to that baseline, not this evaluation branch.
+## Historical pilot documentation
 
-# Aspose Product MCP Pilot
+The material below describes the inherited pilot and its legacy routes. Plugin
+installation instructions in older documents apply to the former combined
+repository. Use [engine-only notes](docs/engine-only.md) for this checkout.
+
+### Aspose Product MCP Pilot
 
 Product-first MCP pilot built on [Aspose Context Engine](https://github.com/aspose-mcp/aspose-context-engine).
 Individual Words and TeX scopes are implemented first, then combined through Total.

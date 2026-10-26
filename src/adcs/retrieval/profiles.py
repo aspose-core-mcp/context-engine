@@ -51,7 +51,7 @@ class RetrievalProfile(BaseModel):
     product_id: str = Field(min_length=1)
     language: str = Field(min_length=1)
     excluded_namespaces: list[str] = Field(default_factory=list, max_length=50)
-    rules: list[RetrievalRule] = Field(max_length=20)
+    rules: list[RetrievalRule] = Field(max_length=32)
 
     @model_validator(mode="after")
     def validate_rules(self) -> RetrievalProfile:

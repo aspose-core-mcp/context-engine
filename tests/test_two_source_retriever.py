@@ -343,3 +343,49 @@ def test_generic_ranking_searches_beyond_output_limit_and_keeps_scope():
         query='How do I import data from DataTable in Aspose.Cells?', scope=scope, limit=1,
     )
     assert list(hits) == [relevant]
+
+
+def test_namespace_classes_are_scoped_and_do_not_use_fuzzy_search():
+    from dataclasses import replace
+
+    class Store:
+        def list_members(self, *, parent_fqn, scope):
+            assert parent_fqn == "Aspose.Slides.Export"
+            assert scope == SCOPE
+            return (
+                replace(_sym(member_fqn=parent_fqn + ".PdfOptions", name="PdfOptions"),
+                        kind="class"),
+                replace(_sym(member_fqn=parent_fqn + ".SaveFormat", name="SaveFormat"),
+                        kind="enum"),
+            )
+
+    lane = ApiRefRetriever(store=Store())
+    hits = lane.search(query="What classes are in the Aspose.Slides.Export namespace?",
+                       scope=SCOPE, limit=10)
+    assert [h.name for h in hits] == ["PdfOptions"]
+    hits = lane.search(query="List types in Aspose.Slides.Export namespace", scope=SCOPE, limit=1)
+    assert len(hits) == 1
+    assert not lane.search(query="List classes in Aspose.Words.AI namespace", scope=SCOPE, limit=10)
+
+
+def test_namespace_listing_detection_is_narrow():
+    from adcs.retrieval.two_source_retriever import namespace_listing_target
+
+    assert namespace_listing_target(
+        "List types in Acme.Documents.Export namespace"
+    ) == "Acme.Documents.Export"
+    assert namespace_listing_target("Explain Acme.Documents.Export namespace") is None
+    assert namespace_listing_target(
+        "Compare classes in Acme.Documents.A and Acme.Documents.B namespace"
+    ) is None
+    assert namespace_listing_target("Acme.Documents.Export") is None
+
+
+def test_empty_namespace_does_not_fall_back_to_unrelated_apis():
+    class Store:
+        def list_members(self, *, parent_fqn, scope):
+            return ()
+
+    assert not ApiRefRetriever(store=Store()).search(
+        query="List classes in Aspose.Slides.Missing namespace", scope=SCOPE, limit=10,
+    )

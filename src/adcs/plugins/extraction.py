@@ -41,6 +41,7 @@ class PlatformExtractionBackend:
         self.timeout = timeout
         self.max_output_bytes = max_output_bytes
         self._symbol_spools: dict[str, TextIO] = {}
+        self._repo_roots: dict[str, Path] = {}
         self._pending_symbols: tuple[str, list[Any]] | None = None
 
     def source(self, repository: SourceRepository) -> SourceDefinition:
@@ -150,6 +151,7 @@ class PlatformExtractionBackend:
         if repository.repo_id in self._symbol_spools:
             self._symbol_spools[repository.repo_id].close()
         self._symbol_spools[repository.repo_id] = tempfile.TemporaryFile(mode="w+t")
+        self._repo_roots[repository.repo_id] = root
         return sorted(discovered)
 
     def extract(
@@ -171,6 +173,9 @@ class PlatformExtractionBackend:
         )
 
         source = self.source(repository)
+        repo_root = self._repo_roots.get(repository.repo_id)
+        if repo_root is None:
+            repo_root = Path(source.path).resolve(strict=True)
         if (
             Path(relative_repo_path).is_absolute()
             or ".." in Path(relative_repo_path).parts
@@ -181,6 +186,7 @@ class PlatformExtractionBackend:
         result = self.invoke(
             repository.source_kind,
             operation="extract",
+            repo_root=str(repo_root),
             repo_id=repository.repo_id,
             product_family=repository.product_family,
             source_path=source_path,
@@ -307,3 +313,4 @@ class PlatformExtractionBackend:
         for spool in self._symbol_spools.values():
             spool.close()
         self._symbol_spools.clear()
+        self._repo_roots.clear()

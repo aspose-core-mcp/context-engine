@@ -63,8 +63,6 @@ COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /opt/licenses /licenses
 COPY src ./src
 COPY config ./config
-COPY plugins ./plugins
-COPY compositions ./compositions
 COPY contracts ./contracts
 COPY prompts ./prompts
 # The source registry accepts repositories that are registered but not cloned yet

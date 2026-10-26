@@ -41,7 +41,6 @@ x-app: &app
     - artifacts:/app/artifacts
     - data_docs:/app/data-docs
     - data_apiref:/app/data-apiref
-    - words_sources:/app/plugins/words-net/sources:ro
   depends_on:
     postgres: {condition: service_healthy}
     redis: {condition: service_healthy}
@@ -68,16 +67,6 @@ services:
     # Bound ingestion to one job at a time on a single VM.
     command: [python, -m, celery, -A, 'adcs.worker.celery_app:celery_app', worker, --loglevel=info, --concurrency=1, --prefetch-multiplier=1]
     stop_grace_period: 2m
-
-  prepare-words:
-    <<: *app
-    profiles: [tools]
-    restart: "no"
-    depends_on: {}
-    healthcheck: {disable: true}
-    command: [python, scripts/deploy/prepare_words.py]
-    volumes:
-      - words_sources:/app/plugins/words-net/sources
 
   postgres:
     image: postgres:16-alpine
@@ -165,7 +154,6 @@ volumes:
   artifacts:
   data_docs:
   data_apiref:
-  words_sources:
   postgres_data:
   redis_data:
   rabbitmq_data:

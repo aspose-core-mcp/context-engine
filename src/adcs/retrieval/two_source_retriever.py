@@ -123,6 +123,20 @@ def looks_like_fqn(query: str) -> bool:
     return bool(_FQN_RE.match(candidate))
 
 
+def namespace_listing_target(query: str) -> str | None:
+    """Recognize one qualified namespace in an explicit member-listing request.
+
+    Reject multiple identifiers and non-enumeration questions rather than
+    guessing a namespace. Product-specific vocabulary is deliberately absent.
+    """
+    if not re.search(r"\bnamespace\b", query, re.I):
+        return None
+    if not re.search(r"\b(classes|types|members|enums|enumerations)\b", query, re.I):
+        return None
+    identifiers = re.findall(r"\b[A-Za-z_]\w*(?:\.[A-Za-z_]\w*){2,}\b", query)
+    return identifiers[0] if len(identifiers) == 1 else None
+
+
 def _symbol_key(symbol: ApiRefSymbol) -> str:
     return f"{symbol.member_fqn}|{symbol.signature or ''}"
 
@@ -145,6 +159,18 @@ class ApiRefRetriever:
         seen: set[str] = set()
         if limit <= 0:
             return ()
+        # Explicit namespace enumeration must not turn into broad fuzzy search.
+        # Keep the original scope (including active snapshot/version enforcement)
+        # and the eligibility wrapper used by all other symbol-store operations.
+        namespace = namespace_listing_target(query)
+        if namespace is not None:
+            if not namespace.casefold().startswith(scope.product.casefold() + "."):
+                return ()
+            members = self._store.list_members(parent_fqn=namespace, scope=scope)
+            kind = ("class" if re.search(r"\bclasses\b", query, re.I) else
+                    "enum" if re.search(r"\b(enums|enumerations)\b", query, re.I) else None)
+            return tuple(member for member in members
+                         if kind is None or member.kind.casefold() == kind)[:limit]
         # Round-robin bounded pools so a broad first term cannot exhaust the
         # candidate budget before a specific later term contributes candidates.
         pool_limit = min(max(limit * 3, 30), 150)

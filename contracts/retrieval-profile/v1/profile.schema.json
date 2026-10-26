@@ -100,7 +100,7 @@
       "items": {
         "$ref": "#/$defs/RetrievalRule"
       },
-      "maxItems": 20,
+      "maxItems": 32,
       "title": "Rules",
       "type": "array"
     }

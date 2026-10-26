@@ -391,3 +391,123 @@ def test_packer_clamps_a_budget_above_the_documented_maximum() -> None:
         assert "max_total_tokens" in str(exc)
     else:  # pragma: no cover - guard must reject a nonsensical budget
         raise AssertionError("a budget below the floor must be rejected")
+
+
+def test_how_to_context_keeps_guides_beyond_save_overloads() -> None:
+    from dataclasses import replace
+
+    for query, options in (
+        ("How to convert Word to XLSX in C#?", "XlsxSaveOptions"),
+        ("How to convert DOC/DOCX to PNG in C#?", "ImageSaveOptions"),
+        ("How to convert DOC/DOCX to HTML in C#?", "HtmlSaveOptions"),
+    ):
+        plan = QueryPlanner().plan(request=QueryPlannerInput(
+            query=query, product_id="aspose.words", programming_language="net",
+            version="26.9", doc_locale="en", strict_version=True,
+        ))
+        assert plan.intent == "how_to"
+
+        def candidate(name, symbol=None):
+            item = _hybrid_candidate(
+                candidate_id=name, title=name, text=name, rerank_score=0.8,
+                dense_score=0.8, lexical_score=0.8,
+                source_kind="apiref" if symbol else "docs", symbol_fqn=symbol,
+            )
+            return replace(item, metadata=replace(item.metadata, product_id="aspose.words"))
+
+        overloads = tuple(candidate(f"save-{i}", "Aspose.Words.Document.Save") for i in range(6))
+        candidates = (
+            candidate("first-guide"), *overloads,
+            candidate("options", "Aspose.Words.Saving." + options),
+            candidate("api-overview"), candidate("migration-guide"),
+            candidate("conversion-guide"), candidate("image-guide"),
+        )
+        result = HybridRetrievalResult(
+            query_fingerprint=plan.query_fingerprint, normalized_query=plan.normalized_query,
+            candidates=candidates, dense_candidates_count=6, lexical_candidates_count=6,
+            fused_candidates_count=len(candidates), dense_weight=0.5, lexical_weight=0.5,
+        )
+        packed = ContextPacker().pack(plan=plan, retrieval_result=result, top_k=10)
+        ids = [item.candidate_id for item in packed.items]
+        assert "conversion-guide" in ids and "image-guide" in ids
+        assert "options" in ids
+        assert ids.index("conversion-guide") < ids.index("save-2")
+        assert len(ids) == 10
+        assert len(result.candidates) == 12  # No overload removed from retrieval.
+
+
+def test_diversity_soft_cap_preserves_symbol_lookups_and_fills_spare_slots() -> None:
+    from dataclasses import replace
+
+    from adcs.retrieval.context_packer import _select_diverse_candidates
+
+    plan = QueryPlanner().plan(request=QueryPlannerInput(
+        query="Aspose.Words.Document.Save", product_id="aspose.words",
+        programming_language="net", version="26.9", doc_locale="en", strict_version=True,
+    ))
+    candidates = tuple(_hybrid_candidate(
+        candidate_id=str(i), title="Save", text="Save overload", rerank_score=0.8,
+        dense_score=0.8, lexical_score=0.8, source_kind="apiref",
+        symbol_fqn="Aspose.Words.Document.Save",
+    ) for i in range(6))
+    assert plan.intent != "how_to"
+    assert _select_diverse_candidates(candidates, plan=plan, limit=4) == candidates[:4]
+    how_to = replace(plan, intent="how_to")
+    assert _select_diverse_candidates(candidates, plan=how_to, limit=10) == candidates
+    assert _select_diverse_candidates(candidates, plan=how_to, limit=1) == candidates[:1]
+    assert _select_diverse_candidates((), plan=how_to, limit=10) == ()
+
+
+def test_complementary_api_beyond_top_k_is_kept_before_token_truncation():
+    plan = QueryPlanner().plan(request=QueryPlannerInput(
+        query="What is the OCR engine?", product_id="aspose.ocr", programming_language="net",
+        version="25.1", doc_locale="en", strict_version=True,
+    ))
+    candidates = tuple(_hybrid_candidate(
+        candidate_id=f"doc-{i}", title="Engine documentation", text="Engine guide " * 200,
+        rerank_score=0.9, dense_score=0.9, lexical_score=0.9,
+    ) for i in range(12)) + (_hybrid_candidate(
+        candidate_id="api", title="Engine", text="public class Engine {}",
+        rerank_score=0.8, dense_score=0.8, lexical_score=0.8, source_kind="apiref",
+        symbol_fqn="Aspose.OCR.Engine",
+    ),)
+    result = HybridRetrievalResult(
+        query_fingerprint=plan.query_fingerprint, normalized_query=plan.normalized_query,
+        candidates=candidates, dense_candidates_count=12, lexical_candidates_count=1,
+        fused_candidates_count=13, dense_weight=0.5, lexical_weight=0.5,
+    )
+    packed = ContextPacker().pack(plan=plan, retrieval_result=result, top_k=10)
+    assert packed.items[0].candidate_id == "doc-0"
+    assert packed.items[1].candidate_id == "api"
+    assert len(packed.items) <= 10
+
+
+def test_context_reserves_distinct_profile_members_without_repeating_overloads(monkeypatch):
+    from types import SimpleNamespace
+
+    from adcs.retrieval.context_packer import _prioritize_profile_coverage
+
+    plan = QueryPlanner().plan(request=QueryPlannerInput(
+        query="Compare two OCR engines", product_id="aspose.ocr", programming_language="net",
+        version="25.1", doc_locale="en", strict_version=True,
+    ))
+    monkeypatch.setattr("adcs.retrieval.context_packer.profile_for", lambda *args: SimpleNamespace(
+        targets=lambda query: ("Engine.First", "Engine.Second", "Engine.Third", "Engine.Fourth")
+    ))
+
+    def candidate(id, symbol=None):
+        return _hybrid_candidate(
+            candidate_id=id, title=id, text=id, rerank_score=0.8,
+            dense_score=0.8, lexical_score=0.8,
+            source_kind="apiref" if symbol else "docs", symbol_fqn=symbol,
+        )
+
+    candidates = (
+        candidate("guide"), candidate("first", "Engine.First"), candidate("long-guide"),
+        candidate("overload", "Engine.First"), candidate("second", "Engine.Second"),
+        candidate("third", "Engine.Third"), candidate("fourth", "Engine.Fourth"),
+    )
+    selected = _prioritize_profile_coverage(candidates, plan=plan)
+    assert [c.metadata.candidate_id for c in selected[:4]] == ["guide", "first", "second", "third"]
+    assert len(selected) == len(candidates)
+    assert selected[4:] == (candidates[2], candidates[3], candidates[6])

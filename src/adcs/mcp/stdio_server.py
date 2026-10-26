@@ -42,6 +42,7 @@ from adcs.api.error_codes import (
     TIMEOUT,
 )
 from adcs.api.error_messages import public_error_message
+from adcs.indexing.symbol_resolution import SymbolNotFoundError
 from adcs.mcp.tool_gateway import MCPToolError, MCPToolGateway
 
 logger = logging.getLogger(__name__)
@@ -145,7 +146,10 @@ class MCPStdioTransport:
                 session_id=session_id, tool_name=tool_name, arguments=arguments
             )
             if failure is not None:
-                return _error_payload(request_id=request.id, code=failure[0], message=failure[1])
+                return _error_payload(
+                    request_id=request.id, code=failure[0], message=failure[1],
+                    details=failure[2] if len(failure) > 2 else None,
+                )
             return _ok_payload(request_id=request.id, result={"result": result})
 
         return _error_payload(
@@ -209,7 +213,8 @@ class MCPStdioTransport:
         )
         if failure is not None:
             return _standard_error_payload(
-                request_id=request.id, code=failure[0], message=failure[1]
+                request_id=request.id, code=failure[0], message=failure[1],
+                details=failure[2] if len(failure) > 2 else None,
             )
         text = json.dumps(result, ensure_ascii=True, separators=(",", ":"))
         return _ok_payload(
@@ -233,7 +238,7 @@ class MCPStdioTransport:
         session_id: str,
         tool_name: str,
         arguments: dict[str, Any],
-    ) -> tuple[dict[str, Any] | None, tuple[str, str] | None]:
+    ) -> tuple[dict[str, Any] | None, tuple[str, str] | tuple[str, str, dict[str, object]] | None]:
         """Call one tool; return (result, None) or (None, (error_code, message))."""
         try:
             result = self._gateway.call_tool(
@@ -258,6 +263,15 @@ class MCPStdioTransport:
                     fallback="The request could not be processed as given.",
                     context="mcp_stdio:INVALID_ARGUMENT",
                 ),
+            )
+        except SymbolNotFoundError as exc:
+            return None, (
+                NOT_FOUND,
+                public_error_message(
+                    exc, fallback="The requested symbol was not found.",
+                    context="mcp_stdio:NOT_FOUND",
+                ),
+                exc.details,
             )
         except LookupError as exc:
             return None, (
@@ -364,6 +378,7 @@ def _error_payload(
     request_id: str | int | None,
     code: str,
     message: str,
+    details: dict[str, object] | None = None,
 ) -> dict[str, Any]:
     # stdio has no HTTP middleware to mint a request id, so mint one here and log
     # it: the id in the error envelope then matches a server-side log line.
@@ -374,7 +389,7 @@ def _error_payload(
         "error": {
             "code": code,
             "message": message,
-            "details": {},
+            "details": details or {},
             "request_id": correlation_id,
         },
     }
@@ -385,6 +400,7 @@ def _standard_error_payload(
     request_id: str | int | None,
     code: str,
     message: str,
+    details: dict[str, object] | None = None,
 ) -> dict[str, Any]:
     """JSON-RPC error with a numeric code, as the streamable HTTP transport returns."""
     from adcs.api.mcp_gateway import _streamable_error_code
@@ -396,7 +412,7 @@ def _standard_error_payload(
         "error": {
             "code": _streamable_error_code(code),
             "message": message,
-            "data": {"adcs_code": code, "request_id": correlation_id},
+            "data": {"adcs_code": code, "request_id": correlation_id, "details": details or {}},
         },
     }
 

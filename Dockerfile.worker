@@ -70,8 +70,6 @@ COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /opt/licenses /licenses
 COPY src ./src
 COPY config ./config
-COPY plugins ./plugins
-COPY compositions ./compositions
 COPY contracts ./contracts
 COPY prompts ./prompts
 COPY scripts/deploy ./scripts/deploy
@@ -82,7 +80,7 @@ COPY scripts/deploy ./scripts/deploy
 COPY .gitmodules ./
 RUN mkdir -p /app/artifacts/config-history /app/artifacts/semantic-review \
     /app/source-repo-apiref /app/source-repo-docs \
-    /app/data-apiref /app/data-docs /app/plugins/words-net/sources \
+    /app/data-apiref /app/data-docs \
     && chown -R appuser:appuser /app
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=5 \

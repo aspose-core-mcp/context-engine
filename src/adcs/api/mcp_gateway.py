@@ -42,6 +42,7 @@ from adcs.api.error_codes import (
 )
 from adcs.api.error_messages import public_error_message
 from adcs.api.metrics import InMemoryMetrics
+from adcs.indexing.symbol_resolution import SymbolNotFoundError
 from adcs.mcp.product_scope import (
     TEX_NET_SCOPE,
     TOTAL_NET_SCOPE,
@@ -335,6 +336,7 @@ async def _tool_call_payload(
             request=request,
             status_code=HTTP_STATUS_BY_CODE[NOT_FOUND],
             code=NOT_FOUND,
+            details=exc.details if isinstance(exc, SymbolNotFoundError) else None,
             message=public_error_message(
                 exc,
                 fallback="The requested resource was not found.",
@@ -1040,6 +1042,7 @@ def _error_response(
     status_code: int,
     code: str,
     message: str,
+    details: dict[str, object] | None = None,
 ) -> HTTPException:
     request_id = getattr(request.state, "request_id", None)
     return HTTPException(
@@ -1048,7 +1051,7 @@ def _error_response(
             "error": {
                 "code": code,
                 "message": message,
-                "details": {},
+                "details": details or {},
                 "request_id": request_id,
             }
         },

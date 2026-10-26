@@ -266,4 +266,6 @@ def test_get_symbol_doc_falls_back_when_no_active_version_exists() -> None:
             )
         )
     # The structured store was consulted for an active version before falling back.
-    assert store.resolve_calls == [("aspose.slides", "net", "en")]
+    # Exact lookup and recovery suggestions both resolve the same scope.
+    assert store.resolve_calls
+    assert set(store.resolve_calls) == {("aspose.slides", "net", "en")}

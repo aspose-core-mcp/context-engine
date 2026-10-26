@@ -103,10 +103,11 @@ if _catalog_path:
     from adcs.plugins.catalog import PluginCatalog
 
     _catalog = PluginCatalog(_catalog_path)
-    if _catalog.compositions["aspose.total.net"].language != "net":
+    _composition = _catalog.compositions.get("aspose.total.net")
+    if _composition is not None and _composition.language != "net":
         raise ValueError("The Total/.NET endpoint requires a .NET composition")
     _members = []
-    for _plugin_id in _catalog.compositions["aspose.total.net"].members:
+    for _plugin_id in (_composition.members if _composition is not None else []):
         _plugin = _catalog.extractor(_plugin_id)
         _name = _plugin.product_id.removeprefix("aspose.")
         _members.append(
