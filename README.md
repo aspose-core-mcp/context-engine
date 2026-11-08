@@ -8,14 +8,14 @@ This repository contains the engine. Product-specific extraction plugins are ins
 
 ## Project family
 
-The shared engine is maintained under [Aspose MCP Core](https://github.com/aspose-core-mcp). Companion Words/.NET projects are planned under [aspose-words-mcp](https://github.com/aspose-words-mcp).
+The shared engine is maintained under [Aspose MCP Core](https://github.com/aspose-core-mcp). Companion Words/.NET projects are published under [aspose-words-mcp](https://github.com/aspose-words-mcp).
 
 | Repository | Responsibility | Public location |
 | --- | --- | --- |
 | context-engine | Shared engine (this repository) | [aspose-core-mcp/context-engine](https://github.com/aspose-core-mcp/context-engine) |
-| net-plugin | Aspose.Words for .NET extraction and retrieval profile | **TODO: WORDS_NET_PLUGIN_PUBLIC_REPOSITORY_URL** |
-| Aspose.Words for .NET MCP server | Product deployment and client-facing endpoint configuration | **TODO: WORDS_NET_MCP_PUBLIC_REPOSITORY_URL** |
-| net-copilot-client-agent | GitHub Copilot configuration and custom agent | **TODO: COPILOT_CLIENT_PUBLIC_REPOSITORY_URL** |
+| net-plugin | Aspose.Words for .NET extraction and retrieval profile | [aspose-words-mcp/net-plugin](https://github.com/aspose-words-mcp/net-plugin) |
+| Aspose.Words for .NET MCP server | Product deployment and client-facing endpoint configuration | [aspose-words-mcp/net-server](https://github.com/aspose-words-mcp/net-server) |
+| net-copilot-client-agent | GitHub Copilot configuration and custom agent | [aspose-words-mcp/net-copilot-client-agent](https://github.com/aspose-words-mcp/net-copilot-client-agent) |
 
 ## How the components fit together
 

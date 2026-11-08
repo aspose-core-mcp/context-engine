@@ -31,7 +31,7 @@ Follow [external-plugin integration](engine-only.md). Provision a pinned plugin 
 
 The supplied engine template does not provide those product-specific mounts. Do not invoke a historical bundled-plugin preparation command.
 
-**TODO: WORDS_NET_MCP_PUBLIC_REPOSITORY_URL** — finalized Words deployment composition.
-**TODO: WORDS_NET_PLUGIN_PUBLIC_REPOSITORY_URL** — source and cache preparation.
+[aspose-words-mcp/net-server](https://github.com/aspose-words-mcp/net-server) — Words deployment helpers and setup guide.
+[aspose-words-mcp/net-plugin](https://github.com/aspose-words-mcp/net-plugin) — source and cache preparation.
 
 Validate extraction, publish explicitly, then verify retrieval against the actual indexed content. Health checks alone do not prove ingestion succeeded.

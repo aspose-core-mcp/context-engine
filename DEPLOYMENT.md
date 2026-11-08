@@ -18,8 +18,8 @@ The admin UI is optional and has its own frontend environment configuration. Eng
 
 Follow [external-plugin integration](docs/engine-only.md). Container deployments need explicit mounts or image provisioning for the deployment catalog and the external plugin's manifest, profile, interpreter, and sources. The engine images do not bundle product plugins. Ensure API and worker processes see the catalog/profile paths they use.
 
-**TODO: WORDS_NET_PLUGIN_PUBLIC_REPOSITORY_URL**
-**TODO: WORDS_NET_MCP_PUBLIC_REPOSITORY_URL** — product-specific image/mount and endpoint setup.
+[aspose-words-mcp/net-plugin](https://github.com/aspose-words-mcp/net-plugin)
+[aspose-words-mcp/net-server](https://github.com/aspose-words-mcp/net-server) — product setup, runtime requirements, and endpoint configuration.
 
 ## Expose the API
 

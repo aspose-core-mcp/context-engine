@@ -1,13 +1,17 @@
-# Public release preparation
+# Public repositories and release maintenance
 
-The public repository is `https://github.com/aspose-core-mcp/context-engine`. Replace companion placeholders when their repositories are available:
+The shared engine is published at [aspose-core-mcp/context-engine](https://github.com/aspose-core-mcp/context-engine).
 
-- `WORDS_NET_PLUGIN_PUBLIC_REPOSITORY_URL`
-- `WORDS_NET_MCP_PUBLIC_REPOSITORY_URL`
-- `COPILOT_CLIENT_PUBLIC_REPOSITORY_URL`
+## Words/.NET companions
 
-The package and import name remain `adcs` for compatibility. Existing license and third-party attribution remain intact. GitHub Actions workflows are inherited; configure any deployment secrets and environments explicitly before enabling deployment workflows in the public repository.
+- [net-plugin](https://github.com/aspose-words-mcp/net-plugin): documentation/API extraction and retrieval profile.
+- [net-server](https://github.com/aspose-words-mcp/net-server): pinned engine/plugin composition, setup and ingestion helpers.
+- [net-copilot-client-agent](https://github.com/aspose-words-mcp/net-copilot-client-agent): Copilot agent, compilation checks and showcase.
 
-The source registry and `.gitmodules` retain legacy upstream source definitions used by compatibility tooling. Do not initialize all submodules for the external-plugin workflow. Historical design records may refer to the original combined repository; use the root README, deployment guide, and external-plugin guide for current setup.
+## Release conventions
 
-This public repository starts with a reviewed source snapshot and a fresh Git history. Companion repositories remain separate releases.
+The package and import name remain `adcs`. The default plugin catalog stays empty; product registration belongs to a deployment. Preserve license and third-party attribution. Configure deployment secrets and environments separately from the public repository.
+
+The public history retains the original author attribution, with historical private deployment details sanitized. Future releases should preserve that history. Server deployments pin explicit engine and plugin commits; publishing an engine update does not automatically change existing deployments.
+
+The source registry and `.gitmodules` retain legacy upstream definitions for compatibility tooling. Do not initialize all submodules for the external-plugin workflow. Historical design records may describe the former combined repository; use the root README, deployment guide and [external-plugin guide](engine-only.md) for current setup.

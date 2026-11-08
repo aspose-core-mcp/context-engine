@@ -4,7 +4,7 @@ The default `config/product-platform-plugins.json` is intentionally empty. Plugi
 
 ## Obtain a plugin
 
-**TODO: WORDS_NET_PLUGIN_PUBLIC_REPOSITORY_URL**
+[aspose-words-mcp/net-plugin](https://github.com/aspose-words-mcp/net-plugin)
 
 Use a pinned checkout of a plugin implementing `adcs.extraction.v1`. Install its interpreter dependencies in its own environment and prepare source repositories and any Gist cache according to that plugin's guide.
 
