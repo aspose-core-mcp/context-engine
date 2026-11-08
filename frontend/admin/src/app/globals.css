@@ -1,0 +1,19 @@
+/* Global resets only. The "Mono" design system (src/theme/mono.css) owns ALL
+   surface styling, tokens, and typography under `.adcs` (console) and `.pub`
+   (public/support pages). No ad-hoc colors here — all color comes from the
+   Mono token set inside those scopes. */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 100%;
+}
+
+/* The .adcs / .pub roots fill the viewport and paint their own token-driven
+   background; the body sits behind them. */

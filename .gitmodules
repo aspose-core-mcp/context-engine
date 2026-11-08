@@ -1,0 +1,396 @@
+[submodule "source-repo-apiref"]
+	path = source-repo-apiref/Aspose.OCR
+	url = https://github.com/aspose-ocr/Aspose.OCR-API-References.git
+	branch = main
+[submodule "source-repo-docs"]
+	path = source-repo-docs/Aspose.OCR
+	url = https://github.com/aspose-ocr/Aspose.OCR-Documentation
+	branch = master
+[submodule "source-repo-docs-Aspose.Words"]
+	path = source-repo-docs/Aspose.Words
+	url = https://github.com/aspose-words/Aspose.Words-Documentation.git
+	branch = master
+[submodule "source-repo-apiref-Aspose.Words"]
+	path = source-repo-apiref/Aspose.Words
+	url = https://github.com/aspose-words/Aspose.Words-API-References.git
+	branch = main
+[submodule "source-repo-docs-Aspose.PDF"]
+	path = source-repo-docs/Aspose.PDF
+	url = https://github.com/aspose-pdf/Aspose.PDF-Documentation.git
+	branch = master
+[submodule "source-repo-docs-Aspose.Email"]
+	path = source-repo-docs/Aspose.Email
+	url = https://github.com/aspose-email/Aspose.Email-Documentation.git
+	branch = master
+[submodule "source-repo-apiref-Aspose.PDF"]
+	path = source-repo-apiref/Aspose.PDF
+	url = https://github.com/aspose-pdf/Aspose.PDF-API-References.git
+	branch = main
+[submodule "source-repo-apiref-Aspose.Email"]
+	path = source-repo-apiref/Aspose.Email
+	url = https://github.com/aspose-email/Aspose.Email-API-References.git
+	branch = main
+[submodule "source-repo-docs-Aspose.Slides"]
+	path = source-repo-docs/Aspose.Slides
+	url = https://github.com/aspose-slides/Aspose.Slides-Documentation.git
+	branch = master
+[submodule "source-repo-apiref-Aspose.Slides"]
+	path = source-repo-apiref/Aspose.Slides
+	url = https://github.com/aspose-slides/Aspose.Slides-API-References.git
+	branch = main
+[submodule "source-repo-docs-Aspose.Imaging"]
+	path = source-repo-docs/Aspose.Imaging
+	url = https://github.com/aspose-imaging/Aspose.Imaging-Documentation.git
+	branch = master
+[submodule "source-repo-apiref-Aspose.Imaging"]
+	path = source-repo-apiref/Aspose.Imaging
+	url = https://github.com/aspose-imaging/Aspose.Imaging-API-References.git
+	branch = main
+[submodule "source-repo-docs-Aspose.BarCode"]
+	path = source-repo-docs/Aspose.BarCode
+	url = https://github.com/aspose-barcode/Aspose.BarCode-Documentation.git
+	branch = master
+[submodule "source-repo-apiref-Aspose.BarCode"]
+	path = source-repo-apiref/Aspose.BarCode
+	url = https://github.com/aspose-barcode/Aspose.BarCode-API-References.git
+	branch = main
+[submodule "source-repo-apiref-GroupDocs.Viewer"]
+	path = source-repo-apiref/GroupDocs.Viewer
+	url = https://github.com/groupdocs-viewer/Groupdocs.Viewer-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Conversion"]
+	path = source-repo-docs/GroupDocs.Conversion
+	url = https://github.com/groupdocs-conversion/GroupDocs.Conversion-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Conversion"]
+	path = source-repo-apiref/GroupDocs.Conversion
+	url = https://github.com/groupdocs-conversion/Groupdocs.Conversion-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.CAD"]
+	path = source-repo-docs/Aspose.CAD
+	url = https://github.com/aspose-cad/Aspose.CAD-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.CAD"]
+	path = source-repo-apiref/Aspose.CAD
+	url = https://github.com/aspose-cad/Aspose.CAD-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.Diagram"]
+	path = source-repo-docs/Aspose.Diagram
+	url = https://github.com/aspose-diagram/Aspose.Diagram-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.Diagram"]
+	path = source-repo-apiref/Aspose.Diagram
+	url = https://github.com/aspose-diagram/Aspose.Diagram-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.Note"]
+	path = source-repo-docs/Aspose.Note
+	url = https://github.com/aspose-note/Aspose.Note-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.Note"]
+	path = source-repo-apiref/Aspose.Note
+	url = https://github.com/aspose-note/Aspose.Note-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.Tasks"]
+	path = source-repo-docs/Aspose.Tasks
+	url = https://github.com/aspose-tasks/Aspose.Tasks-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.Tasks"]
+	path = source-repo-apiref/Aspose.Tasks
+	url = https://github.com/aspose-tasks/Aspose.Tasks-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.Page"]
+	path = source-repo-docs/Aspose.Page
+	url = https://github.com/aspose-page/Aspose.Page-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.Page"]
+	path = source-repo-apiref/Aspose.Page
+	url = https://github.com/aspose-page/Aspose.Page-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.OMR"]
+	path = source-repo-docs/Aspose.OMR
+	url = https://github.com/aspose-omr/Aspose.OMR-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.OMR"]
+	path = source-repo-apiref/Aspose.OMR
+	url = https://github.com/aspose-omr/Aspose.OMR-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.PSD"]
+	path = source-repo-docs/Aspose.PSD
+	url = https://github.com/aspose-psd/Aspose.PSD-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.PSD"]
+	path = source-repo-apiref/Aspose.PSD
+	url = https://github.com/aspose-psd/Aspose.PSD-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.ZIP"]
+	path = source-repo-docs/Aspose.ZIP
+	url = https://github.com/aspose-zip/Aspose.ZIP-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.ZIP"]
+	path = source-repo-apiref/Aspose.ZIP
+	url = https://github.com/aspose-zip/Aspose.ZIP-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.Finance"]
+	path = source-repo-docs/Aspose.Finance
+	url = https://github.com/aspose-finance/Aspose.Finance-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.Finance"]
+	path = source-repo-apiref/Aspose.Finance
+	url = https://github.com/aspose-finance/Aspose.Finance-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.PUB"]
+	path = source-repo-docs/Aspose.PUB
+	url = https://github.com/aspose-pub/Aspose.PUB-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.PUB"]
+	path = source-repo-apiref/Aspose.PUB
+	url = https://github.com/aspose-pub/Aspose.PUB-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.TeX"]
+	path = source-repo-docs/Aspose.TeX
+	url = https://github.com/aspose-tex/Aspose.TeX-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.TeX"]
+	path = source-repo-apiref/Aspose.TeX
+	url = https://github.com/aspose-tex/Aspose.TeX-API-References.git
+	branch = master
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Signature"]
+	path = source-repo-docs/GroupDocs.Signature
+	url = https://github.com/groupdocs-signature/GroupDocs.Signature-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Signature"]
+	path = source-repo-apiref/GroupDocs.Signature
+	url = https://github.com/groupdocs-signature/Groupdocs.Signature-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Parser"]
+	path = source-repo-docs/GroupDocs.Parser
+	url = https://github.com/groupdocs-parser/GroupDocs.Parser-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Parser"]
+	path = source-repo-apiref/GroupDocs.Parser
+	url = https://github.com/groupdocs-parser/Groupdocs.Parser-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Merger"]
+	path = source-repo-docs/GroupDocs.Merger
+	url = https://github.com/groupdocs-merger/GroupDocs.Merger-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Merger"]
+	path = source-repo-apiref/GroupDocs.Merger
+	url = https://github.com/groupdocs-merger/Groupdocs.Merger-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Metadata"]
+	path = source-repo-docs/GroupDocs.Metadata
+	url = https://github.com/groupdocs-metadata/GroupDocs.Metadata-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Metadata"]
+	path = source-repo-apiref/GroupDocs.Metadata
+	url = https://github.com/groupdocs-metadata/Groupdocs.Metadata-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Comparison"]
+	path = source-repo-docs/GroupDocs.Comparison
+	url = https://github.com/groupdocs-comparison/GroupDocs.Comparison-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Comparison"]
+	path = source-repo-apiref/GroupDocs.Comparison
+	url = https://github.com/groupdocs-comparison/Groupdocs.Comparison-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Editor"]
+	path = source-repo-docs/GroupDocs.Editor
+	url = https://github.com/groupdocs-editor/GroupDocs.Editor-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Editor"]
+	path = source-repo-apiref/GroupDocs.Editor
+	url = https://github.com/groupdocs-editor/Groupdocs.Editor-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Annotation"]
+	path = source-repo-docs/GroupDocs.Annotation
+	url = https://github.com/groupdocs-annotation/GroupDocs.Annotation-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Annotation"]
+	path = source-repo-apiref/GroupDocs.Annotation
+	url = https://github.com/groupdocs-annotation/GroupDocs.Annotation-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Search"]
+	path = source-repo-docs/GroupDocs.Search
+	url = https://github.com/groupdocs-search/GroupDocs.Search-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Search"]
+	path = source-repo-apiref/GroupDocs.Search
+	url = https://github.com/groupdocs-search/Groupdocs.Search-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Redaction"]
+	path = source-repo-docs/GroupDocs.Redaction
+	url = https://github.com/groupdocs-redaction/GroupDocs.Redaction-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Redaction"]
+	path = source-repo-apiref/GroupDocs.Redaction
+	url = https://github.com/groupdocs-redaction/Groupdocs.Redaction-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Assembly"]
+	path = source-repo-docs/GroupDocs.Assembly
+	url = https://github.com/groupdocs-assembly/GroupDocs.Assembly-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Assembly"]
+	path = source-repo-apiref/GroupDocs.Assembly
+	url = https://github.com/groupdocs-assembly/Groupdocs.Assembly-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Classification"]
+	path = source-repo-docs/GroupDocs.Classification
+	url = https://github.com/groupdocs-classification/GroupDocs.Classification-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Classification"]
+	path = source-repo-apiref/GroupDocs.Classification
+	url = https://github.com/groupdocs-classification/Groupdocs.Classification-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Watermark"]
+	path = source-repo-docs/GroupDocs.Watermark
+	url = https://github.com/groupdocs-watermark/GroupDocs.Watermark-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Watermark"]
+	path = source-repo-apiref/GroupDocs.Watermark
+	url = https://github.com/groupdocs-watermark/Groupdocs.Watermark-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-apiref-Aspose.Cells"]
+	path = source-repo-apiref/Aspose.Cells
+	url = https://github.com/aspose-cells/Aspose.Cells-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-apiref-Aspose.HTML"]
+	path = source-repo-apiref/Aspose.HTML
+	url = https://github.com/aspose-html/Aspose.HTML-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.GIS"]
+	path = source-repo-docs/Aspose.GIS
+	url = https://github.com/aspose-gis/Aspose.GIS-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.3D"]
+	path = source-repo-apiref/Aspose.3D
+	url = https://github.com/aspose-3d/Aspose.3D-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-apiref-Aspose.SVG"]
+	path = source-repo-apiref/Aspose.SVG
+	url = https://github.com/aspose-svg/Aspose.SVG-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Viewer"]
+	path = source-repo-docs/GroupDocs.Viewer
+	url = https://github.com/groupdocs-viewer/GroupDocs.Viewer-Docs.git
+	branch = master
+	shallow = true
+[submodule "source-repo-docs-Aspose.Font"]
+	path = source-repo-docs/Aspose.Font
+	url = https://github.com/aspose-font/Aspose.Font-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.Font"]
+	path = source-repo-apiref/Aspose.Font
+	url = https://github.com/aspose-font/Aspose.Font-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.Drawing"]
+	path = source-repo-docs/Aspose.Drawing
+	url = https://github.com/aspose-drawing/Aspose.Drawing-Documentation.git
+	branch = master
+	shallow = true
+[submodule "source-repo-docs-Aspose.LLM"]
+	path = source-repo-docs/Aspose.LLM
+	url = https://github.com/aspose-llm/Aspose.LLM-Documentation.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.Medical"]
+	path = source-repo-docs/Aspose.Medical
+	url = https://github.com/aspose-medical/Aspose.Medical-Documentation.git
+	branch = main
+	shallow = true
+[submodule "source-repo-apiref-Aspose.Medical"]
+	path = source-repo-apiref/Aspose.Medical
+	url = https://github.com/aspose-medical/Aspose.Medical-API-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-GroupDocs.Markdown"]
+	path = source-repo-docs/GroupDocs.Markdown
+	url = https://github.com/groupdocs-markdown/GroupDocs.Markdown-Docs.git
+	branch = main
+	shallow = true
+[submodule "source-repo-apiref-GroupDocs.Markdown"]
+	path = source-repo-apiref/GroupDocs.Markdown
+	url = https://github.com/groupdocs-markdown/Groupdocs.Markdown-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-docs-Aspose.3D"]
+	path = source-repo-docs/Aspose.3D
+	url = https://github.com/aspose-3d/Aspose.3D-Doc-md.git
+	branch = master
+	shallow = true
+[submodule "source-repo-docs-Aspose.Cells"]
+	path = source-repo-docs/Aspose.Cells
+	url = https://github.com/aspose-cells/Aspose.Cells-Doc-md.git
+	branch = master
+	shallow = true
+[submodule "source-repo-apiref-Aspose.LLM"]
+	path = source-repo-apiref/Aspose.LLM
+	url = https://github.com/aspose-llm/Aspose.LLM-References.git
+	branch = main
+	shallow = true
+[submodule "source-repo-apiref-Aspose.Drawing"]
+	path = source-repo-apiref/Aspose.Drawing
+	url = https://github.com/aspose-drawing/Aspose.Drawing-API-Reference.git
+	branch = main
+	shallow = true
+[submodule "source-repo-apiref-Aspose.GIS"]
+	path = source-repo-apiref/Aspose.GIS
+	url = https://github.com/aspose-gis/Aspose.GIS-API-Reference.git
+	branch = main
+	shallow = true

@@ -1,0 +1,59 @@
+# Local Pact Broker for the ADCS consumer-driven contract tests
+# (make test-contracts-consumer, make test-contracts-provider).
+#
+# Run locally:
+#   make pact-broker-up        # or, from infra/pact-broker:
+#   cp -n .env.example .env    # first run only
+#   docker compose up -d
+#   open http://localhost:9292
+#
+# Credentials load from infra/pact-broker/.env (DEV-ONLY; gitignored, auto-copied
+# from .env.example by `make pact-broker-up`). No credential literals are
+# committed in this compose file — the env vars below are required (`:?`).
+
+services:
+  pact-broker-postgres:
+    image: postgres:16-alpine
+    container_name: adcs-pact-broker-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${PACT_BROKER_PG_PASSWORD:?set in infra/pact-broker/.env}
+      POSTGRES_DB: pact_broker
+    volumes:
+      - pact-broker-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "pact_broker"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  pact-broker:
+    # Pinned to a specific version for reproducible (immutable) deployments.
+    image: pactfoundation/pact-broker:2.118.0.0
+    container_name: adcs-pact-broker
+    depends_on:
+      pact-broker-postgres:
+        condition: service_healthy
+    ports:
+      - "9292:9292"
+    environment:
+      PACT_BROKER_DATABASE_HOST: pact-broker-postgres
+      PACT_BROKER_DATABASE_USERNAME: postgres
+      PACT_BROKER_DATABASE_PASSWORD: ${PACT_BROKER_PG_PASSWORD:?set in infra/pact-broker/.env}
+      PACT_BROKER_DATABASE_NAME: pact_broker
+      PACT_BROKER_BASIC_AUTH_USERNAME: pactbroker
+      PACT_BROKER_BASIC_AUTH_PASSWORD: ${PACT_BROKER_BASIC_AUTH_PASSWORD:?set in infra/pact-broker/.env}
+      PACT_BROKER_BASIC_AUTH_READ_ONLY_USERNAME: pactread
+      PACT_BROKER_BASIC_AUTH_READ_ONLY_PASSWORD: ${PACT_BROKER_BASIC_AUTH_READ_ONLY_PASSWORD:?set in infra/pact-broker/.env}
+      # No unauthenticated read access
+      PACT_BROKER_ALLOW_PUBLIC_READ: "false"
+      PACT_BROKER_LOG_LEVEL: INFO
+      # Webhooks may only target hosts matching these patterns (space-separated);
+      # adjust for your deployment.
+      PACT_BROKER_WEBHOOK_HOST_WHITELIST: "localhost 127.0.0.1"
+    restart: unless-stopped
+
+volumes:
+  pact-broker-postgres-data:
+    name: adcs-pact-broker-postgres-data

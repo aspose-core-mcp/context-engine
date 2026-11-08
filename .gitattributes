@@ -1,0 +1,47 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Python
+*.py text diff=python
+*.pyi text diff=python
+
+# TypeScript / JavaScript
+*.ts text diff=typescript
+*.tsx text diff=typescript
+*.js text
+*.jsx text
+*.json text
+*.css text
+
+# Shell
+*.sh text eol=lf
+
+# Config
+*.yaml text
+*.yml text
+*.toml text
+*.cfg text
+*.ini text
+*.md text
+*.txt text
+
+# Docker
+Dockerfile text
+*.dockerignore text
+
+# Helm
+*.tpl text
+
+# Binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# Lock files - exact
+package-lock.json -diff linguist-generated=true

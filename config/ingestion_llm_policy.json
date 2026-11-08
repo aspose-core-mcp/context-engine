@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "default_backend": "openai_compatible",
+  "conversion_backend": "openai_compatible",
+  "layout_detection_backend": "deterministic",
+  "external_assistants_allowed": false,
+  "openai_compatible": {
+    "base_url": "http://localhost:11434/v1",
+    "model": "gpt-oss",
+    "api_key_env_var": "ADCS_INGESTION_LLM_API_KEY",
+    "timeout_seconds": 120.0
+  }
+}

@@ -1,0 +1,34 @@
+{{- if and .Values.api.enabled .Values.api.ingress.admin.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "adcs.fullname" . }}-admin
+  labels:
+    {{- include "adcs.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+  {{- with .Values.api.ingress.admin.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.api.ingress.admin.className }}
+  ingressClassName: {{ .Values.api.ingress.admin.className }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.api.ingress.admin.host }}
+      http:
+        paths:
+          {{- range .Values.api.ingress.admin.paths }}
+          - path: {{ . }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "adcs.fullname" $ }}-api
+                port:
+                  number: {{ $.Values.api.service.port }}
+          {{- end }}
+  {{- with .Values.api.ingress.admin.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

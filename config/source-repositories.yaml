@@ -1,0 +1,4383 @@
+schema_version: 1.1.0
+description: Registry of external Hugo MD source repositories attached as git submodules.
+source_roots:
+- root_id: apiref-root
+  source_kind: apiref
+  path: source-repo-apiref
+- root_id: docs-root
+  source_kind: docs
+  path: source-repo-docs
+repositories:
+- repo_id: aspose.ocr.apiref
+  product_id: aspose.ocr
+  product_name: Aspose.OCR
+  product_family: aspose
+  product_family_dir: Aspose.OCR
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-ocr/Aspose.OCR-API-References.git
+    submodule_path: source-repo-apiref/Aspose.OCR
+    default_branch: main
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:06.547697+00:00'
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 1.0
+      level1_programming_score: 0.062
+      level1_children_overlap_score: 0.893
+      level2_programming_score: 1.0
+      directory_vectors_count: 2766
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - arabic
+      - chinese
+      - english
+      - french
+      - german
+      - greece
+      - indian
+      - indonesian
+      - italian
+      - japanese
+      - korean
+      - netherlands
+      - russian
+      - spanish
+      - swedish
+      - turkish
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - cpp
+      - java
+      - javascript-cpp
+      - net
+      - nodejs-cpp
+      - python-java
+      - python-net
+    - depth: 3
+      semantic: namespace
+      values_sample:
+      - aspose
+      - aspose.ocr
+      - aspose.ocr.ai
+      - aspose.ocr.filters
+      - aspose.ocr.models
+      - aspose.ocr.models.events
+      - aspose.ocr.models.preprocessingfilters
+      - aspose.ocr.spellchecker
+      - com.aspose.ocr
+      - com.aspose.ocr.SpellCheck
+      - com.aspose.ocr.metered
+      - com.aspose.ocr.models
+    sample_markdown_paths:
+    - arabic/_index.md
+    - arabic/net/_index.md
+    - arabic/net/aspose.ocr/_index.md
+    - arabic/net/aspose.ocr/areastype/_index.md
+    - arabic/net/aspose.ocr/asposeocr/_index.md
+    - arabic/net/aspose.ocr/asposeocr/asposeocr/_index.md
+    - arabic/net/aspose.ocr/asposeocr/calculateskew/_index.md
+    - arabic/net/aspose.ocr/asposeocr/calculateskewfromuri/_index.md
+    - arabic/net/aspose.ocr/asposeocr/compareimagetexts/_index.md
+    - arabic/net/aspose.ocr/asposeocr/correctspelling/_index.md
+    - arabic/net/aspose.ocr/asposeocr/getrectangles/_index.md
+    - arabic/net/aspose.ocr/asposeocr/imagehastext/_index.md
+    - arabic/net/aspose.ocr/asposeocr/imagetextdiff/_index.md
+    - arabic/net/aspose.ocr/asposeocr/ocrprogress/_index.md
+    - arabic/net/aspose.ocr/asposeocr/preprocessimage/_index.md
+    - arabic/net/aspose.ocr/asposeocr/recognizecarplate/_index.md
+    - arabic/net/aspose.ocr/asposeocr/recognizedjvu/_index.md
+    - arabic/net/aspose.ocr/asposeocr/recognizeidcard/_index.md
+    - arabic/net/aspose.ocr/asposeocr/recognizeimage/_index.md
+    - arabic/net/aspose.ocr/asposeocr/recognizeimagefast/_index.md
+    - arabic/net/aspose.ocr/asposeocr/recognizeimagefrombase64/_index.md
+    - arabic/net/aspose.ocr/asposeocr/recognizeimagefromuri/_index.md
+    - arabic/net/aspose.ocr/asposeocr/recognizeinvoice/_index.md
+    - arabic/net/aspose.ocr/asposeocr/recognizeline/_index.md
+    - arabic/net/aspose.ocr/asposeocr/recognizemultipleimages/_index.md
+    notes:
+    - Top-level directories are treated as documentation locales.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.ocr.docs
+  product_id: aspose.ocr
+  product_name: Aspose.OCR
+  product_family: aspose
+  product_family_dir: Aspose.OCR
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-ocr/Aspose.OCR-Documentation
+    submodule_path: source-repo-docs/Aspose.OCR
+    default_branch: master
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:06.580295+00:00'
+    layout_type: programming_language/content
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 0.111
+      level1_programming_score: 0.889
+      level1_children_overlap_score: 0.597
+      level2_programming_score: 0.0
+      directory_vectors_count: 405
+    dimensions:
+    - depth: 1
+      semantic: programming_language
+      values_sample:
+      - cpp
+      - java
+      - js
+      - net
+      - nodejs-cpp
+      - python
+      - python-cpp
+      - python-java
+    - depth: 1
+      semantic: auxiliary_content_group
+      values_sample:
+      - apps
+    - depth: 2
+      semantic: content_group
+      values_sample:
+      - developer-reference
+      - getting-started
+      - mobile
+      - product-overview
+      - use-cases
+      - web
+    sample_markdown_paths:
+    - README.md
+    - _index.md
+    - apps/_index.md
+    - apps/mobile/_index.md
+    - apps/web/_index.md
+    - cpp/_index.md
+    - cpp/developer-reference/_index.md
+    - cpp/developer-reference/areas-detection/_index.md
+    - cpp/developer-reference/areas-detection/combine/_index.md
+    - cpp/developer-reference/areas-detection/curved-text/_index.md
+    - cpp/developer-reference/areas-detection/document/_index.md
+    - cpp/developer-reference/areas-detection/mixed/_index.md
+    - cpp/developer-reference/areas-detection/photo/_index.md
+    - cpp/developer-reference/areas-detection/table/_index.md
+    - cpp/developer-reference/areas-detection/universal/_index.md
+    - cpp/developer-reference/characters/_index.md
+    - cpp/developer-reference/characters/characters-blacklist/_index.md
+    - cpp/developer-reference/characters/characters-identify/_index.md
+    - cpp/developer-reference/characters/characters-whitelist/_index.md
+    - cpp/developer-reference/content-for-ocr/_index.md
+    - cpp/developer-reference/content-for-ocr/pixel/_index.md
+    - cpp/developer-reference/defects/_index.md
+    - cpp/developer-reference/image-preprocessing/_index.md
+    - cpp/developer-reference/image-preprocessing/binarization/_index.md
+    - cpp/developer-reference/image-preprocessing/contrast/_index.md
+    notes:
+    - Top-level directories are treated as programming languages.
+    - Top-level non-language directories were classified as auxiliary_content_group.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.words.docs
+  product_id: aspose.words
+  product_name: Aspose.Words
+  product_family: aspose
+  product_family_dir: Aspose.Words
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-words/Aspose.Words-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Words
+    default_branch: master
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:07.798421+00:00'
+    layout_type: doc_locale/programming_language/content
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 0.96
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.901
+      level2_programming_score: 0.625
+      directory_vectors_count: 14485
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - af
+      - ar
+      - bg
+      - cs
+      - de
+      - en
+      - es
+      - fa
+      - fr
+      - he
+      - id
+      - it
+      - ja
+      - ko
+      - nl
+      - pl
+      - pt
+      - ro
+      - ru
+      - th
+      - tr
+      - uk
+      - vi
+      - zh
+      - zh-hant
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - androidjava
+      - cpp
+      - jasperreports
+      - java
+      - net
+      - python_via_dotnet
+      - reportingservices
+      - sharepoint
+    sample_markdown_paths:
+    - README.md
+    - af/_index.af.md
+    - af/cpp/_index.af.md
+    - af/cpp/api-reference/_index.af.md
+    - af/cpp/developer-guide/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/convert-a-document/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/convert-a-document/convert-a-document-to-an-image/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/convert-a-document/convert-a-document-to-excel/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/convert-a-document/convert-a-document-to-html-mhtml-or-epub/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/convert-a-document/convert-a-document-to-markdown/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/convert-a-document/convert-a-document-to-mhtml-and-send-it-by-email/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/convert-a-document/convert-a-document-to-pdf/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/convert-a-document/file-formats-and-conversions/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/create-or-load-a-document/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/create-or-load-a-document/detect-file-format-and-check-format-compatibility/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/create-or-load-a-document/specify-load-options/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/save-a-document/_index.af.md
+    - af/cpp/developer-guide/loading-saving-and-converting/save-a-document/specify-save-options/_index.af.md
+    - af/cpp/developer-guide/mail-merge-and-reporting/_index.af.md
+    - af/cpp/developer-guide/mail-merge-and-reporting/advanced-mail-merge-features/_index.af.md
+    - af/cpp/developer-guide/mail-merge-and-reporting/advanced-mail-merge-features/clean-up-before-or-during-a-mail-merge-operation/_index.af.md
+    - af/cpp/developer-guide/mail-merge-and-reporting/advanced-mail-merge-features/insert-checkboxes-text-input-or-images-mail-merge/_index.af.md
+    - af/cpp/developer-guide/mail-merge-and-reporting/mail-merge-template/_index.af.md
+    - af/cpp/developer-guide/mail-merge-and-reporting/types-of-mail-merge-operation/_index.af.md
+    notes: []
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+  onboarding_hints:
+    programming_languages:
+    - net
+    - java
+    - cpp
+    - python
+    - nodejs
+    - php
+- repo_id: aspose.words.apiref
+  product_id: aspose.words
+  product_name: Aspose.Words
+  product_family: aspose
+  product_family_dir: Aspose.Words
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-words/Aspose.Words-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Words
+    default_branch: main
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:14.625716+00:00'
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 1.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.693
+      level2_programming_score: 1.0
+      directory_vectors_count: 64059
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - arabic
+      - chinese
+      - english
+      - french
+      - german
+      - italian
+      - russian
+      - spanish
+      - swedish
+      - turkish
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - cpp
+      - java
+      - net
+      - nodejs-net
+      - python-net
+    - depth: 3
+      semantic: namespace
+      values_sample:
+      - Aspose.Words
+      - Aspose.Words.AI
+      - Aspose.Words.Bibliography
+      - Aspose.Words.BuildingBlocks
+      - Aspose.Words.Comparing
+      - Aspose.Words.DigitalSignatures
+      - Aspose.Words.Drawing
+      - Aspose.Words.Drawing.Charts
+      - Aspose.Words.Drawing.Ole
+      - Aspose.Words.Fields
+      - Aspose.Words.Fonts
+      - Aspose.Words.Framesets
+      - Aspose.Words.Layout
+      - Aspose.Words.Lists
+      - Aspose.Words.Loading
+      - Aspose.Words.Markup
+      - Aspose.Words.Math
+      - Aspose.Words.Notes
+      - Aspose.Words.Properties
+      - Aspose.Words.Rendering
+      - Aspose.Words.Replacing
+      - Aspose.Words.Saving
+      - Aspose.Words.Settings
+      - Aspose.Words.Tables
+      - Aspose.Words.Themes
+      - Aspose.Words.Vba
+      - Aspose.Words.WebExtensions
+      - aspose.words
+      - aspose.words.ai
+      - aspose.words.bibliography
+    sample_markdown_paths:
+    - arabic/_index.md
+    - arabic/net/_index.md
+    - arabic/net/aspose.words/_index.md
+    - arabic/net/aspose.words/absolutepositiontab/_index.md
+    - arabic/net/aspose.words/absolutepositiontab/accept/_index.md
+    - arabic/net/aspose.words/baselinealignment/_index.md
+    - arabic/net/aspose.words/body/_index.md
+    - arabic/net/aspose.words/body/accept/_index.md
+    - arabic/net/aspose.words/body/acceptend/_index.md
+    - arabic/net/aspose.words/body/acceptstart/_index.md
+    - arabic/net/aspose.words/body/body/_index.md
+    - arabic/net/aspose.words/body/ensureminimum/_index.md
+    - arabic/net/aspose.words/body/nodetype/_index.md
+    - arabic/net/aspose.words/body/parentsection/_index.md
+    - arabic/net/aspose.words/bookmark/_index.md
+    - arabic/net/aspose.words/bookmark/bookmarkend/_index.md
+    - arabic/net/aspose.words/bookmark/bookmarkstart/_index.md
+    - arabic/net/aspose.words/bookmark/firstcolumn/_index.md
+    - arabic/net/aspose.words/bookmark/iscolumn/_index.md
+    - arabic/net/aspose.words/bookmark/lastcolumn/_index.md
+    - arabic/net/aspose.words/bookmark/name/_index.md
+    - arabic/net/aspose.words/bookmark/remove/_index.md
+    - arabic/net/aspose.words/bookmark/text/_index.md
+    - arabic/net/aspose.words/bookmarkcollection/_index.md
+    - arabic/net/aspose.words/bookmarkcollection/clear/_index.md
+    notes:
+    - Top-level directories are treated as documentation locales.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+  onboarding_hints:
+    programming_languages:
+    - net
+    - java
+    - cpp
+    - python
+    - nodejs
+    - php
+- repo_id: aspose.pdf.docs
+  product_id: aspose.pdf
+  product_name: Aspose.PDF
+  product_family: aspose
+  product_family_dir: Aspose.PDF
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-pdf/Aspose.PDF-Documentation.git
+    submodule_path: source-repo-docs/Aspose.PDF
+    default_branch: master
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:16.082287+00:00'
+    layout_type: doc_locale/programming_language/content
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 1.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.973
+      level2_programming_score: 0.8
+      directory_vectors_count: 13559
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - ar
+      - en
+      - es
+      - fr
+      - id
+      - ja
+      - ko
+      - pt
+      - ru
+      - zh
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - androidjava
+      - cpp
+      - go-cpp
+      - jasperreports
+      - java
+      - javascript-cpp
+      - net
+      - nodejs-cpp
+      - php-java
+      - python-cpp
+      - python-java
+      - python-net
+      - reportingservices
+      - rust-cpp
+      - sharepoint
+    sample_markdown_paths:
+    - README.md
+    - ar/androidjava/_index.md
+    - ar/androidjava/advanced-operations/_index.md
+    - ar/androidjava/advanced-operations/accessibility-tagged-pdf/_index.md
+    - ar/androidjava/converting/_index.md
+    - ar/androidjava/converting/convert-bmp-to-pdf/_index.md
+    - ar/androidjava/converting/convert-dicom-to-pdf/_index.md
+    - ar/androidjava/converting/convert-jpg-to-pdf/_index.md
+    - ar/androidjava/converting/convert-pdf-to-bmp/_index.md
+    - ar/androidjava/converting/convert-pdf-to-doc/_index.md
+    - ar/androidjava/converting/convert-pdf-to-excel/_index.md
+    - ar/androidjava/converting/convert-pdf-to-jpg/_index.md
+    - ar/androidjava/converting/convert-pdf-to-pdfa/_index.md
+    - ar/androidjava/converting/convert-pdf-to-png/_index.md
+    - ar/androidjava/converting/convert-pdf-to-pptx/_index.md
+    - ar/androidjava/converting/convert-pdf-to-text/_index.md
+    - ar/androidjava/converting/convert-pdf-to-tiff/_index.md
+    - ar/androidjava/converting/convert-pdfa-to-pdf/_index.md
+    - ar/androidjava/converting/convert-png-to-pdf/_index.md
+    - ar/androidjava/converting/convert-text-to-pdf/_index.md
+    - ar/androidjava/converting/convert-tiff-to-pdf/_index.md
+    - ar/androidjava/converting/convert-xml-to-pdf/_index.md
+    - ar/androidjava/get-started/_index.md
+    - ar/androidjava/get-started/basics-of-dom-api/_index.md
+    - ar/androidjava/get-started/complex-pdf/_index.md
+    notes: []
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+  onboarding_hints:
+    programming_languages:
+    - net
+    - java
+    - cpp
+    - python
+    - go
+- repo_id: aspose.pdf.apiref
+  product_id: aspose.pdf
+  product_name: Aspose.PDF
+  product_family: aspose
+  product_family_dir: Aspose.PDF
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-pdf/Aspose.PDF-API-References.git
+    submodule_path: source-repo-apiref/Aspose.PDF
+    default_branch: main
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:28.883583+00:00'
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 1.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.755
+      level2_programming_score: 1.0
+      directory_vectors_count: 119177
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - arabic
+      - chinese
+      - english
+      - french
+      - german
+      - indonesian
+      - italian
+      - japanese
+      - korean
+      - portuguese
+      - russian
+      - spanish
+      - swedish
+      - turkish
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - cpp
+      - go-cpp
+      - java
+      - javascript-cpp
+      - net
+      - nodejs-cpp
+      - python-cpp
+      - python-net
+      - rust-cpp
+    - depth: 3
+      semantic: namespace
+      values_sample:
+      - aspose.pdf
+      - aspose.pdf.ai
+      - aspose.pdf.annotations
+      - aspose.pdf.collections
+      - aspose.pdf.comparison
+      - aspose.pdf.dataeditor
+      - aspose.pdf.devices
+      - aspose.pdf.drawing
+      - aspose.pdf.facades
+      - aspose.pdf.flow
+      - aspose.pdf.forms
+      - aspose.pdf.generator
+      - aspose.pdf.groupprocessor
+      - aspose.pdf.groupprocessor.creators
+      - aspose.pdf.logicalstructure
+      - aspose.pdf.lowcode
+      - aspose.pdf.multithreading
+      - aspose.pdf.operators
+      - aspose.pdf.optimization
+      - aspose.pdf.pdfaoptionclasses
+      - aspose.pdf.pdftomarkdown
+      - aspose.pdf.plugins
+      - aspose.pdf.printing
+      - aspose.pdf.sanitization
+      - aspose.pdf.security
+      - aspose.pdf.security.hiddendatasanitization
+      - aspose.pdf.security.impl
+      - aspose.pdf.signatures
+      - aspose.pdf.structure
+      - aspose.pdf.tagged
+    sample_markdown_paths:
+    - arabic/_index.md
+    - arabic/net/_index.md
+    - arabic/net/aspose.pdf/_index.md
+    - arabic/net/aspose.pdf/afrelationship/_index.md
+    - arabic/net/aspose.pdf/apsloadoptions/_index.md
+    - arabic/net/aspose.pdf/apsloadoptions/apsloadoptions/_index.md
+    - arabic/net/aspose.pdf/apssaveoptions/_index.md
+    - arabic/net/aspose.pdf/apssaveoptions/apssaveoptions/_index.md
+    - arabic/net/aspose.pdf/artifact/_index.md
+    - arabic/net/aspose.pdf/artifact/artifact/_index.md
+    - arabic/net/aspose.pdf/artifact/artifacthorizontalalignment/_index.md
+    - arabic/net/aspose.pdf/artifact/artifactverticalalignment/_index.md
+    - arabic/net/aspose.pdf/artifact/beginupdates/_index.md
+    - arabic/net/aspose.pdf/artifact/bottommargin/_index.md
+    - arabic/net/aspose.pdf/artifact/contents/_index.md
+    - arabic/net/aspose.pdf/artifact/customsubtype/_index.md
+    - arabic/net/aspose.pdf/artifact/customtype/_index.md
+    - arabic/net/aspose.pdf/artifact/dispose/_index.md
+    - arabic/net/aspose.pdf/artifact/form/_index.md
+    - arabic/net/aspose.pdf/artifact/getvalue/_index.md
+    - arabic/net/aspose.pdf/artifact/image/_index.md
+    - arabic/net/aspose.pdf/artifact/isbackground/_index.md
+    - arabic/net/aspose.pdf/artifact/leftmargin/_index.md
+    - arabic/net/aspose.pdf/artifact/lines/_index.md
+    - arabic/net/aspose.pdf/artifact/opacity/_index.md
+    notes:
+    - Top-level directories are treated as documentation locales.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+  onboarding_hints:
+    programming_languages:
+    - net
+    - java
+    - cpp
+    - python
+    - go
+- repo_id: aspose.email.docs
+  product_id: aspose.email
+  product_name: Aspose.Email
+  product_family: aspose
+  product_family_dir: Aspose.Email
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-email/Aspose.Email-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Email
+    default_branch: master
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:29.148212+00:00'
+    layout_type: doc_locale/programming_language/content
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 1.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 1.0
+      level2_programming_score: 0.833
+      directory_vectors_count: 2958
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - en
+      - es
+      - pt
+      - ru
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - androidjava
+      - cpp
+      - java
+      - net
+      - python-net
+      - sharepoint
+    sample_markdown_paths:
+    - README.md
+    - en/_index.md
+    - en/androidjava/_index.md
+    - en/androidjava/developer-guide/_index.md
+    - en/androidjava/developer-guide/creating-simple-application/_index.md
+    - en/androidjava/getting-started/_index.md
+    - en/androidjava/getting-started/features/_index.md
+    - en/androidjava/getting-started/features/features-overview/_index.md
+    - en/androidjava/getting-started/features/limitations-and-api-differences/_index.md
+    - en/androidjava/getting-started/how-to-run-the-examples/_index.md
+    - en/androidjava/getting-started/installation/_index.md
+    - en/androidjava/getting-started/product-overview/_index.md
+    - en/androidjava/getting-started/product-support/_index.md
+    - en/androidjava/getting-started/supported-file-formats/_index.md
+    - en/androidjava/getting-started/system-requirements/_index.md
+    - en/androidjava/live-demos/_index.md
+    - en/cpp/_index.md
+    - en/cpp/developer-guide/_index.md
+    - en/cpp/developer-guide/working-with-exchange-ews-client/_index.md
+    - en/cpp/developer-guide/working-with-exchange-ews-client/connecting-to-exchange-server/_index.md
+    - en/cpp/developer-guide/working-with-exchange-ews-client/filter-appointments-from-exchange-server/_index.md
+    - en/cpp/developer-guide/working-with-exchange-ews-client/filter-messages-from-exchange-mailbox/_index.md
+    - en/cpp/developer-guide/working-with-exchange-ews-client/manage-exchange-conversations/_index.md
+    - en/cpp/developer-guide/working-with-exchange-ews-client/managing-conversation-items/_index.md
+    - en/cpp/developer-guide/working-with-exchange-ews-client/utility-features/_index.md
+    notes: []
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+  onboarding_hints:
+    programming_languages:
+    - net
+    - java
+    - cpp
+    - python
+    - nodejs
+- repo_id: aspose.email.apiref
+  product_id: aspose.email
+  product_name: Aspose.Email
+  product_family: aspose
+  product_family_dir: Aspose.Email
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-email/Aspose.Email-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Email
+    default_branch: main
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:33.479980+00:00'
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 1.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.467
+      level2_programming_score: 1.0
+      directory_vectors_count: 40829
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - chinese
+      - english
+      - russian
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - androidjava
+      - cpp
+      - java
+      - net
+      - python-net
+    - depth: 3
+      semantic: namespace
+      values_sample:
+      - aspose.email
+      - aspose.email.amp
+      - aspose.email.antispam
+      - aspose.email.bounce
+      - aspose.email.calendar
+      - aspose.email.calendar.recurrences
+      - aspose.email.clients
+      - aspose.email.clients.activesync.transportlayer
+      - aspose.email.clients.activity
+      - aspose.email.clients.base
+      - aspose.email.clients.deliveryservice
+      - aspose.email.clients.deliveryservice.mailgun
+      - aspose.email.clients.deliveryservice.sendgrid
+      - aspose.email.clients.exchange
+      - aspose.email.clients.exchange.dav
+      - aspose.email.clients.exchange.webservice
+      - aspose.email.clients.exchange.webservice.exceptions
+      - aspose.email.clients.exchange.webservice.models
+      - aspose.email.clients.exchange.webservice.schema_2016
+      - aspose.email.clients.google
+      - aspose.email.clients.graph
+      - aspose.email.clients.imap
+      - aspose.email.clients.imap.models
+      - aspose.email.clients.pop3
+      - aspose.email.clients.pop3.models
+      - aspose.email.clients.smtp
+      - aspose.email.clients.smtp.models
+      - aspose.email.common
+      - aspose.email.common.delegate
+      - aspose.email.dkim
+    sample_markdown_paths:
+    - chinese/_index.md
+    - chinese/net/_index.md
+    - chinese/net/aspose.email/_index.md
+    - chinese/net/aspose.email/activesyncexception/_index.md
+    - chinese/net/aspose.email/activesyncexception/activesyncexception/_index.md
+    - chinese/net/aspose.email/activesyncexception/errorcode/_index.md
+    - chinese/net/aspose.email/activesyncnotsupportedexception/_index.md
+    - chinese/net/aspose.email/activesyncnotsupportedexception/activesyncnotsupportedexception/_index.md
+    - chinese/net/aspose.email/activesyncnotsupportedexception/errorcode/_index.md
+    - chinese/net/aspose.email/alternateview/_index.md
+    - chinese/net/aspose.email/alternateview/alternateview/_index.md
+    - chinese/net/aspose.email/alternateview/baseuri/_index.md
+    - chinese/net/aspose.email/alternateview/createalternateviewfromstring/_index.md
+    - chinese/net/aspose.email/alternateview/linkedresources/_index.md
+    - chinese/net/aspose.email/alternateviewcollection/_index.md
+    - chinese/net/aspose.email/alternateviewcollection/dispose/_index.md
+    - chinese/net/aspose.email/alternateviewremovedeventargs/_index.md
+    - chinese/net/aspose.email/alternateviewremovedeventargs/alternateview/_index.md
+    - chinese/net/aspose.email/alternateviewremovedeventargs/alternateviewremovedeventargs/_index.md
+    - chinese/net/aspose.email/asposeargumentexception/_index.md
+    - chinese/net/aspose.email/asposeargumentexception/asposeargumentexception/_index.md
+    - chinese/net/aspose.email/asposeargumentnullexception/_index.md
+    - chinese/net/aspose.email/asposeargumentnullexception/asposeargumentnullexception/_index.md
+    - chinese/net/aspose.email/asposeargumentoutofrangeexception/_index.md
+    - chinese/net/aspose.email/asposeargumentoutofrangeexception/asposeargumentoutofrangeexception/_index.md
+    notes:
+    - Top-level directories are treated as documentation locales.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+  onboarding_hints:
+    programming_languages:
+    - net
+    - java
+    - cpp
+    - python
+    - nodejs
+- repo_id: aspose.slides.docs
+  product_id: aspose.slides
+  product_name: Aspose.Slides
+  product_family: aspose
+  product_family_dir: Aspose.Slides
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-slides/Aspose.Slides-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Slides
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:33.480734+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.slides.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.slides.apiref
+  product_id: aspose.slides
+  product_name: Aspose.Slides
+  product_family: aspose
+  product_family_dir: Aspose.Slides
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-slides/Aspose.Slides-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Slides
+    default_branch: main
+    materialization_state: materialized
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:41.829765+00:00'
+    layout_type: content_group/programming_language/namespace
+    confidence: 0.65
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.889
+      directory_vectors_count: 76804
+    dimensions:
+    - depth: 1
+      semantic: content_group
+      values_sample:
+      - archetypes
+      - content
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - androidjava
+      - cpp
+      - home
+      - java
+      - net
+      - nodejs-java
+      - php-java
+      - python-java
+      - python-net
+    sample_markdown_paths:
+    - archetypes/default.md
+    - content/androidjava/english/_index.md
+    - content/androidjava/english/com.aspose.slides/_index.md
+    - content/androidjava/english/com.aspose.slides/adjustvalue/_index.md
+    - content/androidjava/english/com.aspose.slides/adjustvaluecollection/_index.md
+    - content/androidjava/english/com.aspose.slides/afteranimationtype/_index.md
+    - content/androidjava/english/com.aspose.slides/alphabilevel/_index.md
+    - content/androidjava/english/com.aspose.slides/alphaceiling/_index.md
+    - content/androidjava/english/com.aspose.slides/alphafloor/_index.md
+    - content/androidjava/english/com.aspose.slides/alphainverse/_index.md
+    - content/androidjava/english/com.aspose.slides/alphamodulate/_index.md
+    - content/androidjava/english/com.aspose.slides/alphamodulatefixed/_index.md
+    - content/androidjava/english/com.aspose.slides/alphareplace/_index.md
+    - content/androidjava/english/com.aspose.slides/animatetexttype/_index.md
+    - content/androidjava/english/com.aspose.slides/animationtimeline/_index.md
+    - content/androidjava/english/com.aspose.slides/asposelicenseexception/_index.md
+    - content/androidjava/english/com.aspose.slides/audio/_index.md
+    - content/androidjava/english/com.aspose.slides/audiocollection/_index.md
+    - content/androidjava/english/com.aspose.slides/audioframe/_index.md
+    - content/androidjava/english/com.aspose.slides/audioplaymodepreset/_index.md
+    - content/androidjava/english/com.aspose.slides/audiovolumemode/_index.md
+    - content/androidjava/english/com.aspose.slides/autoshape/_index.md
+    - content/androidjava/english/com.aspose.slides/autoshapelock/_index.md
+    - content/androidjava/english/com.aspose.slides/axescompositionnotcombinableexception/_index.md
+    - content/androidjava/english/com.aspose.slides/axesmanager/_index.md
+    notes: []
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.imaging.docs
+  product_id: aspose.imaging
+  product_name: Aspose.Imaging
+  product_family: aspose
+  product_family_dir: Aspose.Imaging
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-imaging/Aspose.Imaging-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Imaging
+    default_branch: master
+    materialization_state: materialized
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:41.918614+00:00'
+    layout_type: programming_language/content
+    confidence: 0.9
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.6
+      level1_children_overlap_score: 0.343
+      level2_programming_score: 0.111
+      directory_vectors_count: 674
+    dimensions:
+    - depth: 1
+      semantic: programming_language
+      values_sample:
+      - java
+      - net
+      - python-net
+    - depth: 1
+      semantic: auxiliary_content_group
+      values_sample:
+      - jasperreports
+      - sharepoint
+    - depth: 2
+      semantic: content_group
+      values_sample:
+      - developer-guide
+      - getting-started
+      - installation
+      - plugins
+      - python-notes
+      - showcases
+      - system-requirements
+      - user-guide
+      - user-s-guide
+    sample_markdown_paths:
+    - README.md
+    - _index.md
+    - jasperreports/_index.md
+    - jasperreports/getting-started/_index.md
+    - jasperreports/getting-started/evaluate-aspose-imaging/_index.md
+    - jasperreports/getting-started/features-overview/_index.md
+    - jasperreports/getting-started/licensing/_index.md
+    - jasperreports/getting-started/product-overview/_index.md
+    - jasperreports/getting-started/supported-file-formats/_index.md
+    - jasperreports/installation/_index.md
+    - jasperreports/installation/demos-setup/_index.md
+    - jasperreports/installation/installing-aspose-imaging-for-jasperreports/_index.md
+    - jasperreports/installation/integration-with-jasperserver/_index.md
+    - jasperreports/installation/introduction/_index.md
+    - jasperreports/system-requirements/_index.md
+    - jasperreports/user-guide/_index.md
+    - jasperreports/user-guide/export-jasperreport-to-dicom/_index.md
+    - jasperreports/user-guide/export-jasperreport-to-emf/_index.md
+    - jasperreports/user-guide/export-jasperreport-to-html/_index.md
+    - jasperreports/user-guide/export-jasperreport-to-jpeg2000/_index.md
+    - jasperreports/user-guide/export-jasperreport-to-psd/_index.md
+    - jasperreports/user-guide/export-jasperreport-to-svg/_index.md
+    - jasperreports/user-guide/export-jasperreport-to-tiff/_index.md
+    - jasperreports/user-guide/export-jasperreport-to-webp/_index.md
+    - jasperreports/user-guide/export-jasperreport-to-wmf/_index.md
+    notes:
+    - Top-level directories are treated as programming languages.
+    - Top-level non-language directories were classified as auxiliary_content_group.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.imaging.apiref
+  product_id: aspose.imaging
+  product_name: Aspose.Imaging
+  product_family: aspose
+  product_family_dir: Aspose.Imaging
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-imaging/Aspose.Imaging-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Imaging
+    default_branch: main
+    materialization_state: materialized
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:50.456504+00:00'
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 1.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.85
+      level2_programming_score: 0.75
+      directory_vectors_count: 67662
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - arabic
+      - chinese
+      - english
+      - french
+      - german
+      - italian
+      - russian
+      - spanish
+      - swedish
+      - turkish
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - adapters
+      - java
+      - net
+      - python-net
+    - depth: 3
+      semantic: namespace
+      values_sample:
+      - aspose.imaging
+      - aspose.imaging.apsbuilder.dib
+      - aspose.imaging.asynctask
+      - aspose.imaging.brushes
+      - aspose.imaging.coreexceptions
+      - aspose.imaging.coreexceptions.compressors
+      - aspose.imaging.coreexceptions.imageformats
+      - aspose.imaging.customfonthandler
+      - aspose.imaging.dithering
+      - aspose.imaging.evalute
+      - aspose.imaging.exif
+      - aspose.imaging.exif.enums
+      - aspose.imaging.extensions
+      - aspose.imaging.fileformats.apng
+      - aspose.imaging.fileformats.avif
+      - aspose.imaging.fileformats.bigtiff
+      - aspose.imaging.fileformats.bmp
+      - aspose.imaging.fileformats.bmp.structures
+      - aspose.imaging.fileformats.cdr
+      - aspose.imaging.fileformats.cdr.const
+      - aspose.imaging.fileformats.cdr.enum
+      - aspose.imaging.fileformats.cdr.objects
+      - aspose.imaging.fileformats.cdr.types
+      - aspose.imaging.fileformats.cmx
+      - aspose.imaging.fileformats.cmx.objectmodel
+      - aspose.imaging.fileformats.cmx.objectmodel.enums
+      - aspose.imaging.fileformats.cmx.objectmodel.specs
+      - aspose.imaging.fileformats.cmx.objectmodel.styles
+      - aspose.imaging.fileformats.core.photo
+      - aspose.imaging.fileformats.core.photo.hdr
+    sample_markdown_paths:
+    - arabic/_index.md
+    - arabic/net/_index.md
+    - arabic/net/aspose.imaging/_index.md
+    - arabic/net/aspose.imaging/aggregateexception/_index.md
+    - arabic/net/aspose.imaging/animationdisposalmethods/_index.md
+    - arabic/net/aspose.imaging/blend/_index.md
+    - arabic/net/aspose.imaging/blend/blend/_index.md
+    - arabic/net/aspose.imaging/blend/equals/_index.md
+    - arabic/net/aspose.imaging/blend/factors/_index.md
+    - arabic/net/aspose.imaging/blend/gethashcode/_index.md
+    - arabic/net/aspose.imaging/blend/positions/_index.md
+    - arabic/net/aspose.imaging/brush/_index.md
+    - arabic/net/aspose.imaging/brush/deepclone/_index.md
+    - arabic/net/aspose.imaging/brush/opacity/_index.md
+    - arabic/net/aspose.imaging/buildversioninfo/_index.md
+    - arabic/net/aspose.imaging/buildversioninfo/assemblyversion/_index.md
+    - arabic/net/aspose.imaging/buildversioninfo/fileversion/_index.md
+    - arabic/net/aspose.imaging/buildversioninfo/product/_index.md
+    - arabic/net/aspose.imaging/buildversioninfo/productmajor/_index.md
+    - arabic/net/aspose.imaging/buildversioninfo/productminor/_index.md
+    - arabic/net/aspose.imaging/buildversioninfo/releasedate/_index.md
+    - arabic/net/aspose.imaging/cache/_index.md
+    - arabic/net/aspose.imaging/cache/allocateddiskbytescount/_index.md
+    - arabic/net/aspose.imaging/cache/allocatedmemorybytescount/_index.md
+    - arabic/net/aspose.imaging/cache/cachefolder/_index.md
+    notes:
+    - Top-level directories are treated as documentation locales.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.barcode.docs
+  product_id: aspose.barcode
+  product_name: Aspose.BarCode
+  product_family: aspose
+  product_family_dir: Aspose.BarCode
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-barcode/Aspose.BarCode-Documentation.git
+    submodule_path: source-repo-docs/Aspose.BarCode
+    default_branch: master
+    materialization_state: materialized
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:50.619724+00:00'
+    layout_type: programming_language/content
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.692
+      level1_children_overlap_score: 0.433
+      level2_programming_score: 0.0
+      directory_vectors_count: 928
+    dimensions:
+    - depth: 1
+      semantic: programming_language
+      values_sample:
+      - androidjava
+      - cpp
+      - java
+      - javascript-cpp
+      - net
+      - nodejsjava
+      - phpjava
+      - python-net
+      - pythonjava
+    - depth: 1
+      semantic: auxiliary_content_group
+      values_sample:
+      - barcode-cards
+      - jasperreports
+      - reportingservices
+      - sharepoint
+    - depth: 2
+      semantic: content_group
+      values_sample:
+      - api-reference
+      - aztec-family
+      - code128-card
+      - code39-card
+      - data-matrix-card
+      - databar-family
+      - developer-guide
+      - ean-family
+      - getting-started
+      - installation
+      - pdf417-family
+      - plugins
+      - programmer-s-guide
+      - programmers-guide
+      - qr-code-family
+      - showcases
+      - technical-articles
+      - upc-family
+      - user-s-guide
+      - x-dimension
+    sample_markdown_paths:
+    - README.md
+    - _index.md
+    - androidjava/_index.md
+    - androidjava/developer-guide/_index.md
+    - androidjava/developer-guide/barcode-generation/_index.md
+    - androidjava/developer-guide/barcode-generation/adjusting-barcode-appearance/_index.md
+    - androidjava/developer-guide/barcode-generation/customizing-barcode-color-scheme/_index.md
+    - androidjava/developer-guide/barcode-generation/managing-barcode-text/_index.md
+    - androidjava/developer-guide/barcode-generation/saving-generated-barcodes/_index.md
+    - androidjava/developer-guide/barcode-generation/setting-barcode-parameters/_index.md
+    - androidjava/developer-guide/barcode-recognition/_index.md
+    - androidjava/developer-guide/barcode-recognition/barcode-recognition-settings/_index.md
+    - androidjava/developer-guide/barcode-recognition/improve-barcode-recognition/_index.md
+    - androidjava/developer-guide/barcode-recognition/improve-barcode-recognition/recognition-modes-and-presets/_index.md
+    - androidjava/developer-guide/barcode-recognition/improve-barcode-recognition/special-recognition-settings/_index.md
+    - androidjava/developer-guide/barcode-recognition/multithreading-in-recognition/_index.md
+    - androidjava/developer-guide/barcode-recognition/read-barcode-properties/_index.md
+    - androidjava/developer-guide/barcode-recognition/recognition-basics/_index.md
+    - androidjava/developer-guide/symbology-generation-specifics/_index.md
+    - androidjava/developer-guide/symbology-generation-specifics/aztec-barcodes/_index.md
+    - androidjava/developer-guide/symbology-generation-specifics/codabar-barcodes/_index.md
+    - androidjava/developer-guide/symbology-generation-specifics/codablockf-barcodes/_index.md
+    - androidjava/developer-guide/symbology-generation-specifics/code16k-barcodes/_index.md
+    - androidjava/developer-guide/symbology-generation-specifics/databar-barcodes/_index.md
+    - androidjava/developer-guide/symbology-generation-specifics/datamatrix-barcodes/_index.md
+    notes:
+    - Top-level directories are treated as programming languages.
+    - Top-level non-language directories were classified as auxiliary_content_group.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.barcode.apiref
+  product_id: aspose.barcode
+  product_name: Aspose.BarCode
+  product_family: aspose
+  product_family_dir: Aspose.BarCode
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-barcode/Aspose.BarCode-API-References.git
+    submodule_path: source-repo-apiref/Aspose.BarCode
+    default_branch: main
+    materialization_state: materialized
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756100+00:00'
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 1.0
+      level1_programming_score: 0.062
+      level1_children_overlap_score: 0.891
+      level2_programming_score: 1.0
+      directory_vectors_count: 21734
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - arabic
+      - chinese
+      - english
+      - french
+      - german
+      - greece
+      - indian
+      - indonesian
+      - italian
+      - japanese
+      - korean
+      - netherlands
+      - russian
+      - spanish
+      - swedish
+      - turkish
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - androidjava
+      - cpp
+      - java
+      - net
+      - nodejs
+      - php
+      - python-java
+      - python-net
+    - depth: 3
+      semantic: namespace
+      values_sample:
+      - address
+      - addresstype
+      - alternativescheme
+      - aspose.barcode
+      - aspose.barcode.barcoderecognition
+      - aspose.barcode.common
+      - aspose.barcode.complexbarcode
+      - aspose.barcode.generation
+      - aspose.barcode.windows.forms
+      - aspose.barcode.wpf
+      - australianpostparameters
+      - australiapostsettings
+      - autosizemode
+      - aztecencodemode
+      - aztecextcodetextbuilder
+      - aztecextendedparameters
+      - aztecparameters
+      - aztecsymbolmode
+      - barcodeclassifications
+      - barcodeconfidence
+      - barcodeextendedparameters
+      - barcodegenerator
+      - barcodeimageformat
+      - barcodeparameters
+      - barcodequalitymode
+      - barcodereader
+      - barcoderegionparameters
+      - barcoderesult
+      - barcodesettings
+      - basegenerationparameters
+    sample_markdown_paths:
+    - arabic/_index.md
+    - arabic/net/_index.md
+    - arabic/net/aspose.barcode/_index.md
+    - arabic/net/aspose.barcode/barcodeexception/_index.md
+    - arabic/net/aspose.barcode/barcodeexception/barcodeexception/_index.md
+    - arabic/net/aspose.barcode/buildversioninfo/_index.md
+    - arabic/net/aspose.barcode/buildversioninfo/assemblyversion/_index.md
+    - arabic/net/aspose.barcode/buildversioninfo/fileversion/_index.md
+    - arabic/net/aspose.barcode/buildversioninfo/product/_index.md
+    - arabic/net/aspose.barcode/buildversioninfo/productmajor/_index.md
+    - arabic/net/aspose.barcode/buildversioninfo/productminor/_index.md
+    - arabic/net/aspose.barcode/buildversioninfo/releasedate/_index.md
+    - arabic/net/aspose.barcode/customerinformationinterpretingtype/_index.md
+    - arabic/net/aspose.barcode/invalidcodeexception/_index.md
+    - arabic/net/aspose.barcode/invalidcodeexception/invalidcodeexception/_index.md
+    - arabic/net/aspose.barcode/license/_index.md
+    - arabic/net/aspose.barcode/license/license/_index.md
+    - arabic/net/aspose.barcode/license/setlicense/_index.md
+    - arabic/net/aspose.barcode/metered/_index.md
+    - arabic/net/aspose.barcode/metered/getconsumptioncredit/_index.md
+    - arabic/net/aspose.barcode/metered/getconsumptionquantity/_index.md
+    - arabic/net/aspose.barcode/metered/metered/_index.md
+    - arabic/net/aspose.barcode/metered/setmeteredkey/_index.md
+    - arabic/net/aspose.barcode.barcoderecognition/_index.md
+    - arabic/net/aspose.barcode.barcoderecognition/australiapostcustomerinformationdecoder/_index.md
+    notes:
+    - Top-level directories are treated as documentation locales.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.viewer.docs
+  product_id: groupdocs.viewer
+  product_name: GroupDocs.Viewer
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Viewer
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-viewer/GroupDocs.Viewer-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Viewer
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756563+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.viewer.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.viewer.apiref
+  product_id: groupdocs.viewer
+  product_name: GroupDocs.Viewer
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Viewer
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-viewer/Groupdocs.Viewer-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Viewer
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756583+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.viewer.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.conversion.docs
+  product_id: groupdocs.conversion
+  product_name: GroupDocs.Conversion
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Conversion
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-conversion/GroupDocs.Conversion-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Conversion
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756595+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.conversion.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.conversion.apiref
+  product_id: groupdocs.conversion
+  product_name: GroupDocs.Conversion
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Conversion
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-conversion/Groupdocs.Conversion-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Conversion
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756607+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.conversion.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.cad.docs
+  product_id: aspose.cad
+  product_name: Aspose.CAD
+  product_family: aspose
+  product_family_dir: Aspose.CAD
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-cad/Aspose.CAD-Documentation.git
+    submodule_path: source-repo-docs/Aspose.CAD
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756618+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.cad.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.cad.apiref
+  product_id: aspose.cad
+  product_name: Aspose.CAD
+  product_family: aspose
+  product_family_dir: Aspose.CAD
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-cad/Aspose.CAD-API-References.git
+    submodule_path: source-repo-apiref/Aspose.CAD
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756628+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.cad.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.diagram.docs
+  product_id: aspose.diagram
+  product_name: Aspose.Diagram
+  product_family: aspose
+  product_family_dir: Aspose.Diagram
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-diagram/Aspose.Diagram-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Diagram
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756639+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.diagram.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.diagram.apiref
+  product_id: aspose.diagram
+  product_name: Aspose.Diagram
+  product_family: aspose
+  product_family_dir: Aspose.Diagram
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-diagram/Aspose.Diagram-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Diagram
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756648+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.diagram.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.note.docs
+  product_id: aspose.note
+  product_name: Aspose.Note
+  product_family: aspose
+  product_family_dir: Aspose.Note
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-note/Aspose.Note-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Note
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756657+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.note.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.note.apiref
+  product_id: aspose.note
+  product_name: Aspose.Note
+  product_family: aspose
+  product_family_dir: Aspose.Note
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-note/Aspose.Note-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Note
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756667+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.note.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.tasks.docs
+  product_id: aspose.tasks
+  product_name: Aspose.Tasks
+  product_family: aspose
+  product_family_dir: Aspose.Tasks
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-tasks/Aspose.Tasks-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Tasks
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756676+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.tasks.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.tasks.apiref
+  product_id: aspose.tasks
+  product_name: Aspose.Tasks
+  product_family: aspose
+  product_family_dir: Aspose.Tasks
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-tasks/Aspose.Tasks-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Tasks
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756686+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.tasks.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.page.docs
+  product_id: aspose.page
+  product_name: Aspose.Page
+  product_family: aspose
+  product_family_dir: Aspose.Page
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-page/Aspose.Page-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Page
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756695+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.page.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.page.apiref
+  product_id: aspose.page
+  product_name: Aspose.Page
+  product_family: aspose
+  product_family_dir: Aspose.Page
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-page/Aspose.Page-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Page
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756705+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.page.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.omr.docs
+  product_id: aspose.omr
+  product_name: Aspose.OMR
+  product_family: aspose
+  product_family_dir: Aspose.OMR
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-omr/Aspose.OMR-Documentation.git
+    submodule_path: source-repo-docs/Aspose.OMR
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756715+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.omr.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.omr.apiref
+  product_id: aspose.omr
+  product_name: Aspose.OMR
+  product_family: aspose
+  product_family_dir: Aspose.OMR
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-omr/Aspose.OMR-API-References.git
+    submodule_path: source-repo-apiref/Aspose.OMR
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756724+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.omr.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.psd.docs
+  product_id: aspose.psd
+  product_name: Aspose.PSD
+  product_family: aspose
+  product_family_dir: Aspose.PSD
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-psd/Aspose.PSD-Documentation.git
+    submodule_path: source-repo-docs/Aspose.PSD
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756733+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.psd.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.psd.apiref
+  product_id: aspose.psd
+  product_name: Aspose.PSD
+  product_family: aspose
+  product_family_dir: Aspose.PSD
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-psd/Aspose.PSD-API-References.git
+    submodule_path: source-repo-apiref/Aspose.PSD
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-16T21:35:59.202291+00:00'
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 1.0
+      level1_programming_score: 0.062
+      level1_children_overlap_score: 0.917
+      level2_programming_score: 1.0
+      directory_vectors_count: 72157
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - arabic
+      - chinese
+      - english
+      - french
+      - german
+      - greece
+      - indian
+      - indonesian
+      - italian
+      - japanese
+      - korean
+      - netherlands
+      - russian
+      - spanish
+      - swedish
+      - turkish
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - java
+      - net
+      - python
+    - depth: 3
+      semantic: namespace
+      values_sample:
+      - aspose.psd
+      - aspose.psd.asynctask
+      - aspose.psd.brushes
+      - aspose.psd.coreexceptions
+      - aspose.psd.coreexceptions.compressors
+      - aspose.psd.coreexceptions.imageformats
+      - aspose.psd.customfonthandler
+      - aspose.psd.dithering
+      - aspose.psd.evalute
+      - aspose.psd.exif
+      - aspose.psd.exif.enums
+      - aspose.psd.extensions
+      - aspose.psd.fileformats.ai
+      - aspose.psd.fileformats.bmp
+      - aspose.psd.fileformats.core.blending
+      - aspose.psd.fileformats.core.vectorpaths
+      - aspose.psd.fileformats.jpeg
+      - aspose.psd.fileformats.jpeg2000
+      - aspose.psd.fileformats.pdf
+      - aspose.psd.fileformats.png
+      - aspose.psd.fileformats.psd
+      - aspose.psd.fileformats.psd.core.rawcolor
+      - aspose.psd.fileformats.psd.layers
+      - aspose.psd.fileformats.psd.layers.adjustmentlayers
+      - aspose.psd.fileformats.psd.layers.animation
+      - aspose.psd.fileformats.psd.layers.filllayers
+      - aspose.psd.fileformats.psd.layers.fillsettings
+      - aspose.psd.fileformats.psd.layers.gradient
+      - aspose.psd.fileformats.psd.layers.layereffects
+      - aspose.psd.fileformats.psd.layers.layerresources
+    sample_markdown_paths:
+    - arabic/_index.md
+    - arabic/net/_index.md
+    - arabic/net/aspose.psd/_index.md
+    - arabic/net/aspose.psd/aggregateexception/_index.md
+    - arabic/net/aspose.psd/blend/_index.md
+    - arabic/net/aspose.psd/blend/blend/_index.md
+    - arabic/net/aspose.psd/blend/equals/_index.md
+    - arabic/net/aspose.psd/blend/factors/_index.md
+    - arabic/net/aspose.psd/blend/gethashcode/_index.md
+    - arabic/net/aspose.psd/blend/positions/_index.md
+    - arabic/net/aspose.psd/brush/_index.md
+    - arabic/net/aspose.psd/brush/deepclone/_index.md
+    - arabic/net/aspose.psd/brush/opacity/_index.md
+    - arabic/net/aspose.psd/buildversioninfo/_index.md
+    - arabic/net/aspose.psd/buildversioninfo/assemblyversion/_index.md
+    - arabic/net/aspose.psd/buildversioninfo/fileversion/_index.md
+    - arabic/net/aspose.psd/buildversioninfo/product/_index.md
+    - arabic/net/aspose.psd/buildversioninfo/productmajor/_index.md
+    - arabic/net/aspose.psd/buildversioninfo/productminor/_index.md
+    - arabic/net/aspose.psd/buildversioninfo/releasedate/_index.md
+    - arabic/net/aspose.psd/cache/_index.md
+    - arabic/net/aspose.psd/cache/allocateddiskbytescount/_index.md
+    - arabic/net/aspose.psd/cache/allocatedmemorybytescount/_index.md
+    - arabic/net/aspose.psd/cache/cachefolder/_index.md
+    - arabic/net/aspose.psd/cache/cachetype/_index.md
+    notes:
+    - Top-level directories are treated as documentation locales.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.zip.docs
+  product_id: aspose.zip
+  product_name: Aspose.ZIP
+  product_family: aspose
+  product_family_dir: Aspose.ZIP
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-zip/Aspose.ZIP-Documentation.git
+    submodule_path: source-repo-docs/Aspose.ZIP
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756751+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.zip.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.zip.apiref
+  product_id: aspose.zip
+  product_name: Aspose.ZIP
+  product_family: aspose
+  product_family_dir: Aspose.ZIP
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-zip/Aspose.ZIP-API-References.git
+    submodule_path: source-repo-apiref/Aspose.ZIP
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756759+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.zip.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.finance.docs
+  product_id: aspose.finance
+  product_name: Aspose.Finance
+  product_family: aspose
+  product_family_dir: Aspose.Finance
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-finance/Aspose.Finance-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Finance
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756768+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.finance.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.finance.apiref
+  product_id: aspose.finance
+  product_name: Aspose.Finance
+  product_family: aspose
+  product_family_dir: Aspose.Finance
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-finance/Aspose.Finance-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Finance
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-16T21:36:05.594854+00:00'
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 1.0
+      level1_programming_score: 0.062
+      level1_children_overlap_score: 0.938
+      level2_programming_score: 1.0
+      directory_vectors_count: 73929
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - arabic
+      - chinese
+      - english
+      - french
+      - german
+      - greece
+      - indian
+      - indonesian
+      - italian
+      - japanese
+      - korean
+      - netherlands
+      - russian
+      - spanish
+      - swedish
+      - turkish
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - net
+      - python-net
+    - depth: 3
+      semantic: namespace
+      values_sample:
+      - aspose.finance
+      - aspose.finance.ofx
+      - aspose.finance.ofx.bank
+      - aspose.finance.ofx.billerdelivery
+      - aspose.finance.ofx.billerdirectory
+      - aspose.finance.ofx.billpay
+      - aspose.finance.ofx.creditcard
+      - aspose.finance.ofx.email
+      - aspose.finance.ofx.image
+      - aspose.finance.ofx.intertransfer
+      - aspose.finance.ofx.investment
+      - aspose.finance.ofx.loan
+      - aspose.finance.ofx.profile
+      - aspose.finance.ofx.securitieslist
+      - aspose.finance.ofx.signon
+      - aspose.finance.ofx.signup
+      - aspose.finance.ofx.tax1098
+      - aspose.finance.ofx.tax1099
+      - aspose.finance.ofx.taxw2
+      - aspose.finance.ofx.wiretransfer
+      - aspose.finance.xbrl
+      - aspose.finance.xbrl.dom
+      - aspose.finance.xbrl.dom.html
+      - aspose.finance.xbrl.dom.inline
+      - aspose.finance.xbrl.dom.xbrlinstance
+      - aspose.finance.xbrl.dom.xbrllinkbase
+      - aspose.finance.xbrl.inline
+      - aspose.finance.xbrl.validator
+    sample_markdown_paths:
+    - arabic/_index.md
+    - arabic/net/_index.md
+    - arabic/net/aspose.finance/_index.md
+    - arabic/net/aspose.finance/license/_index.md
+    - arabic/net/aspose.finance/license/license/_index.md
+    - arabic/net/aspose.finance/license/setlicense/_index.md
+    - arabic/net/aspose.finance/metered/_index.md
+    - arabic/net/aspose.finance/metered/getconsumptioncredit/_index.md
+    - arabic/net/aspose.finance/metered/getconsumptionquantity/_index.md
+    - arabic/net/aspose.finance/metered/metered/_index.md
+    - arabic/net/aspose.finance/metered/setmeteredkey/_index.md
+    - arabic/net/aspose.finance.ofx/_index.md
+    - arabic/net/aspose.finance.ofx/abstractaccount/_index.md
+    - arabic/net/aspose.finance.ofx/abstractaccountinfo/_index.md
+    - arabic/net/aspose.finance.ofx/abstractrequest/_index.md
+    - arabic/net/aspose.finance.ofx/abstractrequestmessageset/_index.md
+    - arabic/net/aspose.finance.ofx/abstractresponse/_index.md
+    - arabic/net/aspose.finance.ofx/abstractresponsemessageset/_index.md
+    - arabic/net/aspose.finance.ofx/abstractresponsemessageset/abstractresponsemessageset/_index.md
+    - arabic/net/aspose.finance.ofx/abstractstringtype/_index.md
+    - arabic/net/aspose.finance.ofx/abstractstringtype/value/_index.md
+    - arabic/net/aspose.finance.ofx/abstractsyncrequest/_index.md
+    - arabic/net/aspose.finance.ofx/abstractsyncrequest/refresh/_index.md
+    - arabic/net/aspose.finance.ofx/abstractsyncrequest/rejectifmisssing/_index.md
+    - arabic/net/aspose.finance.ofx/abstractsyncrequest/token/_index.md
+    notes:
+    - Top-level directories are treated as documentation locales.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.pub.docs
+  product_id: aspose.pub
+  product_name: Aspose.PUB
+  product_family: aspose
+  product_family_dir: Aspose.PUB
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-pub/Aspose.PUB-Documentation.git
+    submodule_path: source-repo-docs/Aspose.PUB
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756786+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.pub.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.pub.apiref
+  product_id: aspose.pub
+  product_name: Aspose.PUB
+  product_family: aspose
+  product_family_dir: Aspose.PUB
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-pub/Aspose.PUB-API-References.git
+    submodule_path: source-repo-apiref/Aspose.PUB
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756795+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.pub.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.tex.docs
+  product_id: aspose.tex
+  product_name: Aspose.TeX
+  product_family: aspose
+  product_family_dir: Aspose.TeX
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-tex/Aspose.TeX-Documentation.git
+    submodule_path: source-repo-docs/Aspose.TeX
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756804+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.tex.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.tex.apiref
+  product_id: aspose.tex
+  product_name: Aspose.TeX
+  product_family: aspose
+  product_family_dir: Aspose.TeX
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-tex/Aspose.TeX-API-References.git
+    submodule_path: source-repo-apiref/Aspose.TeX
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756812+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.tex.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.signature.docs
+  product_id: groupdocs.signature
+  product_name: GroupDocs.Signature
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Signature
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-signature/GroupDocs.Signature-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Signature
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756821+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.signature.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.signature.apiref
+  product_id: groupdocs.signature
+  product_name: GroupDocs.Signature
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Signature
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-signature/Groupdocs.Signature-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Signature
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756830+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.signature.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.parser.docs
+  product_id: groupdocs.parser
+  product_name: GroupDocs.Parser
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Parser
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-parser/GroupDocs.Parser-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Parser
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756839+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.parser.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.parser.apiref
+  product_id: groupdocs.parser
+  product_name: GroupDocs.Parser
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Parser
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-parser/Groupdocs.Parser-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Parser
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756848+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.parser.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.merger.docs
+  product_id: groupdocs.merger
+  product_name: GroupDocs.Merger
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Merger
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-merger/GroupDocs.Merger-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Merger
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756857+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.merger.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.merger.apiref
+  product_id: groupdocs.merger
+  product_name: GroupDocs.Merger
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Merger
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-merger/Groupdocs.Merger-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Merger
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756866+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.merger.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.metadata.docs
+  product_id: groupdocs.metadata
+  product_name: GroupDocs.Metadata
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Metadata
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-metadata/GroupDocs.Metadata-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Metadata
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756875+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.metadata.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.metadata.apiref
+  product_id: groupdocs.metadata
+  product_name: GroupDocs.Metadata
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Metadata
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-metadata/Groupdocs.Metadata-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Metadata
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756884+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.metadata.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.comparison.docs
+  product_id: groupdocs.comparison
+  product_name: GroupDocs.Comparison
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Comparison
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-comparison/GroupDocs.Comparison-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Comparison
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756893+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.comparison.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.comparison.apiref
+  product_id: groupdocs.comparison
+  product_name: GroupDocs.Comparison
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Comparison
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-comparison/Groupdocs.Comparison-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Comparison
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756902+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.comparison.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.editor.docs
+  product_id: groupdocs.editor
+  product_name: GroupDocs.Editor
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Editor
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-editor/GroupDocs.Editor-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Editor
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756911+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.editor.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.editor.apiref
+  product_id: groupdocs.editor
+  product_name: GroupDocs.Editor
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Editor
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-editor/Groupdocs.Editor-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Editor
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756919+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.editor.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.annotation.docs
+  product_id: groupdocs.annotation
+  product_name: GroupDocs.Annotation
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Annotation
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-annotation/GroupDocs.Annotation-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Annotation
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756928+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.annotation.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.annotation.apiref
+  product_id: groupdocs.annotation
+  product_name: GroupDocs.Annotation
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Annotation
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-annotation/GroupDocs.Annotation-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Annotation
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756937+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.annotation.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.search.docs
+  product_id: groupdocs.search
+  product_name: GroupDocs.Search
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Search
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-search/GroupDocs.Search-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Search
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756946+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.search.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.search.apiref
+  product_id: groupdocs.search
+  product_name: GroupDocs.Search
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Search
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-search/Groupdocs.Search-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Search
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756954+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.search.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.redaction.docs
+  product_id: groupdocs.redaction
+  product_name: GroupDocs.Redaction
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Redaction
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-redaction/GroupDocs.Redaction-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Redaction
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756963+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.redaction.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.redaction.apiref
+  product_id: groupdocs.redaction
+  product_name: GroupDocs.Redaction
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Redaction
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-redaction/Groupdocs.Redaction-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Redaction
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756972+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.redaction.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.assembly.docs
+  product_id: groupdocs.assembly
+  product_name: GroupDocs.Assembly
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Assembly
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-assembly/GroupDocs.Assembly-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Assembly
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756981+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.assembly.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.assembly.apiref
+  product_id: groupdocs.assembly
+  product_name: GroupDocs.Assembly
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Assembly
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-assembly/Groupdocs.Assembly-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Assembly
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756990+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.assembly.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.classification.docs
+  product_id: groupdocs.classification
+  product_name: GroupDocs.Classification
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Classification
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-classification/GroupDocs.Classification-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Classification
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.756998+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.classification.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.classification.apiref
+  product_id: groupdocs.classification
+  product_name: GroupDocs.Classification
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Classification
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-classification/Groupdocs.Classification-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Classification
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.757007+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.classification.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.watermark.docs
+  product_id: groupdocs.watermark
+  product_name: GroupDocs.Watermark
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Watermark
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-watermark/GroupDocs.Watermark-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Watermark
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.757016+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.watermark.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.watermark.apiref
+  product_id: groupdocs.watermark
+  product_name: GroupDocs.Watermark
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Watermark
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-watermark/Groupdocs.Watermark-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Watermark
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.757025+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.watermark.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.cells.apiref
+  product_id: aspose.cells
+  product_name: Aspose.Cells
+  product_family: aspose
+  product_family_dir: Aspose.Cells
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-cells/Aspose.Cells-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Cells
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-16T21:36:17.896936+00:00'
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 0.909
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.673
+      level2_programming_score: 0.9
+      directory_vectors_count: 139803
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - arabic
+      - chinese
+      - english
+      - french
+      - german
+      - italian
+      - russian
+      - spanish
+      - static
+      - swedish
+      - turkish
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - cells
+      - cpp
+      - go-cpp
+      - java
+      - javascript-cpp
+      - net
+      - nodejs
+      - nodejs-cpp
+      - php
+      - python-java
+    - depth: 3
+      semantic: namespace
+      values_sample:
+      - AboveAverage
+      - AbstractCalculationEngine
+      - AbstractFormulaChangeMonitor
+      - AbstractInterruptMonitor
+      - AbstractLowCodeLoadOptionsProvider
+      - AbstractLowCodeProtectionProvider
+      - AbstractLowCodeSaveOptionsProvider
+      - AbstractTextLoadOptions
+      - AccentEquationNode
+      - AccessCacheOptions
+      - ActiveXControl
+      - ActiveXControlBase
+      - ActiveXPersistenceType
+      - AdjustFontSizeForRowType
+      - AdvancedFilter
+      - ArcShape
+      - Area
+      - ArrayEquationNode
+      - AutoFillType
+      - AutoFilter
+      - AutoFitMergedCellsType
+      - AutoFitWrappedTextType
+      - AutoFitterOptions
+      - AutoNumberedBulletValue
+      - AutoShapeType
+      - AutomaticFill
+      - Axis
+      - AxisBins
+      - AxisType
+      - BackgroundMode
+    sample_markdown_paths:
+    - arabic/_index.md
+    - arabic/net/_index.md
+    - arabic/net/aspose.cells/_index.md
+    - arabic/net/aspose.cells/aboveaverage/_index.md
+    - arabic/net/aspose.cells/aboveaverage/aboveaverage/_index.md
+    - arabic/net/aspose.cells/aboveaverage/isaboveaverage/_index.md
+    - arabic/net/aspose.cells/aboveaverage/isequalaverage/_index.md
+    - arabic/net/aspose.cells/aboveaverage/stddev/_index.md
+    - arabic/net/aspose.cells/abstractcalculationengine/_index.md
+    - arabic/net/aspose.cells/abstractcalculationengine/calculate/_index.md
+    - arabic/net/aspose.cells/abstractcalculationengine/isparamliteralrequired/_index.md
+    - arabic/net/aspose.cells/abstractcalculationengine/processbuiltinfunctions/_index.md
+    - arabic/net/aspose.cells/abstractcalculationmonitor/_index.md
+    - arabic/net/aspose.cells/abstractcalculationmonitor/aftercalculate/_index.md
+    - arabic/net/aspose.cells/abstractcalculationmonitor/beforecalculate/_index.md
+    - arabic/net/aspose.cells/abstractcalculationmonitor/calculatedvalue/_index.md
+    - arabic/net/aspose.cells/abstractcalculationmonitor/oncircular/_index.md
+    - arabic/net/aspose.cells/abstractcalculationmonitor/originalvalue/_index.md
+    - arabic/net/aspose.cells/abstractcalculationmonitor/valuechanged/_index.md
+    - arabic/net/aspose.cells/abstractglobalizationsettings/_index.md
+    - arabic/net/aspose.cells/abstractglobalizationsettings/compare/_index.md
+    - arabic/net/aspose.cells/abstractglobalizationsettings/getcollationkey/_index.md
+    - arabic/net/aspose.cells/abstractinterruptmonitor/_index.md
+    - arabic/net/aspose.cells/abstractinterruptmonitor/isinterruptionrequested/_index.md
+    - arabic/net/aspose.cells/abstractinterruptmonitor/terminatewithoutexception/_index.md
+    notes:
+    - Top-level directories are treated as documentation locales.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.html.apiref
+  product_id: aspose.html
+  product_name: Aspose.HTML
+  product_family: aspose
+  product_family_dir: Aspose.HTML
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-html/Aspose.HTML-API-References.git
+    submodule_path: source-repo-apiref/Aspose.HTML
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-16T21:36:26.372408+00:00'
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.99
+    algorithm_metrics:
+      level1_locale_score: 1.0
+      level1_programming_score: 0.062
+      level1_children_overlap_score: 0.917
+      level2_programming_score: 1.0
+      directory_vectors_count: 83773
+    dimensions:
+    - depth: 1
+      semantic: doc_locale
+      values_sample:
+      - arabic
+      - chinese
+      - english
+      - french
+      - german
+      - greece
+      - indian
+      - indonesian
+      - italian
+      - japanese
+      - korean
+      - netherlands
+      - russian
+      - spanish
+      - swedish
+      - turkish
+    - depth: 2
+      semantic: programming_language
+      values_sample:
+      - java
+      - net
+      - python-net
+    - depth: 3
+      semantic: namespace
+      values_sample:
+      - aspose.html
+      - aspose.html.accessibility
+      - aspose.html.accessibility.results
+      - aspose.html.accessibility.saving
+      - aspose.html.collections
+      - aspose.html.converters
+      - aspose.html.diagnostics
+      - aspose.html.dom
+      - aspose.html.dom.attributes
+      - aspose.html.dom.canvas
+      - aspose.html.dom.css
+      - aspose.html.dom.events
+      - aspose.html.dom.mutations
+      - aspose.html.dom.svg
+      - aspose.html.dom.svg.collections
+      - aspose.html.dom.svg.datatypes
+      - aspose.html.dom.svg.events
+      - aspose.html.dom.svg.filters
+      - aspose.html.dom.svg.paths
+      - aspose.html.dom.svg.saving
+      - aspose.html.dom.traversal
+      - aspose.html.dom.traversal.filters
+      - aspose.html.dom.views
+      - aspose.html.dom.xpath
+      - aspose.html.drawing
+      - aspose.html.forms
+      - aspose.html.io
+      - aspose.html.loading
+      - aspose.html.net
+      - aspose.html.net.headers
+    sample_markdown_paths:
+    - README.md
+    - arabic/_index.md
+    - arabic/net/_index.md
+    - arabic/net/aspose.html/_index.md
+    - arabic/net/aspose.html/arraybuffer/_index.md
+    - arabic/net/aspose.html/arraybuffer/arraybuffer/_index.md
+    - arabic/net/aspose.html/arraybuffer/bytelength/_index.md
+    - arabic/net/aspose.html/arraybuffer/item/_index.md
+    - arabic/net/aspose.html/arraybuffer/op_explicit/_index.md
+    - arabic/net/aspose.html/configuration/_index.md
+    - arabic/net/aspose.html/configuration/addservice/_index.md
+    - arabic/net/aspose.html/configuration/configuration/_index.md
+    - arabic/net/aspose.html/configuration/dispose/_index.md
+    - arabic/net/aspose.html/configuration/getservice/_index.md
+    - arabic/net/aspose.html/configuration/security/_index.md
+    - arabic/net/aspose.html/float32array/_index.md
+    - arabic/net/aspose.html/float32array/bytes_per_element/_index.md
+    - arabic/net/aspose.html/float32array/float32array/_index.md
+    - arabic/net/aspose.html/float32array/item/_index.md
+    - arabic/net/aspose.html/float64array/_index.md
+    - arabic/net/aspose.html/float64array/bytes_per_element/_index.md
+    - arabic/net/aspose.html/float64array/float64array/_index.md
+    - arabic/net/aspose.html/float64array/item/_index.md
+    - arabic/net/aspose.html/fontssettings/_index.md
+    - arabic/net/aspose.html/fontssettings/fontmatcher/_index.md
+    notes:
+    - Top-level directories are treated as documentation locales.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.gis.docs
+  product_id: aspose.gis
+  product_name: Aspose.GIS
+  product_family: aspose
+  product_family_dir: Aspose.GIS
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-gis/Aspose.GIS-Documentation.git
+    submodule_path: source-repo-docs/Aspose.GIS
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.757053+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.gis.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.3d.apiref
+  product_id: aspose.3d
+  product_name: Aspose.3D
+  product_family: aspose
+  product_family_dir: Aspose.3D
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-3d/Aspose.3D-API-References.git
+    submodule_path: source-repo-apiref/Aspose.3D
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.757063+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.3d.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.svg.apiref
+  product_id: aspose.svg
+  product_name: Aspose.SVG
+  product_family: aspose
+  product_family_dir: Aspose.SVG
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-svg/Aspose.SVG-API-References.git
+    submodule_path: source-repo-apiref/Aspose.SVG
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T09:04:52.757071+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.svg.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.font.docs
+  product_id: aspose.font
+  product_name: Aspose.Font
+  product_family: aspose
+  product_family_dir: Aspose.Font
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-font/Aspose.Font-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Font
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T10:02:51.266990+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.font.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.font.apiref
+  product_id: aspose.font
+  product_name: Aspose.Font
+  product_family: aspose
+  product_family_dir: Aspose.Font
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-font/Aspose.Font-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Font
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T10:02:51.267262+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.font.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.drawing.docs
+  product_id: aspose.drawing
+  product_name: Aspose.Drawing
+  product_family: aspose
+  product_family_dir: Aspose.Drawing
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-drawing/Aspose.Drawing-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Drawing
+    default_branch: master
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T10:02:51.267308+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.drawing.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.llm.docs
+  product_id: aspose.llm
+  product_name: Aspose.LLM
+  product_family: aspose
+  product_family_dir: Aspose.LLM
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-llm/Aspose.LLM-Documentation.git
+    submodule_path: source-repo-docs/Aspose.LLM
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-04-14T21:21:18.983986+00:00'
+    layout_type: programming_language/content
+    confidence: 0.8
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 1.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 20
+    dimensions:
+    - depth: 1
+      semantic: programming_language
+      values_sample:
+      - net
+    - depth: 2
+      semantic: content_group
+      values_sample:
+      - developer-reference
+      - getting-started
+      - product-overview
+      - use-cases
+    sample_markdown_paths:
+    - README.md
+    - _index.md
+    - net/_index.md
+    - net/developer-reference/_index.md
+    - net/developer-reference/api-reference/_index.md
+    - net/developer-reference/chat-sessions/_index.md
+    - net/developer-reference/license/_index.md
+    - net/developer-reference/presets/_index.md
+    - net/developer-reference/session-persistence/_index.md
+    - net/getting-started/_index.md
+    - net/getting-started/hello-world/_index.md
+    - net/getting-started/how-to-run-the-examples/_index.md
+    - net/getting-started/installation/_index.md
+    - net/getting-started/licensing/_index.md
+    - net/getting-started/system-requirements/_index.md
+    - net/product-overview/_index.md
+    - net/product-overview/supported-presets/_index.md
+    - net/use-cases/_index.md
+    - net/use-cases/custom-preset/_index.md
+    - net/use-cases/multi-turn-chat/_index.md
+    - net/use-cases/save-and-restore-session/_index.md
+    - net/use-cases/simple-chat/_index.md
+    notes:
+    - Top-level directories are treated as programming languages.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.medical.docs
+  product_id: aspose.medical
+  product_name: Aspose.Medical
+  product_family: aspose
+  product_family_dir: Aspose.Medical
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-medical/Aspose.Medical-Documentation.git
+    submodule_path: source-repo-docs/Aspose.Medical
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T10:02:51.267340+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.medical.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.medical.apiref
+  product_id: aspose.medical
+  product_name: Aspose.Medical
+  product_family: aspose
+  product_family_dir: Aspose.Medical
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-medical/Aspose.Medical-API-References.git
+    submodule_path: source-repo-apiref/Aspose.Medical
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T10:02:51.267352+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `aspose.medical.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: groupdocs.markdown.docs
+  product_id: groupdocs.markdown
+  product_name: GroupDocs.Markdown
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Markdown
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-markdown/GroupDocs.Markdown-Docs.git
+    submodule_path: source-repo-docs/GroupDocs.Markdown
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T10:02:51.267366+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.markdown.docs`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: groupdocs.markdown.apiref
+  product_id: groupdocs.markdown
+  product_name: GroupDocs.Markdown
+  product_family: groupdocs
+  product_family_dir: GroupDocs.Markdown
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/groupdocs-markdown/Groupdocs.Markdown-References.git
+    submodule_path: source-repo-apiref/GroupDocs.Markdown
+    default_branch: main
+    materialization_state: lazy_registered
+  layout_detection:
+    status: pending_checkout
+    detector_version: layout-detector.v1
+    detected_at_utc: '2026-03-12T10:02:51.267378+00:00'
+    layout_type: pending_checkout
+    confidence: 0.0
+    algorithm_metrics:
+      level1_locale_score: 0.0
+      level1_programming_score: 0.0
+      level1_children_overlap_score: 0.0
+      level2_programming_score: 0.0
+      directory_vectors_count: 0
+    dimensions: []
+    sample_markdown_paths: []
+    notes:
+    - Submodule worktree is not materialized locally for `groupdocs.markdown.apiref`.
+    - Run source-sync/source-update or materialized onboarding before layout detection.
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.3d.docs
+  product_id: aspose.3d
+  product_name: Aspose.3D
+  product_family: aspose
+  product_family_dir: Aspose.3D
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-3d/Aspose.3D-Doc-md.git
+    submodule_path: source-repo-docs/Aspose.3D
+    materialization_state: lazy_registered
+    default_branch: master
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    layout_type: doc_locale/programming_language/content
+    confidence: 0.9
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.cells.docs
+  product_id: aspose.cells
+  product_name: Aspose.Cells
+  product_family: aspose
+  product_family_dir: Aspose.Cells
+  source_kind: docs
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-cells/Aspose.Cells-Doc-md.git
+    submodule_path: source-repo-docs/Aspose.Cells
+    materialization_state: lazy_registered
+    default_branch: master
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    layout_type: doc_locale/programming_language/content
+    confidence: 0.9
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+- repo_id: aspose.llm.apiref
+  product_id: aspose.llm
+  product_name: Aspose.LLM
+  product_family: aspose
+  product_family_dir: Aspose.LLM
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-llm/Aspose.LLM-References.git
+    submodule_path: source-repo-apiref/Aspose.LLM
+    materialization_state: lazy_registered
+    default_branch: main
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.9
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.drawing.apiref
+  product_id: aspose.drawing
+  product_name: Aspose.Drawing
+  product_family: aspose
+  product_family_dir: Aspose.Drawing
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-drawing/Aspose.Drawing-API-Reference.git
+    submodule_path: source-repo-apiref/Aspose.Drawing
+    materialization_state: lazy_registered
+    default_branch: main
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.9
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+- repo_id: aspose.gis.apiref
+  product_id: aspose.gis
+  product_name: Aspose.GIS
+  product_family: aspose
+  product_family_dir: Aspose.GIS
+  source_kind: apiref
+  format: hugo-md
+  git:
+    provider: github
+    url: https://github.com/aspose-gis/Aspose.GIS-API-Reference.git
+    submodule_path: source-repo-apiref/Aspose.GIS
+    materialization_state: lazy_registered
+    default_branch: main
+  layout_detection:
+    status: detected
+    detector_version: layout-detector.v1
+    layout_type: doc_locale/programming_language/namespace
+    confidence: 0.9
+  ingestion:
+    latest_stable_only: true
+    enabled: true
+    triggers:
+    - webhook
+    - admin_button
+    incremental_diff_preferred: true
+    fallback_strategy: full_reindex
+    doc_locale_filter:
+    - english
+layout_semantics_reference:
+  description: Canonical semantics used by layout_detection.layout_type and dimensions.
+  tokens:
+    doc_locale: Natural language locale dimension for documentation content (for example
+      english, german, ru).
+    programming_language: SDK/runtime language dimension (for example net, java, cpp,
+      python).
+    namespace: API namespace/class path dimension, mainly for API reference repositories.
+    content_group: Documentation structure grouping (for example getting-started,
+      developer-reference).
+    auxiliary_content_group: Non-SDK top-level content group that should not be treated
+      as programming language.

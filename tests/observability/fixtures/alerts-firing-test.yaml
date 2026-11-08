@@ -1,0 +1,93 @@
+# promtool `test rules` fixture for the ADCS alert rule set.
+#
+# Each test block injects a synthetic Prometheus metric series and asserts
+# that the named alert fires (or stays silent) at the evaluation time
+# specified. This is the standard pattern for verifying alert firing
+# semantics without a running Prometheus — `promtool test rules` uses the
+# same evaluator as production Prometheus.
+#
+# Run via:
+#   promtool test rules tests/observability/fixtures/alerts-firing-test.yaml
+#
+# The wrapper test in tests/observability/test_alert_firing_promtool.py
+# invokes this automatically when promtool is on PATH and skips otherwise.
+
+rule_files:
+  - ../../../infra/observability/prometheus/adcs-alerts.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # -------------------------------------------------------------------------
+  # Sev1: API availability collapses to 80% — must fire after the 5m `for`
+  # -------------------------------------------------------------------------
+  - interval: 1m
+    input_series:
+      - series: 'adcs_http_requests_total{job="adcs-api",status="200"}'
+        values: "100+100x10"  # 10 cumulative samples of 200s
+      - series: 'adcs_http_requests_total{job="adcs-api",status="500"}'
+        values: "25+25x10"    # 5xx growing in lockstep → 20% error
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ADCSCriticalApiAvailability
+        exp_alerts:
+          - exp_labels:
+              severity: sev1
+              service: adcs-api
+              alertname: ADCSCriticalApiAvailability
+            exp_annotations:
+              summary: "API availability below 95% for 5 minutes"
+              description: |
+                More than 5% of ADCS API requests returned a 5xx status over the last
+                5 minutes.
+              runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"
+
+  # -------------------------------------------------------------------------
+  # Sev2: citation-missing ratio held at 2% — must fire after the 60m `for`
+  # and stay silent before it elapses
+  # -------------------------------------------------------------------------
+  - interval: 1m
+    input_series:
+      - series: 'adcs_citation_missing_ratio{job="adcs-api"}'
+        values: "0.02x70"
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: ADCSCitationCoverageBreach
+        exp_alerts: []
+      - eval_time: 65m
+        alertname: ADCSCitationCoverageBreach
+        exp_alerts:
+          - exp_labels:
+              severity: sev2
+              service: retrieval
+              job: adcs-api
+              alertname: ADCSCitationCoverageBreach
+            exp_annotations:
+              summary: "Citation coverage below 99.5% for 1 hour"
+              description: |
+                Retrieval results are being returned without a canonical_url or
+                section_anchor, violating the citation coverage SLI.
+              runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s2d-citation-coverage-breach-sev2--data-integrity"
+
+  # -------------------------------------------------------------------------
+  # Sev3: 20 req/s answered with 429 for 10 minutes — must fire after the 5m
+  # `for`
+  # -------------------------------------------------------------------------
+  - interval: 1m
+    input_series:
+      - series: 'adcs_http_requests_total{job="adcs-api",status="429"}'
+        values: "0+1200x15"  # +1200 per minute → 20 req/s
+    alert_rule_test:
+      - eval_time: 12m
+        alertname: ADCSAbuseStorm
+        exp_alerts:
+          - exp_labels:
+              severity: sev3
+              service: adcs-api
+              alertname: ADCSAbuseStorm
+            exp_annotations:
+              summary: "Sustained rate-limit firing > 10 req/s for 5 min"
+              description: |
+                The abuse guard defaults to observe-only mode (ADCS_ABUSE_GUARD_MODE), so
+                no 429 is emitted and this fires only once enforcement is switched on.
+              runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s3a-rate-limit--abuse-storm-sev3"

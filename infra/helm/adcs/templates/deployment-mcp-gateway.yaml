@@ -1,0 +1,75 @@
+{{- if .Values.mcpGateway.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "adcs.fullname" . }}-mcp-gateway
+  labels:
+    {{- include "adcs.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mcp-gateway
+spec:
+  replicas: {{ .Values.mcpGateway.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "adcs.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mcp-gateway
+  template:
+    metadata:
+      labels:
+        {{- include "adcs.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mcp-gateway
+        {{- with .Values.global.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "adcs.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- include "adcs.sourceDirs.initContainer" (dict "image" (printf "%s:%s" .Values.mcpGateway.image.repository .Values.mcpGateway.image.tag) "pullPolicy" .Values.mcpGateway.image.pullPolicy) | nindent 8 }}
+      containers:
+        - name: mcp-gateway
+          image: "{{ .Values.mcpGateway.image.repository }}:{{ .Values.mcpGateway.image.tag }}"
+          imagePullPolicy: {{ .Values.mcpGateway.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            {{- include "adcs.commonEnv" . | nindent 12 }}
+          volumeMounts:
+            {{- include "adcs.sourceDirs.volumeMounts" . | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.mcpGateway.livenessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.mcpGateway.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.mcpGateway.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.mcpGateway.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.mcpGateway.livenessProbe.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.mcpGateway.readinessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.mcpGateway.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.mcpGateway.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.mcpGateway.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.mcpGateway.readinessProbe.failureThreshold }}
+          resources:
+            {{- toYaml .Values.mcpGateway.resources | nindent 12 }}
+      volumes:
+        {{- include "adcs.sourceDirs.volume" . | nindent 8 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

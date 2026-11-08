@@ -1,0 +1,225 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adcs"
+version = "0.1.0"
+description = "ADCS — Model Context Protocol (MCP) server for versioned, citation-backed Aspose and GroupDocs documentation; AI-IDE context service with hybrid vector+lexical retrieval."
+keywords = [
+  "mcp",
+  "model-context-protocol",
+  "mcp-server",
+  "ai-ide",
+  "retrieval",
+  "rag",
+  "vector-search",
+  "qdrant",
+  "opensearch",
+  "aspose",
+  "groupdocs",
+  "documentation",
+]
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Aspose Pty Ltd" }]
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.34.0",
+  "pydantic>=2.10.0",
+  "pydantic-settings>=2.7.0",
+  "PyYAML>=6.0.2",
+  "celery>=5.4.0",
+  "redis>=5.0.0",
+  "sqlalchemy>=2.0.0",
+  "psycopg[binary]>=3.2.0",
+  "alembic>=1.14.0",
+  # Imported at module level by src/adcs/llm_proxy/tool_aware_proxy.py, which the
+  # documented `python -m adcs.llm_proxy` entrypoint loads — a runtime dependency,
+  # not a dev one.
+  "httpx>=0.27.0",
+  # CA bundle for outbound TLS (embedding, translation, telemetry clients). The
+  # python.org macOS build ships no system CA store, so this is load-bearing for
+  # certificate verification rather than a convenience.
+  "certifi>=2024.2.2",
+]
+
+[project.scripts]
+adcs-mcp-stdio = "adcs.mcp.stdio_server:main"
+adcs-platform-ingest = "adcs.plugins.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/aspose-core-mcp/context-engine"
+Repository = "https://github.com/aspose-core-mcp/context-engine"
+Issues = "https://github.com/aspose-core-mcp/context-engine/issues"
+
+[project.optional-dependencies]
+dev = [
+  "mypy==2.3.1",
+  "pytest==9.1.1",
+  "pytest-cov==7.1.0",
+  "ruff==0.16.7",
+  "httpx>=0.27.0",
+  "hypothesis==6.168.0",
+]
+# Consumer-driven contract testing via Pact (self-hosted broker).
+# Optional extra so the standard `[dev]` install stays slim; install via
+# `pip install -e ".[dev,contracts]"` when running contract tests.
+contracts = [
+  # The contract tests use the pact-python 2 API (Consumer/Provider, Verifier(provider=...)).
+  "pact-python>=2.3.0,<3",
+]
+
+# Mutation testing via mutmut. Heavyweight (hours per full run), so it is
+# deliberately NOT in [dev]. Install via `pip install -e ".[mutation]"`;
+# run via `make mutation-test`.
+mutation = [
+  "mutmut>=3.5.0",
+]
+
+# Installed by the images: with this present, src/adcs/ops/metrics.py stops
+# degrading to no-op stubs and its embedding/retrieval/ingestion families start
+# being exported. Safe to install because the two registries declare disjoint
+# metric names — see the disjointness test in
+# tests/test_api_observability.py.
+metrics = [
+  "prometheus-client>=0.21.0",
+]
+
+# Not installed by the images, deliberately. With it present TracingService
+# activates and starts exporting, but only the request middleware emits a span,
+# so without a configured OTLP endpoint it adds retry noise rather than traces.
+# It also pulls in a protobuf major upgrade. Configure an endpoint before
+# installing it.
+tracing = [
+  "opentelemetry-sdk>=1.29.0",
+  "opentelemetry-exporter-otlp-proto-http>=1.29.0",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# RUF100 keeps the `# noqa` annotations honest: it flags suppressions for rules
+# this configuration does not enable, so the code never reads as though checks
+# are enforced when nothing runs them.
+select = ["E", "F", "I", "UP", "RUF100"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+# Corpus-dependent tests are excluded by default: their outcome depends on what a
+# local Qdrant/OpenSearch/MCP happens to hold, so leaving them in the mandatory
+# gate makes it pass or fail on ambient container state. Run them via `make
+# test-live`, which requires the surface instead of skipping past it.
+addopts = "-m 'not live'"
+markers = [
+  "live: requires a live retrieval surface (Qdrant/OpenSearch/MCP endpoint) and a loaded corpus",
+]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+packages = ["adcs"]
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+
+# Mutation-testing config consumed by `mutmut` (>= 3.5).
+#
+# mutmut 3.x replaced the 2.x config model entirely; this block follows the
+# 3.x model:
+#   * `tests_dir` is a LIST of pytest selection args, not a string — 3.x
+#     extends the pytest argv with it, so a bare string is split
+#     character-by-character and crashes with
+#     BadTestExecutionCommandsException.
+#   * The 2.x `runner = "..."` shell-string key is IGNORED by 3.x (the
+#     runner is hardcoded to PytestRunner); PYTHONPATH must be exported
+#     in the environment instead (the Makefile `mutation-test` target
+#     does this).
+#   * `paths_to_mutate` must cover the WHOLE `adcs` package: mutmut 3.x
+#     copies these paths into a `mutants/` sandbox and runs the suite
+#     there, and the repo's `tests/conftest.py` imports `adcs.config`,
+#     so a partial subset (e.g. just `quality_loop/`) breaks collection
+#     with ModuleNotFoundError. Scoping a sweep to specific modules is
+#     done at invocation time via `mutmut run <MUTANT_NAMES>`, not here.
+#
+# A full sweep generates thousands of mutants and runs the suite once
+# per surviving mutant — multi-hour wall-clock. It is therefore run on
+# demand via `make mutation-test`, never as part of the `make test` gate.
+# Priority module order for the baseline: quality_loop/audit_replay.py,
+# quality_loop/diagnosis_agent.py, admin/tenant_persistence.py.
+[tool.mutmut]
+paths_to_mutate = [
+  "src/adcs/",
+]
+tests_dir = [
+  "tests/",
+]
+backup = false
+
+[[tool.mypy.overrides]]
+module = ["celery", "celery.*", "kombu", "kombu.*", "yaml", "yaml.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["opentelemetry", "opentelemetry.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["prometheus_client", "prometheus_client.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["certifi", "certifi.*"]
+ignore_missing_imports = true
+
+# ----------------------------------------------------------------------------
+# Coverage configuration (pytest-cov + coverage.py)
+# ----------------------------------------------------------------------------
+# Coverage is computed for the `src/adcs` package. High-risk modules have a
+# hard 80% gate enforced by `make test-coverage-gate`; the global threshold is
+# informational only.
+# ----------------------------------------------------------------------------
+
+[tool.coverage.run]
+source = ["src/adcs"]
+branch = true
+parallel = true
+omit = [
+  "*/tests/*",
+  "*/__init__.py",
+  "*/migrations/*",
+  "*/scripts/*",
+  "*/conftest.py",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+  "pragma: no cover",
+  "raise NotImplementedError",
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+  "@overload",
+  "@abstractmethod",
+]
+
+[tool.coverage.xml]
+output = "reports/coverage/coverage.xml"
+
+[tool.coverage.html]
+directory = "reports/coverage/html"

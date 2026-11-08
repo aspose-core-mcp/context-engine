@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "base_url": "http://localhost:11434/v1",
+  "model": "gpt-oss",
+  "api_key_env_var": "ADCS_TRANSLATION_LLM_API_KEY",
+  "timeout_seconds": 8.0,
+  "temperature": 0.0,
+  "max_tokens": 1024
+}

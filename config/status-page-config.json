@@ -1,0 +1,63 @@
+{
+  "_comment": "Status page configuration. Maintenance windows and announcements are read from this file at request time. Edit and commit to update.",
+  "components": [
+    {
+      "id": "mcp_api",
+      "name": "MCP API (public)",
+      "description": "Public Model Context Protocol endpoint used by AI-IDEs.",
+      "depends_on": ["retrieval", "auth"]
+    },
+    {
+      "id": "rest_api",
+      "name": "REST API /v1/*",
+      "description": "Public REST endpoints.",
+      "depends_on": ["retrieval", "auth"]
+    },
+    {
+      "id": "admin_api",
+      "name": "Admin API",
+      "description": "Operator-facing admin endpoints (requires API key).",
+      "depends_on": ["auth", "metadata_db"]
+    },
+    {
+      "id": "retrieval",
+      "name": "Retrieval (search backends)",
+      "description": "Hybrid search across Qdrant (vector) and OpenSearch (lexical).",
+      "depends_on": ["vector_db", "lexical_db"]
+    },
+    {
+      "id": "ingestion",
+      "name": "Ingestion pipeline",
+      "description": "Background processing of documentation updates.",
+      "depends_on": ["queue", "metadata_db"]
+    },
+    {
+      "id": "auth",
+      "name": "Authentication",
+      "description": "Admin API key validation."
+    },
+    {
+      "id": "vector_db",
+      "name": "Vector DB (Qdrant)",
+      "description": "Vector index serving semantic search."
+    },
+    {
+      "id": "lexical_db",
+      "name": "Lexical DB (OpenSearch)",
+      "description": "BM25 inverted index serving keyword search."
+    },
+    {
+      "id": "metadata_db",
+      "name": "Metadata DB (PostgreSQL)",
+      "description": "Control plane database (audit, snapshots, registries)."
+    },
+    {
+      "id": "queue",
+      "name": "Job queue (RabbitMQ)",
+      "description": "Async work queue for ingestion and indexing."
+    }
+  ],
+  "maintenance_windows": [],
+  "announcements": [],
+  "incidents": []
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0",
+  "profiles": {
+    "dev": {
+      "qdrant": {
+        "shard_number": 1,
+        "replication_factor": 1,
+        "write_consistency_factor": 1
+      },
+      "opensearch": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0,
+        "refresh_interval": "1s"
+      },
+      "compaction": {
+        "enabled": false,
+        "max_inactive_snapshots_per_scope": 3,
+        "stale_snapshot_retention_days": 30
+      },
+      "storage_tiering": {
+        "latest_stable_tier": "hot",
+        "archive_tier": "warm"
+      }
+    },
+    "staging": {
+      "qdrant": {
+        "shard_number": 2,
+        "replication_factor": 1,
+        "write_consistency_factor": 1
+      },
+      "opensearch": {
+        "number_of_shards": 2,
+        "number_of_replicas": 1,
+        "refresh_interval": "5s"
+      },
+      "compaction": {
+        "enabled": true,
+        "max_inactive_snapshots_per_scope": 5,
+        "stale_snapshot_retention_days": 90
+      },
+      "storage_tiering": {
+        "latest_stable_tier": "hot",
+        "archive_tier": "warm"
+      }
+    },
+    "prod": {
+      "qdrant": {
+        "shard_number": 4,
+        "replication_factor": 2,
+        "write_consistency_factor": 2
+      },
+      "opensearch": {
+        "number_of_shards": 6,
+        "number_of_replicas": 1,
+        "refresh_interval": "10s"
+      },
+      "compaction": {
+        "enabled": true,
+        "max_inactive_snapshots_per_scope": 8,
+        "stale_snapshot_retention_days": 180
+      },
+      "storage_tiering": {
+        "latest_stable_tier": "hot",
+        "archive_tier": "warm"
+      }
+    }
+  }
+}

@@ -1,0 +1,77 @@
+# ADCS performance + cost budgets enforced in CI.
+#
+# Budgets are enforced by `make perf-budget-gate`. This file expresses the
+# service latency, error-rate, throughput and LLM cost targets as gates.
+#
+# Versioning: bump `version` whenever a budget loosens (regression) or
+# tightens (improvement). Loosening requires owner sign-off in PR.
+# ----------------------------------------------------------------------------
+
+version: 1
+owner: maintainers
+last_reviewed: "2026-04-30"
+
+# Where the budget enforcer reads measurements from.
+sources:
+  perf_summary: reports/quality-gates/perf-summary.json
+  cost_summary: reports/quality-gates/cost-summary.json   # produced by scripts/perf/measure_llm_cost_surface.py
+
+# Latency / throughput / availability budgets.
+# Each row maps to one target inside perf-summary.profiles[].targets[].
+# When measurement is missing, behaviour is governed by `on_missing`.
+performance:
+  # Sustained profile (50 RPS target, normal ops).
+  - profile: sustained
+    metric: query_docs_p50_latency_ms
+    comparator: "<="
+    budget: 350           # ms — query_docs median latency target
+    on_missing: warn
+  - profile: sustained
+    metric: query_docs_p95_latency_ms
+    comparator: "<="
+    budget: 1200          # ms — query_docs p95 latency target
+    on_missing: warn
+  - profile: sustained
+    metric: error_rate
+    comparator: "<="
+    budget: 0.01          # 1 %
+    on_missing: warn
+  - profile: sustained
+    metric: throughput_rps
+    comparator: ">="
+    budget: 40            # MVP sustained 50 RPS, but harness simulates fewer
+    on_missing: warn
+
+  # Burst profile (150 RPS target).
+  - profile: burst
+    metric: query_docs_p95_latency_ms
+    comparator: "<="
+    budget: 1500          # graceful headroom over sustained
+    on_missing: warn
+
+# Cost surface — bounded by static analysis of LLM call sites per module.
+# Catches silent fan-out (one PR adds 10 new LLM calls in a hot path).
+# Numbers are the *current* baseline + small headroom for planned
+# work; bumping them needs owner approval (the PR + this file edit are
+# reviewed together).
+#
+# Current baseline (2026-04-30): 2 call sites, both in translation_fallback.py.
+# As multi-LLM voting and the query refiner land, these numbers
+# will grow; the gate makes that growth visible at budget-review time.
+cost:
+  llm_call_sites:
+    # ⚠ Numbers validated by scripts/perf/measure_llm_cost_surface.py.
+    # Update in the same PR that intentionally adds/removes calls.
+    overall_max: 25                                       # baseline 2, headroom for planned LLM features
+    per_module:
+      "src/adcs/retrieval/translation_fallback.py": 4    # baseline 2; allow up to 4
+      "src/adcs/quality_gates/golden_eval.py": 4         # baseline 0; budget for LLM-as-judge
+      "src/adcs/quality_gates/release_readiness.py": 2   # baseline 0
+      "src/adcs/admin/quality_reviews.py": 4             # baseline 0; multi-LLM voting
+
+# Dispositions on enforcement.
+disposition:
+  # `block` = exit 1 on breach. `track` = print warning, exit 0.
+  on_breach: block
+  on_unknown_metric: track  # forward-compat for SLIs added after this file
+  on_loosening: warn        # detect non-monotonic budget edits

@@ -1,0 +1,55 @@
+{
+  "schema_version": "adcs.release_catalog.v1",
+  "entries": [
+    {
+      "product_id": "aspose.ocr",
+      "programming_language": "net",
+      "version": "latest-stable",
+      "published_at": "2026-01-15T00:00:00+00:00",
+      "channel": "latest-stable",
+      "label": "Aspose.OCR latest stable for .NET"
+    },
+    {
+      "product_id": "aspose.ocr",
+      "programming_language": "net",
+      "version": "26.1",
+      "published_at": "2026-01-15T00:00:00+00:00",
+      "channel": "stable"
+    },
+    {
+      "product_id": "aspose.ocr",
+      "programming_language": "net",
+      "version": "25.12",
+      "published_at": "2025-12-10T00:00:00+00:00",
+      "channel": "stable"
+    },
+    {
+      "product_id": "aspose.ocr",
+      "programming_language": "net",
+      "version": "25.11",
+      "published_at": "2025-11-25T00:00:00+00:00",
+      "channel": "stable"
+    },
+    {
+      "product_id": "aspose.ocr",
+      "programming_language": "net",
+      "version": "25.9.1",
+      "published_at": "2025-09-24T00:00:00+00:00",
+      "channel": "stable"
+    },
+    {
+      "product_id": "aspose.ocr",
+      "programming_language": "net",
+      "version": "25.1",
+      "published_at": "2025-01-22T00:00:00+00:00",
+      "channel": "stable"
+    },
+    {
+      "product_id": "aspose.ocr",
+      "programming_language": "net",
+      "version": "24.12",
+      "published_at": "2024-12-18T00:00:00+00:00",
+      "channel": "stable"
+    }
+  ]
+}

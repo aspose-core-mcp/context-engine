@@ -1,0 +1,105 @@
+"""Indexing package for Stage-E embeddings and Stage-F index publish."""
+
+from adcs.indexing.embedding_provider import (
+    DeterministicLocalEmbeddingProvider,
+    EmbeddingProvider,
+    OllamaEmbeddingProvider,
+    OpenAICompatibleEmbeddingProvider,
+)
+from adcs.indexing.index_models import (
+    CriticalEventSummary,
+    IndexPublishSummary,
+    IngestionRunMode,
+    LexicalIndexRecord,
+    LexicalWriteResult,
+    NotificationDispatchSummary,
+    PublishDecision,
+    SnapshotRecord,
+    SnapshotRollbackOutcome,
+    SnapshotStatus,
+    VectorIndexRecord,
+    VectorWriteResult,
+)
+from adcs.indexing.lexical_index_writer import (
+    InMemoryLexicalIndexWriter,
+    LexicalIndexWriter,
+    OpenSearchLexicalIndexWriter,
+)
+from adcs.indexing.publish_orchestrator import IndexPublishOrchestrator
+from adcs.indexing.snapshot_cleanup import (
+    BulkSnapshotCleanupResult,
+    BulkSnapshotCleanupScopeSummary,
+    SnapshotCleanupExecutionResult,
+    SnapshotCleanupFilters,
+    SnapshotCleanupPreview,
+    SnapshotCleanupProtectedSnapshot,
+    SnapshotCleanupService,
+    VectorIndexPurger,
+)
+from adcs.indexing.snapshot_registry import (
+    InMemorySnapshotRegistry,
+    PostgresSnapshotRegistry,
+    SnapshotRegistry,
+    SnapshotRollbackConflictError,
+)
+from adcs.indexing.topology_policy import (
+    CompactionTopologyPolicy,
+    IndexTopologyPolicy,
+    OpenSearchTopologyPolicy,
+    QdrantTopologyPolicy,
+    StorageTieringPolicy,
+    load_index_topology_policy,
+)
+from adcs.indexing.vector_index_writer import (
+    InMemoryVectorIndexPurger,
+    InMemoryVectorIndexWriter,
+    QdrantVectorIndexPurger,
+    QdrantVectorIndexWriter,
+    VectorIndexWriter,
+)
+
+__all__ = [
+    "BulkSnapshotCleanupResult",
+    "BulkSnapshotCleanupScopeSummary",
+    "DeterministicLocalEmbeddingProvider",
+    "EmbeddingProvider",
+    "OllamaEmbeddingProvider",
+    "OpenAICompatibleEmbeddingProvider",
+    "CriticalEventSummary",
+    "IndexPublishOrchestrator",
+    "IndexPublishSummary",
+    "IngestionRunMode",
+    "InMemoryLexicalIndexWriter",
+    "InMemorySnapshotRegistry",
+    "InMemoryVectorIndexPurger",
+    "InMemoryVectorIndexWriter",
+    "LexicalIndexRecord",
+    "LexicalIndexWriter",
+    "LexicalWriteResult",
+    "NotificationDispatchSummary",
+    "OpenSearchLexicalIndexWriter",
+    "OpenSearchTopologyPolicy",
+    "PostgresSnapshotRegistry",
+    "PublishDecision",
+    "QdrantVectorIndexPurger",
+    "QdrantVectorIndexWriter",
+    "QdrantTopologyPolicy",
+    "SnapshotCleanupExecutionResult",
+    "SnapshotCleanupFilters",
+    "SnapshotCleanupPreview",
+    "SnapshotCleanupProtectedSnapshot",
+    "SnapshotCleanupService",
+    "SnapshotRecord",
+    "SnapshotRollbackConflictError",
+    "SnapshotRollbackOutcome",
+    "SnapshotRegistry",
+    "SnapshotStatus",
+    "StorageTieringPolicy",
+    "VectorIndexPurger",
+    "VectorIndexRecord",
+    "VectorIndexWriter",
+    "VectorWriteResult",
+    "CompactionTopologyPolicy",
+    "IndexTopologyPolicy",
+    "load_index_topology_policy",
+]

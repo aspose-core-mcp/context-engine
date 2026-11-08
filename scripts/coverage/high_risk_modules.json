@@ -1,0 +1,73 @@
+{
+  "_comment": "High-risk modules require >=80% line coverage. Other modules: report-only.",
+  "_decided_at": "2026-04-25",
+  "_decided_by": "maintainers",
+  "global_threshold_percent": 0,
+  "high_risk_modules": [
+    {
+      "path_glob": "src/adcs/api/admin_auth.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "Auth bypass = critical security risk"
+    },
+    {
+      "path_glob": "src/adcs/api/admin_keys.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "API key lifecycle = security-critical"
+    },
+    {
+      "path_glob": "src/adcs/retrieval/hybrid_retriever.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "Core retrieval correctness"
+    },
+    {
+      "path_glob": "src/adcs/retrieval/filter_resolver.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "strict_version invariant = data integrity"
+    },
+    {
+      "path_glob": "src/adcs/retrieval/reranker.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "Result ordering correctness"
+    },
+    {
+      "path_glob": "src/adcs/retrieval/context_packer.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "Citation assembly correctness"
+    },
+    {
+      "path_glob": "src/adcs/ingestion/source_hugo_normalization_orchestrator.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "Pipeline orchestration data integrity"
+    },
+    {
+      "path_glob": "src/adcs/ingestion/hugo_parser.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "Parser correctness affects every chunk"
+    },
+    {
+      "path_glob": "src/adcs/ingestion/normalized_document.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "adcs.normalized_document.v1 contract"
+    },
+    {
+      "path_glob": "src/adcs/ingestion/metadata_quarantine.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "Quarantine policy decisions"
+    },
+    {
+      "path_glob": "src/adcs/indexing/publish_orchestrator.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "Atomic snapshot switch = data safety"
+    },
+    {
+      "path_glob": "src/adcs/mcp/tool_gateway.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "MCP contract dispatch"
+    },
+    {
+      "path_glob": "src/adcs/mcp/revision_negotiation.py",
+      "min_line_coverage_percent": 80,
+      "rationale": "MCP protocol compatibility"
+    }
+  ]
+}

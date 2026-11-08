@@ -1,0 +1,33 @@
+{
+  "properties": {
+    "contract": {
+      "const": "adcs.extraction.v1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "plugin_id": {
+      "title": "Plugin Id",
+      "type": "string"
+    },
+    "plugin_version": {
+      "title": "Plugin Version",
+      "type": "string"
+    },
+    "error": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Error",
+      "type": "object"
+    }
+  },
+  "required": [
+    "contract",
+    "plugin_id",
+    "plugin_version",
+    "error"
+  ],
+  "title": "ExtractionFailure",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -1,0 +1,13 @@
+Additional constraints for API reference pages:
+1) Detect each overload section and split to dedicated chunks.
+2) Prefer chunk types:
+   - `api_signature`
+   - `api_parameters`
+   - `api_returns`
+   - `api_remarks`
+   - `api_examples`
+3) Keep parameter tables and return descriptions structured.
+4) Preserve symbol identity in `document.symbol_fqn` when possible.
+5) Keep See Also links as citation-supporting context.
+6) If signature lines exist in source, at least one `api_signature` chunk is required.
+7) If parameter table exists in source, at least one `api_parameters` chunk is required.

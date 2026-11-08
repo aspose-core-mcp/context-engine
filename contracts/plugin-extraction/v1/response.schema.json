@@ -1,0 +1,838 @@
+{
+  "$defs": {
+    "ApiRefSymbol": {
+      "description": "One API-reference symbol row (a class/method/property/...).\n\n`payload` carries the structured facets (signature, params, returns,\nremarks, examples) aggregated from the symbol document's chunks.",
+      "properties": {
+        "snapshot_id": {
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "product": {
+          "title": "Product",
+          "type": "string"
+        },
+        "language": {
+          "title": "Language",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        },
+        "locale": {
+          "title": "Locale",
+          "type": "string"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "member_fqn": {
+          "title": "Member Fqn",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "parent_fqn": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Fqn"
+        },
+        "signature": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Signature"
+        },
+        "canonical_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Canonical Url"
+        },
+        "is_deprecated": {
+          "default": false,
+          "title": "Is Deprecated",
+          "type": "boolean"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Summary"
+        },
+        "payload": {
+          "additionalProperties": true,
+          "title": "Payload",
+          "type": "object"
+        }
+      },
+      "required": [
+        "snapshot_id",
+        "product",
+        "language",
+        "version",
+        "locale",
+        "kind",
+        "member_fqn",
+        "name"
+      ],
+      "title": "ApiRefSymbol",
+      "type": "object"
+    },
+    "DiscoveryResult": {
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Files",
+          "type": "array"
+        }
+      },
+      "required": [
+        "files"
+      ],
+      "title": "DiscoveryResult",
+      "type": "object"
+    },
+    "ExtractedContent": {
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "$ref": "#/$defs/HugoNormalizedPage"
+        },
+        "normalized_document": {
+          "$ref": "#/$defs/NormalizedDocument"
+        },
+        "chunk_records": {
+          "items": {
+            "$ref": "#/$defs/StageDChunkRecord"
+          },
+          "minItems": 1,
+          "title": "Chunk Records",
+          "type": "array"
+        },
+        "symbols": {
+          "items": {
+            "$ref": "#/$defs/ApiRefSymbol"
+          },
+          "title": "Symbols",
+          "type": "array"
+        }
+      },
+      "required": [
+        "page",
+        "normalized_document",
+        "chunk_records",
+        "symbols"
+      ],
+      "title": "ExtractedContent",
+      "type": "object"
+    },
+    "HugoCodeBlock": {
+      "properties": {
+        "language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Language"
+        },
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "line_start": {
+          "title": "Line Start",
+          "type": "integer"
+        },
+        "line_end": {
+          "title": "Line End",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "language",
+        "code",
+        "line_start",
+        "line_end"
+      ],
+      "title": "HugoCodeBlock",
+      "type": "object"
+    },
+    "HugoHeading": {
+      "properties": {
+        "level": {
+          "title": "Level",
+          "type": "integer"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "line_hint": {
+          "title": "Line Hint",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "level",
+        "text",
+        "line_hint"
+      ],
+      "title": "HugoHeading",
+      "type": "object"
+    },
+    "HugoNormalizedPage": {
+      "properties": {
+        "repo_id": {
+          "title": "Repo Id",
+          "type": "string"
+        },
+        "source_path": {
+          "title": "Source Path",
+          "type": "string"
+        },
+        "source_kind": {
+          "title": "Source Kind",
+          "type": "string"
+        },
+        "product_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Product Id"
+        },
+        "product_family": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Product Family"
+        },
+        "programming_language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Programming Language"
+        },
+        "doc_locale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Doc Locale"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "body_plain": {
+          "title": "Body Plain",
+          "type": "string"
+        },
+        "headings": {
+          "items": {
+            "$ref": "#/$defs/HugoHeading"
+          },
+          "title": "Headings",
+          "type": "array"
+        },
+        "code_blocks": {
+          "items": {
+            "$ref": "#/$defs/HugoCodeBlock"
+          },
+          "title": "Code Blocks",
+          "type": "array"
+        },
+        "parse_warnings": {
+          "items": {
+            "$ref": "#/$defs/HugoParseWarning"
+          },
+          "title": "Parse Warnings",
+          "type": "array"
+        },
+        "is_index_page": {
+          "title": "Is Index Page",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "repo_id",
+        "source_path",
+        "source_kind",
+        "product_id",
+        "product_family",
+        "programming_language",
+        "doc_locale",
+        "title",
+        "metadata",
+        "body_plain",
+        "headings",
+        "code_blocks",
+        "parse_warnings",
+        "is_index_page"
+      ],
+      "title": "HugoNormalizedPage",
+      "type": "object"
+    },
+    "HugoParseWarning": {
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "line_hint": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Line Hint"
+        },
+        "severity": {
+          "default": "warning",
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "line_hint"
+      ],
+      "title": "HugoParseWarning",
+      "type": "object"
+    },
+    "NormalizedChunk": {
+      "properties": {
+        "chunk_key": {
+          "title": "Chunk Key",
+          "type": "string"
+        },
+        "section_path": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Section Path",
+          "type": "array"
+        },
+        "section_anchor": {
+          "title": "Section Anchor",
+          "type": "string"
+        },
+        "chunk_type": {
+          "title": "Chunk Type",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/NormalizedCitation"
+          },
+          "title": "Citations",
+          "type": "array"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "canonical_url": {
+          "title": "Canonical Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "chunk_key",
+        "section_path",
+        "section_anchor",
+        "chunk_type",
+        "text",
+        "citations",
+        "title",
+        "canonical_url"
+      ],
+      "title": "NormalizedChunk",
+      "type": "object"
+    },
+    "NormalizedCitation": {
+      "properties": {
+        "canonical_url": {
+          "title": "Canonical Url",
+          "type": "string"
+        },
+        "source_path": {
+          "title": "Source Path",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "section_anchor": {
+          "title": "Section Anchor",
+          "type": "string"
+        }
+      },
+      "required": [
+        "canonical_url",
+        "source_path",
+        "title",
+        "section_anchor"
+      ],
+      "title": "NormalizedCitation",
+      "type": "object"
+    },
+    "NormalizedDocument": {
+      "properties": {
+        "schema": {
+          "title": "Schema",
+          "type": "string"
+        },
+        "document": {
+          "$ref": "#/$defs/NormalizedDocumentMetadata"
+        },
+        "chunks": {
+          "items": {
+            "$ref": "#/$defs/NormalizedChunk"
+          },
+          "title": "Chunks",
+          "type": "array"
+        },
+        "warnings": {
+          "items": {
+            "$ref": "#/$defs/NormalizedWarning"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema",
+        "document",
+        "chunks",
+        "warnings"
+      ],
+      "title": "NormalizedDocument",
+      "type": "object"
+    },
+    "NormalizedDocumentMetadata": {
+      "properties": {
+        "repo_id": {
+          "title": "Repo Id",
+          "type": "string"
+        },
+        "product_id": {
+          "title": "Product Id",
+          "type": "string"
+        },
+        "product_family": {
+          "title": "Product Family",
+          "type": "string"
+        },
+        "source_kind": {
+          "title": "Source Kind",
+          "type": "string"
+        },
+        "programming_language": {
+          "title": "Programming Language",
+          "type": "string"
+        },
+        "doc_locale": {
+          "title": "Doc Locale",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "doc_type": {
+          "title": "Doc Type",
+          "type": "string"
+        },
+        "canonical_url": {
+          "title": "Canonical Url",
+          "type": "string"
+        },
+        "source_path": {
+          "title": "Source Path",
+          "type": "string"
+        },
+        "source_revision": {
+          "title": "Source Revision",
+          "type": "string"
+        },
+        "symbol_fqn": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Symbol Fqn"
+        },
+        "symbol_kind": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Symbol Kind"
+        }
+      },
+      "required": [
+        "repo_id",
+        "product_id",
+        "product_family",
+        "source_kind",
+        "programming_language",
+        "doc_locale",
+        "version",
+        "title",
+        "doc_type",
+        "canonical_url",
+        "source_path",
+        "source_revision"
+      ],
+      "title": "NormalizedDocumentMetadata",
+      "type": "object"
+    },
+    "NormalizedWarning": {
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "source_path": {
+          "title": "Source Path",
+          "type": "string"
+        },
+        "line_hint": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Line Hint"
+        },
+        "severity": {
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "source_path",
+        "line_hint",
+        "severity"
+      ],
+      "title": "NormalizedWarning",
+      "type": "object"
+    },
+    "StageDChunkRecord": {
+      "description": "Stage-D chunk payload with citation-ready retrieval metadata.",
+      "properties": {
+        "chunk_id": {
+          "title": "Chunk Id",
+          "type": "string"
+        },
+        "repo_id": {
+          "title": "Repo Id",
+          "type": "string"
+        },
+        "product_id": {
+          "title": "Product Id",
+          "type": "string"
+        },
+        "product_family": {
+          "title": "Product Family",
+          "type": "string"
+        },
+        "programming_language": {
+          "title": "Programming Language",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        },
+        "source_kind": {
+          "title": "Source Kind",
+          "type": "string"
+        },
+        "doc_locale": {
+          "title": "Doc Locale",
+          "type": "string"
+        },
+        "doc_type": {
+          "title": "Doc Type",
+          "type": "string"
+        },
+        "symbol_fqn": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Symbol Fqn"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "section_path": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Section Path",
+          "type": "array"
+        },
+        "canonical_url": {
+          "title": "Canonical Url",
+          "type": "string"
+        },
+        "section_anchor": {
+          "title": "Section Anchor",
+          "type": "string"
+        },
+        "source_path": {
+          "title": "Source Path",
+          "type": "string"
+        },
+        "source_revision": {
+          "title": "Source Revision",
+          "type": "string"
+        },
+        "is_deprecated": {
+          "title": "Is Deprecated",
+          "type": "boolean"
+        },
+        "has_code_example": {
+          "title": "Has Code Example",
+          "type": "boolean"
+        },
+        "chunk_type": {
+          "title": "Chunk Type",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "tokens": {
+          "title": "Tokens",
+          "type": "integer"
+        },
+        "checksum": {
+          "title": "Checksum",
+          "type": "string"
+        },
+        "executable_snippets": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/StageDExecutableSnippet"
+          },
+          "title": "Executable Snippets",
+          "type": "array"
+        }
+      },
+      "required": [
+        "chunk_id",
+        "repo_id",
+        "product_id",
+        "product_family",
+        "programming_language",
+        "version",
+        "source_kind",
+        "doc_locale",
+        "doc_type",
+        "symbol_fqn",
+        "title",
+        "section_path",
+        "canonical_url",
+        "section_anchor",
+        "source_path",
+        "source_revision",
+        "is_deprecated",
+        "has_code_example",
+        "chunk_type",
+        "text",
+        "tokens",
+        "checksum"
+      ],
+      "title": "StageDChunkRecord",
+      "type": "object"
+    },
+    "StageDExecutableSnippet": {
+      "description": "Executable snippet metadata extracted from fenced code blocks.",
+      "properties": {
+        "snippet_id": {
+          "title": "Snippet Id",
+          "type": "string"
+        },
+        "language": {
+          "title": "Language",
+          "type": "string"
+        },
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "parent_canonical_url": {
+          "title": "Parent Canonical Url",
+          "type": "string"
+        },
+        "parent_section_anchor": {
+          "title": "Parent Section Anchor",
+          "type": "string"
+        },
+        "parent_symbol_fqn": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Symbol Fqn"
+        }
+      },
+      "required": [
+        "snippet_id",
+        "language",
+        "code",
+        "parent_canonical_url",
+        "parent_section_anchor"
+      ],
+      "title": "StageDExecutableSnippet",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "const": "adcs.extraction.v1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "plugin_id": {
+      "title": "Plugin Id",
+      "type": "string"
+    },
+    "plugin_version": {
+      "title": "Plugin Version",
+      "type": "string"
+    },
+    "result": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExtractedContent"
+        },
+        {
+          "$ref": "#/$defs/DiscoveryResult"
+        }
+      ],
+      "title": "Result"
+    }
+  },
+  "required": [
+    "contract",
+    "plugin_id",
+    "plugin_version",
+    "result"
+  ],
+  "title": "ExtractionResponse",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
