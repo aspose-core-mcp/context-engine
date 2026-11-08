@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 
-from celery import Celery
+from celery import Celery, Task
 from kombu import Exchange, Queue
 from pydantic import ValidationError
 
@@ -180,7 +180,7 @@ def execute_ingestion(*, operation_id: str) -> dict[str, str]:
 
 @celery_app.task(name="adcs.plugins.ingestion.execute", bind=True,
                  acks_late=True, reject_on_worker_lost=True, max_retries=None)
-def execute_plugin_ingestion(self, *, operation_id: str, workspace: str) -> dict[str, str]:
+def execute_plugin_ingestion(self: Task, *, operation_id: str, workspace: str) -> dict[str, str]:
     """Reconstruct the registered plugin from durable shared-workspace state."""
     from adcs.plugins.queued_jobs import PluginJobBusy, execute_job
 

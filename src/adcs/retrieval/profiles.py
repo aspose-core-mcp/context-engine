@@ -5,10 +5,32 @@ import os
 import re
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Any, Literal, Protocol
 from urllib.parse import unquote, urlsplit
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+if TYPE_CHECKING:
+    from adcs.indexing.apiref_symbol_store import ApiRefSymbol, ApiRefSymbolStore
+
+
+class EligibilityMetadata(Protocol):
+    """Read-only fields shared by indexed chunks and retrieval candidates."""
+
+    @property
+    def source_kind(self) -> str: ...
+
+    @property
+    def product_id(self) -> str: ...
+
+    @property
+    def programming_language(self) -> str: ...
+
+    @property
+    def symbol_fqn(self) -> str | None: ...
+
+    @property
+    def canonical_url(self) -> str: ...
 
 
 def words(value: str) -> set[str]:
@@ -129,7 +151,7 @@ def symbol_allowed(product: str, language: str, member_fqn: str | None) -> bool:
     return not profile or not member_fqn or profile.allows(member_fqn)
 
 
-def candidate_allowed(metadata) -> bool:
+def candidate_allowed(metadata: EligibilityMetadata) -> bool:
     # Documentation eligibility is deliberately unchanged. Legacy namespace
     # pages can lack symbol_fqn, so also recognize canonical namespace segments.
     if metadata.source_kind != "apiref":
@@ -150,17 +172,17 @@ class EligibleSymbolStore:
     limits, so filtering their returned rows can produce fewer eligible results.
     """
 
-    def __init__(self, store):
+    def __init__(self, store: ApiRefSymbolStore) -> None:
         self._store = store
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         method = getattr(self._store, name)
         if name not in {
             "get_symbol", "list_members", "list_overloads", "search_symbols", "fts_search"
         }:
             return method
 
-        def eligible(**kwargs):
+        def eligible(**kwargs: Any) -> tuple[ApiRefSymbol, ...]:
             scope = kwargs["scope"]
             requested = kwargs.get("member_fqn", kwargs.get("parent_fqn"))
             if not symbol_allowed(scope.product, scope.language, requested):

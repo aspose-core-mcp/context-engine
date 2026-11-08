@@ -11,6 +11,8 @@ from adcs.retrieval.query_planner import QueryPlanner
 from adcs.retrieval.reranker import AdvancedHeuristicReranker
 from adcs.retrieval.task_relevance import api_task_relevant
 
+pytestmark = pytest.mark.usefixtures("sample_retrieval_catalog")
+
 
 def plan(query):
     return QueryPlanner().plan(request=QueryPlannerInput(

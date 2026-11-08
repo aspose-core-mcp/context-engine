@@ -207,6 +207,7 @@ class TestMcpGatewayToolCallErrorHandling:
             session_id: str,
             tool_name: str,
             arguments: dict[str, Any],
+            scope: Any = None,
         ) -> dict[str, Any]:
             raise RuntimeError("retrieval backend down")
 
@@ -238,6 +239,7 @@ class TestMcpGatewayToolCallErrorHandling:
             session_id: str,
             tool_name: str,
             arguments: dict[str, Any],
+            scope: Any = None,
         ) -> dict[str, Any]:
             raise TimeoutError("tool call exceeded 10s deadline")
 
@@ -321,6 +323,7 @@ class TestStdioTransportErrorHandling:
             session_id: str,
             tool_name: str,
             arguments: dict[str, Any],
+            scope: Any = None,
         ) -> dict[str, Any]:
             raise Exception("unexpected internal failure")
 
@@ -353,6 +356,7 @@ class TestStdioTransportErrorHandling:
             session_id: str,
             tool_name: str,
             arguments: dict[str, Any],
+            scope: Any = None,
         ) -> dict[str, Any]:
             raise RuntimeError("service crashed")
 
@@ -385,6 +389,7 @@ class TestStdioTransportErrorHandling:
             session_id: str,
             tool_name: str,
             arguments: dict[str, Any],
+            scope: Any = None,
         ) -> dict[str, Any]:
             raise TimeoutError("operation timed out")
 

@@ -14,8 +14,10 @@ import os
 import subprocess
 import sys
 import time
+from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Literal, TypedDict
 from uuid import UUID, uuid4
 
 from celery import Celery
@@ -26,6 +28,10 @@ from adcs.plugins.extraction import PlatformExtractionBackend
 TASK_NAME = "adcs.plugins.ingestion.execute"
 QUEUE_NAME = "adcs.ingestion"
 _TERMINAL = {"completed", "failed", "stale", "needs_attention"}
+
+
+class SubmissionOptions(TypedDict, total=False):
+    metadata_quarantine_policy: str
 
 
 class PluginJobBusy(RuntimeError):
@@ -65,7 +71,7 @@ def read_job(workspace: Path, operation_id: str) -> dict:
 
 
 @contextmanager
-def _lock(workspace: Path, key: str):
+def _lock(workspace: Path, key: str) -> Iterator[None]:
     path = _root(workspace) / "locks" / (hashlib.sha256(key.encode()).hexdigest() + ".lock")
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a") as stream:
@@ -80,7 +86,7 @@ def _lock(workspace: Path, key: str):
 
 
 def _revision(root: Path) -> str:
-    def git(*args):
+    def git(*args: str) -> str:
         return subprocess.check_output(["git", "-C", str(root), *args], text=True).strip()
 
     if git("status", "--porcelain"):
@@ -109,7 +115,7 @@ def _publisher() -> Celery:
     return Celery("adcs-plugin-submitter", broker=settings.rabbitmq_url, backend=settings.redis_url)
 
 
-def dispatch_job(job: dict, publisher=None) -> dict:
+def dispatch_job(job: dict, publisher: Celery | None = None) -> dict:
     workspace = Path(job["workspace"])
     with _lock(workspace, "job:" + job["operation_id"]):
         job = read_job(workspace, job["operation_id"])
@@ -134,16 +140,16 @@ def dispatch_job(job: dict, publisher=None) -> dict:
 
 def enqueue_sources(
     *,
-    catalog,
-    plugin_id,
-    catalog_path,
-    workspace,
-    kinds,
-    python,
-    timeout,
-    stage,
-    publish,
-    publisher=None,
+    catalog: PluginCatalog,
+    plugin_id: str,
+    catalog_path: str | Path,
+    workspace: Path,
+    kinds: Sequence[Literal["docs", "apiref"]],
+    python: str | None,
+    timeout: float,
+    stage: bool,
+    publish: bool,
+    publisher: Celery | None = None,
 ) -> list[dict]:
     from adcs.indexing.index_models import IngestionRunMode
     from adcs.ingestion.source_hugo_normalization_orchestrator import (
@@ -151,7 +157,7 @@ def enqueue_sources(
     )
     from adcs.plugins.cli import registry_payload
 
-    submission_options = {}
+    submission_options: SubmissionOptions = {}
     if publish:
         from adcs.config import get_settings
 

@@ -29,6 +29,8 @@ from adcs.retrieval.retrieval_models import HybridRetrievalResult
 from adcs.retrieval.translation_fallback import TranslationFallbackService
 from adcs.retrieval.two_source_retriever import ApiRefRetriever, TwoSourceRetriever
 
+pytestmark = pytest.mark.usefixtures("sample_retrieval_catalog")
+
 SCOPE = ApiRefScope(product='aspose.words', language='net', version='25.4', locale='en')
 BLOCKED = 'Aspose.Words.LowCode.MailMerger.Execute'
 ALLOWED = 'Aspose.Words.MailMerging.MailMerge.Execute'

@@ -46,7 +46,7 @@ def find_symbol_candidates(
         return SymbolCandidates()
     leaf = norm.rsplit(".", 1)[-1]
     rows = store.search_symbols(pattern=leaf, scope=scope, limit=_POOL_LIMIT)
-    candidates = {}
+    candidates: dict[str, ApiRefSymbol] = {}
     for row in rows:
         if (row.product, row.language, row.version, row.locale) != (
             scope.product,
@@ -77,7 +77,7 @@ class SymbolNotFoundError(LookupError):
         else:
             message += " Use search_symbols to find its canonical name."
         super().__init__(message)
-        self.details = {
+        self.details: dict[str, object] = {
             "requested_symbol": requested,
             "suggested_symbols": candidates.suggestions(),
         }
