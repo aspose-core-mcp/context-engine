@@ -4,7 +4,7 @@
 # ---------------------------------------------------------------------------
 # Stage 1: Install dependencies
 # ---------------------------------------------------------------------------
-FROM node:22-alpine AS deps
+FROM node:25-alpine AS deps
 WORKDIR /app
 # The lockfile must be copied, and the install must be `npm ci`: it installs
 # exactly the locked dependency tree, so the image ships what was tested
@@ -15,7 +15,7 @@ RUN npm ci
 # ---------------------------------------------------------------------------
 # Stage 2: Build the Next.js app (standalone output)
 # ---------------------------------------------------------------------------
-FROM node:22-alpine AS builder
+FROM node:25-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -31,7 +31,7 @@ RUN node scripts/third-party-notices.mjs > THIRD_PARTY_NOTICES.txt
 # ---------------------------------------------------------------------------
 # Stage 3: Production runtime (standalone — no node_modules needed)
 # ---------------------------------------------------------------------------
-FROM node:22-alpine AS runner
+FROM node:25-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
