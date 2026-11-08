@@ -9,7 +9,7 @@ This page is a one-page locator: where the server lives in the code, which trans
 and protocol revisions it supports, and which tools it exposes. For the project
 overview, see [README.md](README.md).
 
-A public instance runs at **`https://mcp.aspose.com/mcp/v1/streamable-http`**.
+Use the base URL of your own deployment. This checkout does not provide a hosted instance. Product content must be ingested separately; see [external-plugin setup](docs/engine-only.md).
 
 ## Server entry points
 

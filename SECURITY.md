@@ -13,7 +13,7 @@ Security fixes are made on the `main` branch and shipped in the next release.
 Please **do not open a public issue** for a security problem.
 
 Report it privately through GitHub instead:
-[**Security → Report a vulnerability**](https://github.com/aspose-mcp/aspose-context-engine/security/advisories/new),
+[**Security → Report a vulnerability**](https://github.com/aspose-core-mcp/context-engine/security/advisories/new),
 or e-mail Muhammad Sabir at [muhammad.sabir@aspose.com](mailto:muhammad.sabir@aspose.com).
 
 Please include:

@@ -35,7 +35,7 @@ groups:
           description: |
             More than 5% of ADCS API requests returned a 5xx status over the last
             5 minutes.
-          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"
+          runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"
 
   # ===========================================================================
   # Sev2 — SLO at risk or major feature degraded
@@ -56,7 +56,7 @@ groups:
         annotations:
           summary: "API p95 latency above 1.8s for 10 minutes"
           description: "Latency SLO at risk. Investigate retrieval pipeline and upstreams."
-          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s2a-api-latency-slo-breach-sev2"
+          runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s2a-api-latency-slo-breach-sev2"
 
       - alert: ADCSCitationCoverageBreach
         expr: adcs_citation_missing_ratio > 0.005
@@ -69,7 +69,7 @@ groups:
           description: |
             Retrieval results are being returned without a canonical_url or
             section_anchor, violating the citation coverage SLI.
-          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s2d-citation-coverage-breach-sev2--data-integrity"
+          runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s2d-citation-coverage-breach-sev2--data-integrity"
 
   # ===========================================================================
   # Sev3 — minor degradation, a workaround exists
@@ -103,7 +103,7 @@ groups:
           description: |
             The abuse guard defaults to observe-only mode (ADCS_ABUSE_GUARD_MODE), so
             no 429 is emitted and this fires only once enforcement is switched on.
-          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s3a-rate-limit--abuse-storm-sev3"
+          runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s3a-rate-limit--abuse-storm-sev3"
 
       - alert: ADCSMcpNegotiationFallbackSpike
         expr: |
@@ -140,7 +140,7 @@ groups:
             documents. One is routine; a burst usually means a source repository
             changed shape. Clean runs are not recorded, so no ratio is available
             and the rule counts partial-publish events instead.
-          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s3b-ingestion-pipeline-failure-sev3"
+          runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s3b-ingestion-pipeline-failure-sev3"
 
   # ===========================================================================
   # SLO burn-rate alerts (multi-window, multi-burn-rate pattern)
@@ -177,7 +177,7 @@ groups:
           description: |
             Fast burn rate detected. At current rate, monthly error budget will exhaust
             in approximately 2 hours.
-          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"
+          runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"
 
       - alert: ADCSSlo99_9_SlowBurn
         expr: |
@@ -205,4 +205,4 @@ groups:
           slo: api_availability
         annotations:
           summary: "API SLO 99.9% burning at 6x rate (will exhaust monthly budget in 5 days)"
-          runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"
+          runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"

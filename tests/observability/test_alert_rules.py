@@ -42,7 +42,7 @@ ALERTS_PATH = REPO_ROOT / "infra" / "observability" / "prometheus" / "adcs-alert
 
 _VALID_SEVERITIES = frozenset({"sev1", "sev2", "sev3", "sev4"})
 _DURATION_RE = re.compile(r"^\d+(ms|[smhd])$")
-_RUNBOOK_URL_PREFIX = "https://github.com/aspose-mcp/aspose-context-engine/blob/main/"
+_RUNBOOK_URL_PREFIX = "https://github.com/aspose-core-mcp/context-engine/blob/main/"
 _PROMQL_KEYWORDS = frozenset(
     {
         "and",

@@ -40,7 +40,7 @@ tests:
               description: |
                 More than 5% of ADCS API requests returned a 5xx status over the last
                 5 minutes.
-              runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"
+              runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s1b-api-availability-breach-sev1"
 
   # -------------------------------------------------------------------------
   # Sev2: citation-missing ratio held at 2% — must fire after the 60m `for`
@@ -67,7 +67,7 @@ tests:
               description: |
                 Retrieval results are being returned without a canonical_url or
                 section_anchor, violating the citation coverage SLI.
-              runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s2d-citation-coverage-breach-sev2--data-integrity"
+              runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s2d-citation-coverage-breach-sev2--data-integrity"
 
   # -------------------------------------------------------------------------
   # Sev3: 20 req/s answered with 429 for 10 minutes — must fire after the 5m
@@ -90,4 +90,4 @@ tests:
               description: |
                 The abuse guard defaults to observe-only mode (ADCS_ABUSE_GUARD_MODE), so
                 no 429 is emitted and this fires only once enforcement is switched on.
-              runbook_url: "https://github.com/aspose-mcp/aspose-context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s3a-rate-limit--abuse-storm-sev3"
+              runbook_url: "https://github.com/aspose-core-mcp/context-engine/blob/main/infra/runbooks/incident-response-playbooks.md#playbook-s3a-rate-limit--abuse-storm-sev3"

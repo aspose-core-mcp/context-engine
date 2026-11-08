@@ -9,6 +9,8 @@ Questions about the project go to Muhammad Sabir
 [muhammad.sabir@aspose.com](mailto:muhammad.sabir@aspose.com)); report bugs and propose
 features through GitHub issues.
 
+See [external-plugin setup](docs/engine-only.md) for the standalone engine.
+
 ## Prerequisites
 
 - Python 3.12+
@@ -19,8 +21,8 @@ features through GitHub issues.
 ## Development setup
 
 ```bash
-git clone https://github.com/aspose-mcp/aspose-context-engine.git
-cd aspose-context-engine
+git clone https://github.com/aspose-core-mcp/context-engine.git
+cd context-engine
 
 python3.12 -m venv .venv
 source .venv/bin/activate

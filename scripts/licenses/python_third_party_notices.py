@@ -25,7 +25,7 @@ Third-party software notices
 This image contains the Python packages listed below. Each entry gives the package
 version, its declared license and the license files shipped with the package. The ADCS
 code itself is MIT-licensed:
-https://github.com/aspose-mcp/aspose-context-engine/blob/main/LICENSE
+https://github.com/aspose-core-mcp/context-engine/blob/main/LICENSE
 """
 
 

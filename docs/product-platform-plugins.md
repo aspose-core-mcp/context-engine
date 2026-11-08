@@ -1,5 +1,7 @@
 # Independent product-platform extraction plugins
 
+> For the standalone engine, start with [external-plugin setup](engine-only.md). Bundled-plugin paths in this inherited design guide refer to the former combined repository; deploy external manifests and source checkouts instead.
+
 This evaluation implements separate Words/.NET and TeX/.NET extraction packages.
 Each owns source discovery, docs and API theme handling, parsing, normalization,
 semantic chunking and structured API signature/facet extraction. Workers import

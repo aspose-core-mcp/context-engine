@@ -159,4 +159,3 @@ def test_prompt_registry_rejects_invalid_variant_weight_sum(tmp_path: Path) -> N
 
     with pytest.raises(ValueError, match="weight_pct sum must equal 100"):
         IngestionPromptRegistry.from_config_file(config_path=config_path)
-

@@ -51,9 +51,9 @@ adcs-mcp-stdio = "adcs.mcp.stdio_server:main"
 adcs-platform-ingest = "adcs.plugins.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/aspose-mcp/aspose-context-engine"
-Repository = "https://github.com/aspose-mcp/aspose-context-engine"
-Issues = "https://github.com/aspose-mcp/aspose-context-engine/issues"
+Homepage = "https://github.com/aspose-core-mcp/context-engine"
+Repository = "https://github.com/aspose-core-mcp/context-engine"
+Issues = "https://github.com/aspose-core-mcp/context-engine/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -223,4 +223,3 @@ output = "reports/coverage/coverage.xml"
 
 [tool.coverage.html]
 directory = "reports/coverage/html"
-
