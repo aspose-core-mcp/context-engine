@@ -1,5 +1,11 @@
 # Quick start
 
+## Choose a starting point
+
+For a product server with its plugin already registered, use [Words/.NET server](https://github.com/aspose-words-mcp/net-server) or [TeX/.NET server](https://github.com/aspose-tex-mcp/net-server). Follow that repository's setup, ingestion, and client guides. These helpers use host Python environments; they do not provision runtime stores or publish a corpus automatically.
+
+Continue below for shared-engine development or a custom deployment.
+
 ## Verify the engine checkout
 
 ```sh
@@ -31,3 +37,5 @@ After plugin installation and publication, send requests to your configured endp
 
 [aspose-words-mcp/net-server](https://github.com/aspose-words-mcp/net-server) — product deployment guide.
 [aspose-words-mcp/net-copilot-client-agent](https://github.com/aspose-words-mcp/net-copilot-client-agent) — Copilot client setup.
+
+[TeX/.NET server client setup](https://github.com/aspose-tex-mcp/net-server/blob/main/docs/clients.md) — generic MCP configuration for TeX.

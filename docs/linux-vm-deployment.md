@@ -34,4 +34,9 @@ The supplied engine template does not provide those product-specific mounts. Do 
 [aspose-words-mcp/net-server](https://github.com/aspose-words-mcp/net-server) — Words deployment helpers and setup guide.
 [aspose-words-mcp/net-plugin](https://github.com/aspose-words-mcp/net-plugin) — source and cache preparation.
 
+[aspose-tex-mcp/net-server](https://github.com/aspose-tex-mcp/net-server) — TeX deployment helpers and registration.
+[aspose-tex-mcp/net-plugin](https://github.com/aspose-tex-mcp/net-plugin) — TeX sources and cache preparation.
+
+The product servers provide host-Python helpers; their registration catalogs do not automatically populate or mount plugins in this engine-only VM template. Adapt paths and mounts explicitly.
+
 Validate extraction, publish explicitly, then verify retrieval against the actual indexed content. Health checks alone do not prove ingestion succeeded.

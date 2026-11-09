@@ -16,10 +16,14 @@ The admin UI is optional and has its own frontend environment configuration. Eng
 
 ## External plugins
 
-Follow [external-plugin integration](docs/engine-only.md). Container deployments need explicit mounts or image provisioning for the deployment catalog and the external plugin's manifest, profile, interpreter, and sources. The engine images do not bundle product plugins. Ensure API and worker processes see the catalog/profile paths they use.
+Follow [external-plugin integration](docs/engine-only.md). Container deployments need explicit mounts or image provisioning for the deployment catalog and the external plugin's manifest, optional retrieval profile, interpreter, sources, and Gist cache. The engine images do not bundle product plugins. Ensure API and worker processes see the catalog/profile paths they use.
 
-[aspose-words-mcp/net-plugin](https://github.com/aspose-words-mcp/net-plugin)
-[aspose-words-mcp/net-server](https://github.com/aspose-words-mcp/net-server) — product setup, runtime requirements, and endpoint configuration.
+| Product | Plugin | Server setup |
+| --- | --- | --- |
+| Words/.NET | [net-plugin](https://github.com/aspose-words-mcp/net-plugin) | [net-server](https://github.com/aspose-words-mcp/net-server) |
+| TeX/.NET | [net-plugin](https://github.com/aspose-tex-mcp/net-plugin) | [net-server](https://github.com/aspose-tex-mcp/net-server) |
+
+Each server supplies its registration catalog and launch/ingestion wrappers; no edit to the shared engine catalog is required. Words supplies a retrieval profile; TeX uses default retrieval behavior. Both server repositories provide host-Python helpers, not a complete product-specific Compose or Helm deployment. Container deployments still require the mounts and provisioning described above.
 
 ## Expose the API
 

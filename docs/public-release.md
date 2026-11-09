@@ -8,6 +8,14 @@ The shared engine is published at [aspose-core-mcp/context-engine](https://githu
 - [net-server](https://github.com/aspose-words-mcp/net-server): pinned engine/plugin composition, setup and ingestion helpers.
 - [net-copilot-client-agent](https://github.com/aspose-words-mcp/net-copilot-client-agent): Copilot agent, compilation checks and showcase.
 
+## TeX/.NET companions
+
+- [net-plugin](https://github.com/aspose-tex-mcp/net-plugin): documentation/API extraction with no retrieval profile; default engine retrieval behavior applies.
+- [net-server](https://github.com/aspose-tex-mcp/net-server): pinned engine/plugin deployment with TeX registration and scoped MCP verification.
+- [Client setup](https://github.com/aspose-tex-mcp/net-server/blob/main/docs/clients.md): generic MCP client configuration. A dedicated TeX Copilot custom-agent repository is not yet published.
+
+Both product servers already register their plugins in deployment-specific catalogs. Manual registration is only needed for custom deployments. Their setup and CI verify component integration; source ingestion and publication remain explicit deployment steps.
+
 ## Release conventions
 
 The package and import name remain `adcs`. The default plugin catalog stays empty; product registration belongs to a deployment. Preserve license and third-party attribution. Configure deployment secrets and environments separately from the public repository.

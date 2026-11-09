@@ -8,20 +8,24 @@ This repository contains the engine. Product-specific extraction plugins are ins
 
 > **Recommended: plugin-based ingestion**
 >
-> For new deployments, use an external product plugin to configure source repositories, extraction, and retrieval policies. Start with the [plugin integration guide](docs/engine-only.md). For Aspose.Words for .NET, use [net-plugin](https://github.com/aspose-words-mcp/net-plugin) with [net-server](https://github.com/aspose-words-mcp/net-server).
+> For new deployments, use an external product plugin to configure source repositories, extraction, and retrieval policies. Start with the [plugin integration guide](docs/engine-only.md). Use the published Words/.NET or TeX/.NET plugin and server listed below; each server supplies its product registration catalog.
 >
 > The built-in source-registry and source-submodule ingestion workflow is retained as a **legacy workflow** for existing deployments. Its source configuration is separate from plugin manifests. See the [legacy source-registry tools](scripts/README.md#sources--registry-legacy-workflow).
 
 ## Project family
 
-These repositories work together to provide documentation-backed MCP services and a GitHub Copilot client for Aspose.Words for .NET. The shared engine is maintained under **aspose-core-mcp**; the Words/.NET components are maintained under **aspose-words-mcp**.
+The shared engine supports product-specific plugins and MCP deployments. Words/.NET components are maintained under **aspose-words-mcp** and TeX/.NET components under **aspose-tex-mcp**.
 
 | Repository | Responsibility |
 | --- | --- |
-| [context-engine](https://github.com/aspose-core-mcp/context-engine) **(this repository)** | Shared documentation ingestion, indexing, retrieval, and MCP infrastructure |
-| [net-plugin](https://github.com/aspose-words-mcp/net-plugin) | Aspose.Words for .NET documentation/API extraction and retrieval configuration |
-| [net-server](https://github.com/aspose-words-mcp/net-server) | Deployment helpers that combine pinned engine and plugin versions |
-| [net-copilot-client-agent](https://github.com/aspose-words-mcp/net-copilot-client-agent) | GitHub Copilot agent, C# compilation checks, and example-answer showcase |
+| [context-engine](https://github.com/aspose-core-mcp/context-engine) **(this repository)** | Shared ingestion, indexing, retrieval, and MCP infrastructure |
+| [Words/.NET plugin](https://github.com/aspose-words-mcp/net-plugin) | Words extraction and product-specific retrieval profile |
+| [Words/.NET server](https://github.com/aspose-words-mcp/net-server) | Pinned engine/plugin deployment and registration |
+| [Words Copilot agent](https://github.com/aspose-words-mcp/net-copilot-client-agent) | Copilot agent, C# compilation checks, and showcase |
+| [TeX/.NET plugin](https://github.com/aspose-tex-mcp/net-plugin) | TeX extraction using default engine retrieval behavior |
+| [TeX/.NET server](https://github.com/aspose-tex-mcp/net-server) | Pinned engine/plugin deployment and registration |
+
+Both servers include client connection guides. A dedicated TeX Copilot custom-agent repository is not yet published.
 
 ## How the components fit together
 
@@ -50,11 +54,13 @@ Do not initialize the legacy source submodules recursively for the external-plug
 
 ## Add product content
 
+For a product deployment, follow the [Words server ingestion guide](https://github.com/aspose-words-mcp/net-server/blob/main/docs/ingestion.md) or [TeX server ingestion guide](https://github.com/aspose-tex-mcp/net-server/blob/main/docs/ingestion.md). Their catalogs already register the respective plugin; manual registration below applies to custom engine deployments.
+
 1. Obtain a compatible external plugin checkout and prepare its source repositories and examples.
 2. Register its manifest in an engine catalog.
 3. Validate extraction using `adcs-platform-ingest` with explicit catalog, workspace, and plugin-interpreter paths.
 4. Configure runtime stores and embeddings, then publish indexed content explicitly.
-5. Configure retrieval-profile serving and connect an MCP or REST client.
+5. Configure serving and any optional retrieval profile, then connect an MCP or REST client.
 
 See [the external-plugin guide](docs/engine-only.md) for commands and catalog examples. Plugin registration does not download sources, install dependencies, or publish data.
 
