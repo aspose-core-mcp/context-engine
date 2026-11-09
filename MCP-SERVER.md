@@ -23,6 +23,20 @@ The HTTP transports are served by the API process (`make run`, the Docker images
 Helm chart). All transports share one tool-dispatch core,
 [`src/adcs/mcp/tool_gateway.py`](src/adcs/mcp/tool_gateway.py).
 
+## Total/.NET deployment
+
+[aspose-total-mcp/net-server](https://github.com/aspose-total-mcp/net-server) registers the Words and TeX .NET plugins and their Total composition. One engine process exposes:
+
+| Scope | Streamable HTTP endpoint | MCP server identity |
+| --- | --- | --- |
+| Total (Words + TeX) | `/total/net/mcp/v1/streamable-http` | `aspose-total-net-mcp` |
+| Words | `/words/net/mcp/v1/streamable-http` | `aspose-words-net-mcp` |
+| TeX | `/tex/net/mcp/v1/streamable-http` | `aspose-tex-net-mcp` |
+
+On Total, omitting `product_id` queries both members independently; `aspose.words` or `aspose.tex` selects one. The endpoint enforces .NET scope and rejects other products/languages. `aspose.total` is not a member filter or ingestible product. Aggregate retrieval returns product-specific results rather than merging product identities.
+
+The deployment sets the product and retrieval catalog environment variables through its launch wrapper. A route being defined in the engine does not automatically register or ingest its members. Follow [Total client setup](https://github.com/aspose-total-mcp/net-server/blob/main/docs/clients.md) and verify actual retrieval after both products have been ingested and published. Current Total coverage is Words and TeX only.
+
 ## Custom JSON-RPC implementation — by design
 
 ADCS implements the protocol directly over JSON-RPC and does not depend on the `mcp`,

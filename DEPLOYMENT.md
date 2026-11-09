@@ -22,8 +22,11 @@ Follow [external-plugin integration](docs/engine-only.md). Container deployments
 | --- | --- | --- |
 | Words/.NET | [net-plugin](https://github.com/aspose-words-mcp/net-plugin) | [net-server](https://github.com/aspose-words-mcp/net-server) |
 | TeX/.NET | [net-plugin](https://github.com/aspose-tex-mcp/net-plugin) | [net-server](https://github.com/aspose-tex-mcp/net-server) |
+| Total/.NET (Words + TeX) | Both plugins above; no Total extractor | [net-server](https://github.com/aspose-total-mcp/net-server) |
 
-Each server supplies its registration catalog and launch/ingestion wrappers; no edit to the shared engine catalog is required. Words supplies a retrieval profile; TeX uses default retrieval behavior. Both server repositories provide host-Python helpers, not a complete product-specific Compose or Helm deployment. Container deployments still require the mounts and provisioning described above.
+Each server supplies its registration catalog and launch/ingestion wrappers; no edit to the shared engine catalog is required. Words supplies a retrieval profile; TeX uses default retrieval behavior. These server repositories provide host-Python helpers, not a complete product-specific Compose or Helm deployment. Container deployments still require the mounts and provisioning described above.
+
+Total uses one engine and shared runtime stores, with separate product ingestion workspaces (`workspaces/words` and `workspaces/tex`) to prevent source-path collisions. Its catalog registers both plugins and the `aspose.total.net` composition. Ingest each product separately; Total owns no corpus. Follow the [Total ingestion guide](https://github.com/aspose-total-mcp/net-server/blob/main/docs/ingestion.md).
 
 ## Expose the API
 

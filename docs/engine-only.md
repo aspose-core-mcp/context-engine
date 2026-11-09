@@ -14,10 +14,11 @@ The default `config/product-platform-plugins.json` is intentionally empty. Plugi
 | --- | --- | --- | --- |
 | Words/.NET | [net-plugin](https://github.com/aspose-words-mcp/net-plugin) | [net-server](https://github.com/aspose-words-mcp/net-server) | Plugin-supplied profile |
 | TeX/.NET | [net-plugin](https://github.com/aspose-tex-mcp/net-plugin) | [net-server](https://github.com/aspose-tex-mcp/net-server) | Default engine behavior; no profile |
+| Total/.NET (Words + TeX) | Both plugins above | [net-server](https://github.com/aspose-total-mcp/net-server) | Each member retains its own policy |
 
-> **Using one of these server repositories?** Its deployment catalog already registers the product plugin. Follow that server's setup and ingestion guides instead of repeating the manual registration below. The shared engine's empty default catalog needs no changes.
+> **Using one of these server repositories?** Its deployment catalog already registers the required plugins and, for Total, the composition. Follow that server's setup and ingestion guides instead of repeating the manual registration below. The shared engine's empty default catalog needs no changes.
 
-The server wrappers use `engine/` as the ingestion workspace and keep the plugin and Gist cache under `plugins/`. The standalone example below uses a plugin checkout as its workspace; do not mix the two layouts.
+The individual Words and TeX servers use `engine/` as the ingestion workspace. Total uses separate `workspaces/words` and `workspaces/tex` directories because both plugins declare `sources/api-reference`. All three keep each plugin and its Gist cache under `plugins/`. The standalone example below uses a plugin checkout as its workspace. Follow the selected deployment's paths consistently.
 
 Use a pinned checkout of a plugin implementing `adcs.extraction.v1`. Install its interpreter dependencies in its own environment and prepare source repositories and any Gist cache according to that plugin's guide.
 
@@ -52,6 +53,21 @@ For TeX, use `aspose.tex.net` and the paths to your TeX plugin checkout and inte
 Without `--stage` or `--publish`, the CLI validates extraction; it can still write operation/review metadata. `--stage` writes review staging. `--publish` explicitly publishes through configured runtime stores. These modes are mutually exclusive. Use `--source-kind docs` or `--source-kind apiref` to select one source; the default is both.
 
 Configure backing stores and embeddings before publication. After validation succeeds, repeat the invocation with `--publish` when you intend to update published data. `--enqueue` submits durable jobs; inspect them with `--job-status OPERATION_ID` using the same workspace. See `adcs-platform-ingest --help` for the implemented options.
+
+## Total composition
+
+The [Total server](https://github.com/aspose-total-mcp/net-server) already supplies `config/total-net.json` and registers it in its catalog's `compositions` array. For a custom deployment, register both plugin manifests and an equivalent composition file:
+
+```json
+{
+  "composition_id": "aspose.total.net",
+  "language": "net",
+  "members": ["aspose.words.net", "aspose.tex.net"],
+  "owns_sources": false
+}
+```
+
+Composition paths resolve relative to the catalog. Ingest Words and TeX independently into the runtime stores used by serving; do not invoke ingestion for `aspose.total.net`. The composition groups retrieval scopes without creating a third corpus. Use separate workspaces to preserve each plugin's source paths and operation state.
 
 ## Configure serving
 

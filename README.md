@@ -26,7 +26,7 @@ The shared engine supports product-specific plugins and MCP deployments. Words/.
 | [TeX/.NET server](https://github.com/aspose-tex-mcp/net-server) | Pinned engine/plugin deployment and registration |
 | [Total/.NET server](https://github.com/aspose-total-mcp/net-server) | Shared engine deployment aggregating Words and TeX; no separate Total corpus |
 
-Both servers include client connection guides. A dedicated TeX Copilot custom-agent repository is not yet published.
+All three servers include client connection guides. A dedicated TeX Copilot custom-agent repository is not yet published.
 
 ## How the components fit together
 
@@ -55,7 +55,7 @@ Do not initialize the legacy source submodules recursively for the external-plug
 
 ## Add product content
 
-For a product deployment, follow the [Words server ingestion guide](https://github.com/aspose-words-mcp/net-server/blob/main/docs/ingestion.md) or [TeX server ingestion guide](https://github.com/aspose-tex-mcp/net-server/blob/main/docs/ingestion.md). Their catalogs already register the respective plugin; manual registration below applies to custom engine deployments.
+For a product deployment, follow the [Words server ingestion guide](https://github.com/aspose-words-mcp/net-server/blob/main/docs/ingestion.md) or [TeX server ingestion guide](https://github.com/aspose-tex-mcp/net-server/blob/main/docs/ingestion.md). Their catalogs already register the respective plugin; manual registration below applies to custom engine deployments. For both products in one engine, use the [Total server ingestion guide](https://github.com/aspose-total-mcp/net-server/blob/main/docs/ingestion.md), which keeps their workspaces separate.
 
 1. Obtain a compatible external plugin checkout and prepare its source repositories and examples.
 2. Register its manifest in an engine catalog.
