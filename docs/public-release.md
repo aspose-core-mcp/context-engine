@@ -16,6 +16,12 @@ The shared engine is published at [aspose-core-mcp/context-engine](https://githu
 
 Both product servers already register their plugins in deployment-specific catalogs. Manual registration is only needed for custom deployments. Their setup and CI verify component integration; source ingestion and publication remain explicit deployment steps.
 
+## Total/.NET deployment
+
+[aspose-total-mcp/net-server](https://github.com/aspose-total-mcp/net-server) combines the public Words and TeX plugins in one engine with an `aspose.total.net` serving composition. Its catalog already registers both members. It currently covers Words and TeX only; it does not supply another extraction plugin or corpus.
+
+Ingest each product separately using the deployment's isolated `workspaces/words` and `workspaces/tex` directories. This avoids the plugins' shared relative API-reference path. The Total endpoint queries both member scopes, or a selected product, against shared runtime stores. Follow its [ingestion](https://github.com/aspose-total-mcp/net-server/blob/main/docs/ingestion.md) and [client guides](https://github.com/aspose-total-mcp/net-server/blob/main/docs/clients.md).
+
 ## Release conventions
 
 The package and import name remain `adcs`. The default plugin catalog stays empty; product registration belongs to a deployment. Preserve license and third-party attribution. Configure deployment secrets and environments separately from the public repository.

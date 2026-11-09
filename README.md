@@ -24,6 +24,7 @@ The shared engine supports product-specific plugins and MCP deployments. Words/.
 | [Words Copilot agent](https://github.com/aspose-words-mcp/net-copilot-client-agent) | Copilot agent, C# compilation checks, and showcase |
 | [TeX/.NET plugin](https://github.com/aspose-tex-mcp/net-plugin) | TeX extraction using default engine retrieval behavior |
 | [TeX/.NET server](https://github.com/aspose-tex-mcp/net-server) | Pinned engine/plugin deployment and registration |
+| [Total/.NET server](https://github.com/aspose-total-mcp/net-server) | Shared engine deployment aggregating Words and TeX; no separate Total corpus |
 
 Both servers include client connection guides. A dedicated TeX Copilot custom-agent repository is not yet published.
 
