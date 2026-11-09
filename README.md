@@ -6,6 +6,12 @@ This repository contains the engine. Product-specific extraction plugins are ins
 
 [Quick start](quick-start-guide.md) · [External plugins](docs/engine-only.md) · [Deployment](DEPLOYMENT.md) · [MCP interfaces](MCP-SERVER.md)
 
+> **Recommended: plugin-based ingestion**
+>
+> For new deployments, use an external product plugin to configure source repositories, extraction, and retrieval policies. Start with the [plugin integration guide](docs/engine-only.md). For Aspose.Words for .NET, use [net-plugin](https://github.com/aspose-words-mcp/net-plugin) with [net-server](https://github.com/aspose-words-mcp/net-server).
+>
+> The built-in source-registry and source-submodule ingestion workflow is retained as a **legacy workflow** for existing deployments. Its source configuration is separate from plugin manifests. See the [legacy source-registry tools](scripts/README.md#sources--registry-legacy-workflow).
+
 ## Project family
 
 These repositories work together to provide documentation-backed MCP services and a GitHub Copilot client for Aspose.Words for .NET. The shared engine is maintained under **aspose-core-mcp**; the Words/.NET components are maintained under **aspose-words-mcp**.

@@ -67,7 +67,10 @@ Generated reports are written under `reports/` (and some artifacts under `artifa
 - `scripts/quality_loop/run_cycle.py` (`make quality-loop-cycle`, `make quality-loop-cycle-quiet`)
   - Runs one judge → diagnose → propose → guard cycle of the quality-improvement loop on a deterministic synthetic sample set; writes `reports/quality-loop/audit-log.jsonl`, `reports/quality-loop/last-summary.json` and per-cycle detail under `reports/quality-loop/cycles/`. See [`docs/quality-loop.md`](../docs/quality-loop.md).
 
-## Sources / Registry
+## Sources / Registry (legacy workflow)
+
+> **For new deployments, use [plugin-based ingestion](../docs/engine-only.md).** The source-registry and source-submodule workflow below is retained as a legacy path for existing deployments. Its configuration is separate from external plugin manifests; these synchronization tools do not prepare plugin-defined source workspaces. Prepare sources using the selected plugin's guide, then ingest with `adcs-platform-ingest`.
+
 - `scripts/sources/registry/sync_source_repos.py` (`make source-validate`, `make source-sync`, `make source-update`)
   - Validates the source registry (`config/source-repositories.yaml` by default, JSON also supported) and validates, syncs or updates the corresponding git submodules (`--mode validate|sync|update`).
 - `scripts/ops/register_docs_repo.py`

@@ -1,5 +1,11 @@
 # External plugins and engine integration
 
+> **Recommended ingestion workflow for new deployments**
+>
+> Use an external product plugin and the `adcs-platform-ingest` commands in this guide. The plugin manifest defines its source repositories and extraction settings, and its retrieval profile supplies product-specific retrieval policies. For Aspose.Words for .NET, follow [net-plugin source preparation](https://github.com/aspose-words-mcp/net-plugin/blob/main/docs/source-preparation.md) and [net-server deployment](https://github.com/aspose-words-mcp/net-server).
+>
+> The built-in source-registry/submodule workflow is **legacy**, retained for existing deployments. Its `config/source-repositories.yaml`, JSON counterpart, and source entries in `.gitmodules` are separate from plugin manifests; editing those files does not update a plugin's source configuration. The legacy label does not announce removal or a change in support. See the [legacy source-registry tools](../scripts/README.md#sources--registry-legacy-workflow).
+
 The default `config/product-platform-plugins.json` is intentionally empty. Plugins and compositions are deployed separately. This guide is the entry point for the standalone engine; older combined-repository examples may refer to bundled plugins that are no longer present.
 
 ## Obtain a plugin
