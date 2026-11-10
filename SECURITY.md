@@ -1,12 +1,13 @@
 # Security Policy
 
+For Aspose's corporate information on customer data and security, see
+[Customer Data and Security](https://about.aspose.com/security/customer-data-and-security/).
+This document provides security guidance specific to Context Engine.
+
 ## Supported versions
 
-Security fixes are made on the `main` branch and shipped in the next release.
-
-| Version | Supported |
-|---------|-----------|
-| 0.1.x   | Yes       |
+No versioned release has been published yet. Security fixes are currently applied
+to the `main` branch.
 
 ## Reporting a vulnerability
 
@@ -14,7 +15,7 @@ Please **do not open a public issue** for a security problem.
 
 Report it privately through GitHub instead:
 [**Security → Report a vulnerability**](https://github.com/aspose-core-mcp/context-engine/security/advisories/new),
-or e-mail Muhammad Sabir at [muhammad.sabir@aspose.com](mailto:muhammad.sabir@aspose.com).
+or e-mail [security@aspose.com](mailto:security@aspose.com).
 
 Please include:
 
