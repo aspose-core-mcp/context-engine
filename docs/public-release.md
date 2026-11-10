@@ -6,7 +6,7 @@ The shared engine is published at [aspose-core-mcp/context-engine](https://githu
 
 - [net-plugin](https://github.com/aspose-words-mcp/net-plugin): documentation/API extraction and retrieval profile.
 - [net-server](https://github.com/aspose-words-mcp/net-server): pinned engine/plugin composition, setup and ingestion helpers.
-- [net-copilot-client-agent](https://github.com/aspose-words-mcp/net-copilot-client-agent): Copilot agent, compilation checks and showcase.
+- [net-client-copilot-agent](https://github.com/aspose-words-mcp/net-client-copilot-agent): Copilot agent, compilation checks and showcase.
 
 ## TeX/.NET companions
 

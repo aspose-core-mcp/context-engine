@@ -36,7 +36,7 @@ For containers on a Linux VM, use [deployment setup](docs/linux-vm-deployment.md
 After plugin installation and publication, send requests to your configured endpoint. Configure client authentication according to [deployment guidance](DEPLOYMENT.md). Product-scoped MCP route details are documented in [MCP-SERVER.md](MCP-SERVER.md).
 
 [aspose-words-mcp/net-server](https://github.com/aspose-words-mcp/net-server) — product deployment guide.
-[aspose-words-mcp/net-copilot-client-agent](https://github.com/aspose-words-mcp/net-copilot-client-agent) — Copilot client setup.
+[aspose-words-mcp/net-client-copilot-agent](https://github.com/aspose-words-mcp/net-client-copilot-agent) — Copilot client setup.
 
 [TeX/.NET server client setup](https://github.com/aspose-tex-mcp/net-server/blob/main/docs/clients.md) — generic MCP configuration for TeX.
 
