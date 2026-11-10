@@ -104,3 +104,20 @@ The engine derives from the MIT-licensed Aspose Context Engine / ADCS project. H
 ## License
 
 [MIT](LICENSE) © Aspose Pty Ltd. Preserve existing attribution and bundled third-party notices. Source corpora and downloaded examples retain their upstream terms. Aspose and GroupDocs product names remain trademarks of their respective owners.
+
+## C++ product endpoints
+
+With the appropriate C++ plugins registered, this engine supports:
+
+- `/words/cpp/mcp/v1/streamable-http`: Aspose.Words for C++.
+- `/tex/cpp/mcp/v1/streamable-http`: Aspose.TeX for C++.
+- `/total/cpp/mcp/v1/streamable-http`: the configured `aspose.total.cpp` composition.
+
+Individual endpoints enforce their product and C++ language scope. The Total
+endpoint accepts `product_id` to select one member, or returns grouped member
+results when it is omitted. Register the plugins and composition in the product
+catalog; publishing the server alone does not ingest their content.
+
+The optional `docker-compose.cpp-local.yml` exposes PostgreSQL on local port
+15432. Its API container mapping remains 8080; choose the desired serving port
+when starting the engine on the host.

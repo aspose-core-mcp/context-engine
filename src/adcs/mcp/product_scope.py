@@ -52,12 +52,30 @@ WORDS_NET_SCOPE = MCPProductScope(
 )
 
 
+WORDS_CPP_SCOPE = MCPProductScope(
+    product_id="aspose.words",
+    language="cpp",
+    title="Aspose.Words for C++",
+    product_aliases=WORDS_NET_SCOPE.product_aliases,
+    language_aliases=frozenset({"cpp", "c++"}),
+)
+
+
 TEX_NET_SCOPE = MCPProductScope(
     product_id="aspose.tex",
     language="net",
     title="Aspose.TeX for .NET",
     product_aliases=frozenset({"aspose.tex", "tex", "aspose tex"}),
     language_aliases=WORDS_NET_SCOPE.language_aliases,
+)
+
+
+TEX_CPP_SCOPE = MCPProductScope(
+    product_id="aspose.tex",
+    language="cpp",
+    title="Aspose.TeX for C++",
+    product_aliases=TEX_NET_SCOPE.product_aliases,
+    language_aliases=WORDS_CPP_SCOPE.language_aliases,
 )
 
 
@@ -97,6 +115,14 @@ TOTAL_NET_SCOPE = MCPProductGroup(
 )
 
 
+TOTAL_CPP_SCOPE = MCPProductGroup(
+    product_id="aspose.total",
+    language="cpp",
+    title="Aspose.Total for C++ (Words and TeX)",
+    members=(WORDS_CPP_SCOPE, TEX_CPP_SCOPE),
+)
+
+
 # Opt-in catalog-driven serving; legacy images need not contain extractor packages.
 _catalog_path = os.environ.get("ADCS_PRODUCT_PLUGIN_CATALOG")
 if _catalog_path:
@@ -124,4 +150,23 @@ if _catalog_path:
         language="net",
         title="Aspose.Total for .NET",
         members=tuple(_members),
+    )
+
+    _cpp_composition = _catalog.compositions.get("aspose.total.cpp")
+    if _cpp_composition is not None and _cpp_composition.language != "cpp":
+        raise ValueError("The Total/C++ endpoint requires a C++ composition")
+    _cpp_members = []
+    for _plugin_id in (_cpp_composition.members if _cpp_composition is not None else []):
+        _plugin = _catalog.extractor(_plugin_id)
+        _name = _plugin.product_id.removeprefix("aspose.")
+        _cpp_members.append(MCPProductScope(
+            product_id=_plugin.product_id,
+            language=_plugin.language,
+            title=_plugin.title,
+            product_aliases=frozenset({_plugin.product_id, _name, f"aspose {_name}"}),
+            language_aliases=WORDS_CPP_SCOPE.language_aliases,
+        ))
+    TOTAL_CPP_SCOPE = MCPProductGroup(
+        product_id="aspose.total", language="cpp", title="Aspose.Total for C++",
+        members=tuple(_cpp_members),
     )

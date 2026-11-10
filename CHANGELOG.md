@@ -7,6 +7,8 @@ and the project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- Add scoped Words/TeX C++ MCP endpoints and the catalog-driven Total C++ composition, with ingress coverage and endpoint regression tests.
+
 ## [0.1.0] - 2026-09-15
 
 Initial public release of the engine behind [Aspose.MCP](https://mcp.aspose.com).

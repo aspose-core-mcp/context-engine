@@ -45,7 +45,10 @@ from adcs.api.metrics import InMemoryMetrics
 from adcs.indexing.symbol_resolution import SymbolNotFoundError
 from adcs.mcp.product_scope import (
     TEX_NET_SCOPE,
+    TEX_CPP_SCOPE,
+    TOTAL_CPP_SCOPE,
     TOTAL_NET_SCOPE,
+    WORDS_CPP_SCOPE,
     WORDS_NET_SCOPE,
     MCPProductGroup,
     MCPProductScope,
@@ -166,9 +169,12 @@ async def mcp_sse_call_tool(
     return _sse_response(event="tool_result", payload=payload.model_dump())
 
 
+@router.get("/total/cpp/mcp/v1/streamable-http")
+@router.get("/tex/cpp/mcp/v1/streamable-http")
 @router.get("/total/net/mcp/v1/streamable-http")
 @router.get("/tex/net/mcp/v1/streamable-http")
 @router.get("/words/net/mcp/v1/streamable-http")
+@router.get("/words/cpp/mcp/v1/streamable-http")
 @router.get("/mcp/v1/streamable-http")
 async def mcp_streamable_http_sse(request: Request) -> StreamingResponse:
     """GET handler for MCP Streamable HTTP SSE stream.
@@ -199,6 +205,24 @@ async def mcp_streamable_http_sse(request: Request) -> StreamingResponse:
     )
 
 
+@router.post("/tex/cpp/mcp/v1/streamable-http", response_model=None)
+async def tex_cpp_streamable_http(
+    request_payload: MCPStreamableHttpRequest,
+    request: Request,
+) -> Response:
+    request.state.mcp_product_scope = TEX_CPP_SCOPE
+    return await mcp_streamable_http_jsonrpc(request_payload=request_payload, request=request)
+
+
+@router.post("/total/cpp/mcp/v1/streamable-http", response_model=None)
+async def total_cpp_streamable_http(
+    request_payload: MCPStreamableHttpRequest,
+    request: Request,
+) -> Response:
+    request.state.mcp_product_scope = TOTAL_CPP_SCOPE
+    return await mcp_streamable_http_jsonrpc(request_payload=request_payload, request=request)
+
+
 @router.post("/total/net/mcp/v1/streamable-http", response_model=None)
 async def total_net_streamable_http(
     request_payload: MCPStreamableHttpRequest,
@@ -224,6 +248,16 @@ async def words_net_streamable_http(
 ) -> Response:
     # Scope is selected by the route, never by client headers or session tokens.
     request.state.mcp_product_scope = WORDS_NET_SCOPE
+    return await mcp_streamable_http_jsonrpc(request_payload=request_payload, request=request)
+
+
+@router.post("/words/cpp/mcp/v1/streamable-http", response_model=None)
+async def words_cpp_streamable_http(
+    request_payload: MCPStreamableHttpRequest,
+    request: Request,
+) -> Response:
+    # Scope is selected by the route, never by client headers or session tokens.
+    request.state.mcp_product_scope = WORDS_CPP_SCOPE
     return await mcp_streamable_http_jsonrpc(request_payload=request_payload, request=request)
 
 
