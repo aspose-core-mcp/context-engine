@@ -46,6 +46,7 @@ from adcs.indexing.symbol_resolution import SymbolNotFoundError
 from adcs.mcp.product_scope import (
     TEX_NET_SCOPE,
     TOTAL_NET_SCOPE,
+    WORDS_JAVA_SCOPE,
     WORDS_NET_SCOPE,
     MCPProductGroup,
     MCPProductScope,
@@ -169,6 +170,7 @@ async def mcp_sse_call_tool(
 @router.get("/total/net/mcp/v1/streamable-http")
 @router.get("/tex/net/mcp/v1/streamable-http")
 @router.get("/words/net/mcp/v1/streamable-http")
+@router.get("/words/java/mcp/v1/streamable-http")
 @router.get("/mcp/v1/streamable-http")
 async def mcp_streamable_http_sse(request: Request) -> StreamingResponse:
     """GET handler for MCP Streamable HTTP SSE stream.
@@ -224,6 +226,16 @@ async def words_net_streamable_http(
 ) -> Response:
     # Scope is selected by the route, never by client headers or session tokens.
     request.state.mcp_product_scope = WORDS_NET_SCOPE
+    return await mcp_streamable_http_jsonrpc(request_payload=request_payload, request=request)
+
+
+@router.post("/words/java/mcp/v1/streamable-http", response_model=None)
+async def words_java_streamable_http(
+    request_payload: MCPStreamableHttpRequest,
+    request: Request,
+) -> Response:
+    # Scope is selected by the route, never by client headers or session tokens.
+    request.state.mcp_product_scope = WORDS_JAVA_SCOPE
     return await mcp_streamable_http_jsonrpc(request_payload=request_payload, request=request)
 
 

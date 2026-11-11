@@ -7,6 +7,16 @@ and the project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `/words/java/mcp/v1/streamable-http` product-scoped MCP endpoint (Aspose.Words
+  for Java; aliases `java`, `jvm`). Content comes from a separately registered plugin.
+
+### Changed
+
+- Retrieval profiles accept Java package identities (`com.<product>.`) for
+  preferred symbols, in addition to `<product>.`.
+
 ## [0.1.0] - 2026-09-15
 
 Initial public release of the engine behind [Aspose.MCP](https://mcp.aspose.com).

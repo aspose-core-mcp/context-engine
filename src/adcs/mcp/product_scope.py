@@ -52,6 +52,15 @@ WORDS_NET_SCOPE = MCPProductScope(
 )
 
 
+WORDS_JAVA_SCOPE = MCPProductScope(
+    product_id="aspose.words",
+    language="java",
+    title="Aspose.Words for Java",
+    product_aliases=WORDS_NET_SCOPE.product_aliases,
+    language_aliases=frozenset({"java", "jvm"}),
+)
+
+
 TEX_NET_SCOPE = MCPProductScope(
     product_id="aspose.tex",
     language="net",
