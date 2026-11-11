@@ -14,7 +14,7 @@ This repository contains the engine. Product-specific extraction plugins are ins
 
 ## Project family
 
-The shared engine supports product-specific plugins and MCP deployments. Words/.NET components are maintained under **aspose-words-mcp** and TeX/.NET components under **aspose-tex-mcp**.
+The shared engine supports product-specific plugins and MCP deployments. Words components are maintained under **aspose-words-mcp** and TeX components under **aspose-tex-mcp**.
 
 | Repository | Responsibility |
 | --- | --- |
@@ -24,6 +24,10 @@ The shared engine supports product-specific plugins and MCP deployments. Words/.
 | [Words Copilot agent](https://github.com/aspose-words-mcp/net-client-copilot-agent) | Copilot agent, C# compilation checks, and showcase |
 | [TeX/.NET plugin](https://github.com/aspose-tex-mcp/net-plugin) | TeX extraction using default engine retrieval behavior |
 | [TeX/.NET server](https://github.com/aspose-tex-mcp/net-server) | Pinned engine/plugin deployment and registration |
+| [Words/Java plugin](https://github.com/aspose-words-mcp/java-plugin) | Words/Java extraction and product-specific retrieval profile |
+| [Words/Java server](https://github.com/aspose-words-mcp/java-server) | Pinned engine/plugin deployment and registration |
+| [TeX/Java plugin](https://github.com/aspose-tex-mcp/java-plugin) | TeX/Java extraction and product-specific retrieval profile |
+| [TeX/Java server](https://github.com/aspose-tex-mcp/java-server) | Pinned engine/plugin deployment and registration |
 | [Total/.NET server](https://github.com/aspose-total-mcp/net-server) | Shared engine deployment aggregating Words and TeX; no separate Total corpus |
 
 All three servers include client connection guides. A dedicated TeX Copilot custom-agent repository is not yet published.
