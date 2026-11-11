@@ -187,6 +187,7 @@ mcpGateway:
       - "/tex/net/mcp"
       - "/words/net/mcp"
       - "/words/java/mcp"
+      - "/tex/java/mcp"
       - "/mcp"
       - "/mcp/"
       - "/webmcp"

@@ -70,6 +70,15 @@ TEX_NET_SCOPE = MCPProductScope(
 )
 
 
+TEX_JAVA_SCOPE = MCPProductScope(
+    product_id="aspose.tex",
+    language="java",
+    title="Aspose.TeX for Java",
+    product_aliases=TEX_NET_SCOPE.product_aliases,
+    language_aliases=WORDS_JAVA_SCOPE.language_aliases,
+)
+
+
 @dataclass(frozen=True, slots=True)
 class MCPProductGroup:
     """An endpoint grouping; its identity is never sent to retrieval stores."""

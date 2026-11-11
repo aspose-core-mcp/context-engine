@@ -11,6 +11,9 @@ and the project follows [Semantic Versioning](https://semver.org/).
 
 - `/words/java/mcp/v1/streamable-http` product-scoped MCP endpoint (Aspose.Words
   for Java; aliases `java`, `jvm`). Content comes from a separately registered plugin.
+- `/tex/java/mcp/v1/streamable-http` product-scoped MCP endpoint (Aspose.TeX for
+  Java; aliases `java`, `jvm`). Content comes from the separately registered
+  `aspose.tex.java` plugin.
 
 ### Changed
 
