@@ -45,8 +45,9 @@ Words/Java and TeX/Java are served by separate deployments, each registering one
 | --- | --- | --- | --- |
 | Words/Java | `/words/java/mcp/v1/streamable-http` | `aspose-words-java-mcp` | [aspose-words-mcp/java-server](https://github.com/aspose-words-mcp/java-server) |
 | TeX/Java | `/tex/java/mcp/v1/streamable-http` | `aspose-tex-java-mcp` | [aspose-tex-mcp/java-server](https://github.com/aspose-tex-mcp/java-server) |
+| Total/Java | `/total/java/mcp/v1/streamable-http` | `aspose-total-java-mcp` | [aspose-total-mcp/java-server](https://github.com/aspose-total-mcp/java-server) |
 
-Each endpoint fixes the product and `language="java"` (aliases `java`, `jvm`) and rejects other products and languages. Neither is a Total/.NET member. API identities are Java packages, for example `com.aspose.words.Document.save` or `com.aspose.tex.TeXJob.run`, so retrieval profiles may name preferred symbols with either `<product>.` or `com.<product>.`. A route being defined in the engine does not register or ingest its plugin.
+Each endpoint fixes the product and `language="java"` (aliases `java`, `jvm`) and rejects other products and languages. Neither is a Total/.NET member. Total/Java groups Words/Java and TeX/Java like Total/.NET: omitting `product_id` searches both members independently, and selecting one narrows the request. A catalog `aspose.total.java` composition defines its members. API identities are Java packages, for example `com.aspose.words.Document.save` or `com.aspose.tex.TeXJob.run`, so retrieval profiles may name preferred symbols with either `<product>.` or `com.<product>.`. A route being defined in the engine does not register or ingest its plugin.
 
 ## Custom JSON-RPC implementation — by design
 

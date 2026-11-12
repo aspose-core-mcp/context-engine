@@ -108,8 +108,10 @@ this prefix is included in the default Helm values. Installations overriding
 The Java endpoints `/words/java/mcp/v1/streamable-http` and
 `/tex/java/mcp/v1/streamable-http` (GET SSE and POST JSON-RPC) fix the product
 and `language="java"`; their server names are `aspose-words-java-mcp` and
-`aspose-tex-java-mcp`. Forward `/words/java/mcp` and `/tex/java/mcp` through the
-ingress unchanged; both prefixes are included in the default Helm values. Content
+`aspose-tex-java-mcp`. The Total/Java endpoint `/total/java/mcp/v1/streamable-http`
+(`aspose-total-java-mcp`) groups both. Forward `/words/java/mcp`, `/tex/java/mcp`
+and `/total/java/mcp` through the ingress unchanged; all three prefixes are
+included in the default Helm values. Content
 comes from the separately registered Java plugins.
 
 The Total .NET endpoint is `/total/net/mcp/v1/streamable-http` (GET/POST).

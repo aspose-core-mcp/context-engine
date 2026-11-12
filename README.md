@@ -28,6 +28,7 @@ The shared engine supports product-specific plugins and MCP deployments. Words c
 | [Words/Java server](https://github.com/aspose-words-mcp/java-server) | Pinned engine/plugin deployment and registration |
 | [TeX/Java plugin](https://github.com/aspose-tex-mcp/java-plugin) | TeX/Java extraction and product-specific retrieval profile |
 | [TeX/Java server](https://github.com/aspose-tex-mcp/java-server) | Pinned engine/plugin deployment and registration |
+| [Total/Java server](https://github.com/aspose-total-mcp/java-server) | Words/Java and TeX/Java through one Total endpoint |
 | [Total/.NET server](https://github.com/aspose-total-mcp/net-server) | Shared engine deployment aggregating Words and TeX; no separate Total corpus |
 
 All three servers include client connection guides. A dedicated TeX Copilot custom-agent repository is not yet published.
