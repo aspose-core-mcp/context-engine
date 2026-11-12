@@ -87,10 +87,13 @@ class RetrievalProfile(BaseModel):
             for term in [*rule.all_terms, *rule.any_terms, *rule.any_phrases, *rule.exclude_terms]:
                 if not words(term):
                     raise ValueError("Retrieval terms must contain words")
+            # Java packages qualify the product as ``com.<product>``
+            # (``com.aspose.words.Document``); .NET uses ``Aspose.Words``.
+            product = self.product_id.casefold() + "."
             for symbol in rule.preferred_symbols:
                 if not self.allows(symbol):
                     raise ValueError("Preferred symbol conflicts with excluded namespace")
-                if not symbol.casefold().startswith(self.product_id.casefold() + "."):
+                if not symbol.casefold().startswith((product, "com." + product)):
                     raise ValueError("Preferred symbol is outside profile product")
         return self
 

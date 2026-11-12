@@ -52,12 +52,30 @@ WORDS_NET_SCOPE = MCPProductScope(
 )
 
 
+WORDS_JAVA_SCOPE = MCPProductScope(
+    product_id="aspose.words",
+    language="java",
+    title="Aspose.Words for Java",
+    product_aliases=WORDS_NET_SCOPE.product_aliases,
+    language_aliases=frozenset({"java", "jvm"}),
+)
+
+
 TEX_NET_SCOPE = MCPProductScope(
     product_id="aspose.tex",
     language="net",
     title="Aspose.TeX for .NET",
     product_aliases=frozenset({"aspose.tex", "tex", "aspose tex"}),
     language_aliases=WORDS_NET_SCOPE.language_aliases,
+)
+
+
+TEX_JAVA_SCOPE = MCPProductScope(
+    product_id="aspose.tex",
+    language="java",
+    title="Aspose.TeX for Java",
+    product_aliases=TEX_NET_SCOPE.product_aliases,
+    language_aliases=WORDS_JAVA_SCOPE.language_aliases,
 )
 
 
@@ -97,6 +115,14 @@ TOTAL_NET_SCOPE = MCPProductGroup(
 )
 
 
+TOTAL_JAVA_SCOPE = MCPProductGroup(
+    product_id="aspose.total",
+    language="java",
+    title="Aspose.Total for Java (Words and TeX)",
+    members=(WORDS_JAVA_SCOPE, TEX_JAVA_SCOPE),
+)
+
+
 # Opt-in catalog-driven serving; legacy images need not contain extractor packages.
 _catalog_path = os.environ.get("ADCS_PRODUCT_PLUGIN_CATALOG")
 if _catalog_path:
@@ -124,4 +150,28 @@ if _catalog_path:
         language="net",
         title="Aspose.Total for .NET",
         members=tuple(_members),
+    )
+
+    # Total/Java: members come from the deployment's aspose.total.java composition.
+    _java_composition = _catalog.compositions.get("aspose.total.java")
+    if _java_composition is not None and _java_composition.language != "java":
+        raise ValueError("The Total/Java endpoint requires a Java composition")
+    _java_members = []
+    for _plugin_id in (_java_composition.members if _java_composition is not None else []):
+        _plugin = _catalog.extractor(_plugin_id)
+        _name = _plugin.product_id.removeprefix("aspose.")
+        _java_members.append(
+            MCPProductScope(
+                product_id=_plugin.product_id,
+                language=_plugin.language,
+                title=_plugin.title,
+                product_aliases=frozenset({_plugin.product_id, _name, f"aspose {_name}"}),
+                language_aliases=WORDS_JAVA_SCOPE.language_aliases,
+            )
+        )
+    TOTAL_JAVA_SCOPE = MCPProductGroup(
+        product_id="aspose.total",
+        language="java",
+        title="Aspose.Total for Java",
+        members=tuple(_java_members),
     )
